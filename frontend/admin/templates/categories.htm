@@ -1,1 +1,16 @@
 <h1>Categories Page</h1>
+
+
+<div class="">
+  <input type="text" ng-model="catBox">
+  <button type="button" ng-click="addNewCategory()">Add</button>
+</div>
+
+<div class="">
+  <ul>
+    <li ng-repeat="c in categories track by $index">
+      {{c.name}}
+      <button type="button" ng-click="connectCategory(c.id)">connect</button>
+    </li>
+  </ul>
+</div>

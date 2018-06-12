@@ -29,8 +29,8 @@ We gonna use a flat structure.. with a pointer  to parentCategory, childrenCateg
 ```
 { id: CategoryId
 , name: String
-, parentCategory: Maybe CategoryId
-, childrenCategories: List CategoryId
+<!-- , parentCategory: Maybe CategoryId -->
+<!-- , childrenCategories: List CategoryId -->
 , products : List ProductId
 , mapper: List ExternalCategory
 }
