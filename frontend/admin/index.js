@@ -1,10 +1,27 @@
 console.log("index.js was loaded..");
+
+// import * as firebase from '../assets/firebase.js'
+// import 'assets/firebase-firestore.js'
+
+// Firebase configuration.
+
+
+
+// Angularjs configuration.
+
+
+// import Controllers
 import MainCtrl from "./controllers/MainCtrl.js"
 import CategoriesCtrl from "./controllers/CategoriesCtrl.js"
 import ProductsCtrl from "./controllers/ProductsCtrl.js"
 import OrdersCtrl from "./controllers/OrdersCtrl.js"
 import UsersCtrl from "./controllers/UsersCtrl.js"
 import SettingsCtrl from "./controllers/SettingsCtrl.js"
+
+// import Serives
+// import CategoriesService from "./services/CategoriesService.js"
+import BackendService from "./services/BackendService.js"
+import ShopsService from "./services/ShopsService.js"
 
 const admin = angular.module("admin", ["ngRoute"]);
 console.log("admin", admin);
@@ -39,9 +56,16 @@ admin.config(function($routeProvider) {
     });
 });
 
+// controllers.
 admin.controller("MainCtrl", MainCtrl);
 admin.controller("CategoriesCtrl", CategoriesCtrl);
 admin.controller("ProductsCtrl", ProductsCtrl);
 admin.controller("OrdersCtrl", OrdersCtrl);
 admin.controller("UsersCtrl", UsersCtrl);
 admin.controller("SettingsCtrl", SettingsCtrl);
+
+
+// services
+// admin.service("CategoriesService", CategoriesService);
+admin.service("BackendService", BackendService);
+admin.service("ShopsService", ShopsService);

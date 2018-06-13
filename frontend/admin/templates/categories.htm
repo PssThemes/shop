@@ -2,15 +2,48 @@
 
 
 <div class="">
+  <h3>Create category</h3>
   <input type="text" ng-model="catBox">
-  <button type="button" ng-click="addNewCategory()">Add</button>
+  <button type="button" ng-click="addCustomCategory()">Add</button>
 </div>
 
 <div class="">
+  <h3>Link each category with the categories you have in the online shops</h3>
   <ul>
-    <li ng-repeat="c in categories track by $index">
-      {{c.name}}
-      <button type="button" ng-click="connectCategory(c.id)">connect</button>
+    <li ng-repeat="(key, cat) in customCategories">
+      <!--  TODO: orderBy cat.name -->
+
+      <!-- Edit Mode for Category Name  -->
+      <div ng-if="cat.editMode">
+        <input type="text" model="cat.editName">
+        <button type="button" ng-click="saveEdit(key)">edit</button>
+        <button type="button" ng-click="cancelEdit(key)">edit</button>
+      </div>
+
+      <!-- Normal Mode -->
+      <div ng-if="cat.editMode == false">
+        {{cat.name}}
+        <button type="button" ng-click="startEditingCategory(key)">edit</button>
+        <button type="button" ng-click="removeCategory(key)">remove</button>
+        <button type="button" ng-click="selectCategoryForLinking(key)">link</button>
+      </div>
+
     </li>
   </ul>
 </div>
+<br>
+<!-- <button type="button" ng-click="unselectForLinking()">Exit linking mode</button> -->
+<hr>
+<br>
+<!-- <div class="" ng-hide="selectedForLinking == null">
+  This one is supposed to be a modal..
+  <div class="" ng-repeat="shop in extenralCategories">
+    shopName: {{shop.shopName}}
+    <ul>
+      <li ng-repeat="cat in shop.categories track by $index" ng-click="linkToExternalCategory(cat.categoryId)">
+        {{cat.name}}
+      </li>
+    </ul>
+    <hr style="margin: 0px" width="400px">
+  </div>
+</div> -->

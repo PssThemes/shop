@@ -9,15 +9,10 @@
 
   <link rel="stylesheet" href="../assets/css/index.css">
 
-  <!-- JS stuff -->
-  <script type="text/javascript" src="../assets/angularjs.js"></script>
-  <script type="text/javascript" src="../assets/angularjs-route.js"></script>
-  <script type="module" src="index.js "></script>
-
 </head>
 
 <body ng-app="admin">
-  <nav>
+  <nav class="header">
     <ul style="display: inline-block ">
       <li>
         <a href="#/categories ">Categories</a>
@@ -40,6 +35,33 @@
       <h1>Loaded {{name}}</h1>
     </div>  -->
   <ng-view></ng-view>
+
+  <!-- firebase config -->
+  <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
+  <!-- <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-firestore.js"></script> -->
+  <script type="text/javascript">
+    firebase.initializeApp({
+      apiKey: "AIzaSyBHFgL85LAezq8GV-MIqDvBz53g4LSrk1I",
+      authDomain: "shop-0000.firebaseapp.com",
+      databaseURL: "https://shop-0000.firebaseio.com",
+      projectId: "shop-0000",
+      storageBucket: "shop-0000.appspot.com",
+      messagingSenderId: "809051870205"
+    });
+
+    const firestore = firebase.firestore();
+    const settings = { /* your settings... */
+      timestampsInSnapshots: true
+    };
+    firestore.settings(settings);
+  </script>
+
+
+  <!-- angular config -->
+  <script type="text/javascript" src="../assets/angularjs.js"></script>
+  <script type="text/javascript" src="../assets/angularjs-route.js"></script>
+  <script type="module" src="index.js"></script>
+
 </body>
 
 </html>
