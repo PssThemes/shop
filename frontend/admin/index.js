@@ -1,14 +1,6 @@
-console.log("index.js was loaded..");
-
-// import * as firebase from '../assets/firebase.js'
-// import 'assets/firebase-firestore.js'
-
-// Firebase configuration.
-
-
-
+// -------------------------------------
 // Angularjs configuration.
-
+// -------------------------------------
 
 // import Controllers
 import MainCtrl from "./controllers/MainCtrl.js"
@@ -24,7 +16,6 @@ import BackendService from "./services/BackendService.js"
 import ShopsService from "./services/ShopsService.js"
 
 const admin = angular.module("admin", ["ngRoute"]);
-console.log("admin", admin);
 admin.config(function($routeProvider) {
   $routeProvider
     .when("/", {

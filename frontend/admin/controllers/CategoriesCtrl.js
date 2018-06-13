@@ -1,42 +1,75 @@
-function CategoriesCtrl($scope, BackendService, ShopsService) {
+function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
 
   // Initialization stuff:
-  // input for creating a new Custom Category
-  $scope.catBox = "";
+
+
+  // -----------------------------------------------------
+  // Load Categories
+  // -----------------------------------------------------
 
   $scope.customCategories = {};
   // Load custom categories form backend.. and attach a default ui-state.
   BackendService.getCustomCategories()
     .then(obj => {
-      console.log("objjjjj ?", obj)
       $scope.customCategories = obj;
-      console.log("$scope.customCategories ", $scope.customCategories);
       $scope.$apply();
     })
     .catch(err => console.log("error when loading categories: ", err));
 
-  //   .then(cats => {
-  //     const list =
-  //       cats
-  //       // add ui state.
-  //       .map(cat => {
-  //         // TODO: Refactor this into a CustomCategory object with a properly defined api..
-  //         return {
-  //           editMode: false,
-  //           editName: "",
-  //           name: cat.name,
-  //           products: cat.products,
-  //           id: cat.id
-  //         }
-  //       })
-  //       // transform it into a nice indexed by categoryId object...
-  //       // { CategoryId: Catregory}
-  //       .reduce((acc, cat) => {
-  //         acc[cat.id] = cat;
-  //         return acc;
-  //       }, {});
-  //
-  //   })
+
+
+  // -----------------------------------------------------
+  // Add Category
+  // -----------------------------------------------------
+  $scope.catBox = "";
+  $scope.addCustomCategory = () => {
+    BackendService.createCustomCategory(name)
+      .then(() => {
+        $scope.catBox = "";
+      })
+      .catch(err => console.log("error when creating the category: ", err));
+  };
+
+  BackendService.onCreateCustomCategory((catId, cat) => {
+    $scope.customCategories[catId] = cat;
+    $timeout(() => {
+      $scope.$apply();
+    }, 10);
+  });
+
+  // -----------------------------------------------------
+  // Edit Category
+  // -----------------------------------------------------
+  $scope.editNameState = "";
+  $scope.categorySelectedForEditing = null;
+  $scope.updateEditNameState = (value) => {
+    $scope.editNameState = value;
+  }
+  $scope.startEditingCategoryName = (catId) => {
+    $scope.editNameState = $scope.customCategories[catId].name;
+    $scope.categorySelectedForEditing = catId;
+  };
+
+  $scope.saveEdit = (catId) => {
+    console.log($scope.editNameState);
+    $scope.customCategories[catId].updateName($scope.editNameState);
+    BackendService.updateCustomCategory(catId, $scope.customCategories[catId].getData());
+    // $scope.editNameState = ""
+    $scope.categorySelectedForEditing = null;
+    // console.log("$sope.customCategories: ", $scope.customCategories);
+    // $timeout(() => {
+    //   $scope.$apply();
+    // }, 10);
+  };
+
+  $scope.cancelEdit = (catId) => {
+    $scope.categorySelectedForEditing = null;
+  };
+
+  // -----------------------------------------------------
+  // Remove Category
+  // -----------------------------------------------------
+  // input for creating a new Custom Category
 
   // Load external categories form all available shops.
   // $scope.extenralCategories = ShopsService.loadExternalCategories();
@@ -45,6 +78,7 @@ function CategoriesCtrl($scope, BackendService, ShopsService) {
   // ---------------------------------------
   // Add, remove or update the name of custom categories
   // ---------------------------------------
+
 
   // EDIT CATEGORY NAME
   // $scope.cancelEdit = catId => {
@@ -56,10 +90,7 @@ function CategoriesCtrl($scope, BackendService, ShopsService) {
   //   // we wait for the real time backend to update the new name.
   //   BackendService.updateNameForCustomCategory(catId, newName);
   // }
-  // $scope.addCustomCategory = () => {
-  //   BackendService.addCustomCategory($scope.catBox);
-  //   $scope.catBox = "";
-  // }
+
   //
   // $scope.startEditingCategory = (key) => {
   //   $scope.customCategories[key].editMode = true;

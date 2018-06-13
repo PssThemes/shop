@@ -8,24 +8,24 @@
 </div>
 
 <div class="">
-  <h3>Link each category with the categories you have in the online shops</h3>
+  <h3>Link each category with the categories you have in the online shops</h3> editNameState is: {{editNameState}}
   <ul>
-    <li ng-repeat="(key, cat) in customCategories">
+    <li ng-repeat="(catId, cat) in customCategories track by $index">
       <!--  TODO: orderBy cat.name -->
 
       <!-- Edit Mode for Category Name  -->
-      <div ng-if="cat.editMode">
-        <input type="text" model="cat.editName">
-        <button type="button" ng-click="saveEdit(key)">edit</button>
-        <button type="button" ng-click="cancelEdit(key)">edit</button>
+      <div ng-if="categorySelectedForEditing == catId">
+        <input type="text" ng-model="cat.name" ng-blur=updateEditNameState(cat.name)>
+        <button type="button" ng-click="saveEdit(catId, editNameState)">Save</button>
+        <button type="button" ng-click="cancelEdit(catId)">Cancel</button>
       </div>
 
       <!-- Normal Mode -->
-      <div ng-if="cat.editMode == false">
+      <div ng-if="categorySelectedForEditing != catId">
         {{cat.name}}
-        <button type="button" ng-click="startEditingCategory(key)">edit</button>
-        <button type="button" ng-click="removeCategory(key)">remove</button>
-        <button type="button" ng-click="selectCategoryForLinking(key)">link</button>
+        <button type="button" ng-click="startEditingCategoryName(catId)">edit</button>
+        <button type="button" ng-click="removeCategory(catId)">remove</button>
+        <button type="button" ng-click="selectCategoryForLinking(catId)">link</button>
       </div>
 
     </li>

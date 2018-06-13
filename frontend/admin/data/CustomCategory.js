@@ -3,26 +3,13 @@ export default class CustomCategory {
     this.id = id;
     this.name = name;
     this.products = products;
-    this.editMode = false;
-    this.editName = "";
     this.linkedTo = [];
   }
 
-  getId() {
-    return this.id;
+  updateName(newName) {
+    this.name = newName;
   }
 
-  updateName(name) {
-    this.name = name;
-  }
-
-  startEditName() {
-    this.editMode = true;
-  }
-
-  stopEditName() {
-    this.editMode = false;
-  }
 
   getData() {
     return {
