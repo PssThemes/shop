@@ -8,15 +8,16 @@
 </div>
 
 <div class="">
-  <h3>Link each category with the categories you have in the online shops</h3> editNameState is: {{editNameState}}
+  <h3>Link each category with the categories you have in the online shops</h3>
   <ul>
-    <li ng-repeat="(catId, cat) in customCategories track by $index">
+    <li ng-repeat="(catId, cat) in customCategories">
       <!--  TODO: orderBy cat.name -->
 
       <!-- Edit Mode for Category Name  -->
       <div ng-if="categorySelectedForEditing == catId">
-        <input type="text" ng-model="cat.name" ng-blur=updateEditNameState(cat.name)>
-        <button type="button" ng-click="saveEdit(catId, editNameState)">Save</button>
+        <!-- What a ng-repeat hack!! -->
+        <input type="text" ng-model="cat.name" ng-blur="updateEditNameState(cat.name)">
+        <button type="button" ng-click="saveEdit(catId)">Save</button>
         <button type="button" ng-click="cancelEdit(catId)">Cancel</button>
       </div>
 

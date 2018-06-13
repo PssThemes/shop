@@ -1,8 +1,8 @@
 export default class CustomCategory {
   constructor(id, name, products) {
     this.id = id;
-    this.name = name;
-    this.products = products;
+    this.name = name || "no name?";
+    this.products = products || [];
     this.linkedTo = [];
   }
 

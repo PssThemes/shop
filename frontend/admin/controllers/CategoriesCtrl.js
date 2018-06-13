@@ -51,15 +51,10 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
   };
 
   $scope.saveEdit = (catId) => {
-    console.log($scope.editNameState);
     $scope.customCategories[catId].updateName($scope.editNameState);
     BackendService.updateCustomCategory(catId, $scope.customCategories[catId].getData());
-    // $scope.editNameState = ""
+    $scope.editNameState = ""
     $scope.categorySelectedForEditing = null;
-    // console.log("$sope.customCategories: ", $scope.customCategories);
-    // $timeout(() => {
-    //   $scope.$apply();
-    // }, 10);
   };
 
   $scope.cancelEdit = (catId) => {
@@ -69,7 +64,17 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
   // -----------------------------------------------------
   // Remove Category
   // -----------------------------------------------------
-  // input for creating a new Custom Category
+  $scope.removeCategory = (catId) => {
+    BackendService.deleteCustomCategory(catId)
+      .catch(err => console.log("failed to delete custom category: ", err));
+  }
+  BackendService.onDeleteCustomCategory((catId) => {
+    delete $scope.customCategories[catId];
+  })
+  /////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////
 
   // Load external categories form all available shops.
   // $scope.extenralCategories = ShopsService.loadExternalCategories();
