@@ -8,7 +8,17 @@ export default class CustomCategory {
     }
     this.name = name || "no name?";
     this.products = products || [];
-    this.linkedTo = linkedTo || [];
+    this.linkedTo = linkedTo || {
+      shopify: {
+        categories: {}
+      },
+      magento: {
+        categories: {}
+      },
+      woocommerce: {
+        categories: {}
+      }
+    };
   }
 
   updateName(newName) {
@@ -25,12 +35,28 @@ export default class CustomCategory {
     }
   }
 
-  linkExternalCategory(extenralCat) {
-    // i expect the extenralCat to be an object of typpe
+  addLinkToExternalCategory(shopName, externalCat) {
+    // i expect the externalCat to be an object of typpe
     // { id: String
     // , name: String
-    // , origin: String
     // }
-    this.linkedTo.push(externalCat);
+
+    // // console.log(shopName, externalCat, this.linkedTo[shopName]);
+    this.linkedTo[shopName].categories[externalCat.id] = externalCat;
+  }
+
+  removeLinkToExternalCategory(shopName, externalCat) {
+    delete this.linkedTo[shopName].categories[externalCat.id];
+  }
+
+  categoryHasAlreadyBeenLinked(shopName, externalCat) {
+    const itExists = this.linkedTo[shopName].categories[externalCat.id];
+    if (itExists) {
+      // This external category already added to the linking list.
+      return true;
+    } else {
+      // was not aded.
+      return false;
+    }
   }
 }

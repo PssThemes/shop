@@ -17,7 +17,7 @@
       <!-- Edit Mode for Category Name  -->
       <div ng-if="categorySelectedForEditing == catId">
         <!-- What a ng-repeat hack!! -->
-        <input type="text" ng-model="cat.name" ng-blur="updateEditNameState(cat.name)">
+        <input type="text" ng-model="cat.name" ng-blur="updateEditNameState(cat.name)" on-Enter="saveEdit(catId)" on-Esc="cancelEdit(catId)">
         <button type="button" ng-click="saveEdit(catId)">Save</button>
         <button type="button" ng-click="cancelEdit(catId)">Cancel</button>
       </div>
@@ -34,18 +34,34 @@
   </ul>
 </div>
 <br>
-<!-- <button type="button" ng-click="unselectForLinking()">Exit linking mode</button> -->
+<button type="button" ng-click="unselectCategoryForLinking()">Exit linking mode</button>
 <hr>
 <br>
-<!-- <div class="" ng-hide="selectedForLinking == null">
-  This one is supposed to be a modal..
-  <div class="" ng-repeat="shop in extenralCategories">
-    shopName: {{shop.shopName}}
+
+<div class="" ng-if="selectedForLinking != null">
+
+  <br> Link the {{ getSelectedCategoryName() }} category with the ones in your shops..
+
+  <br>
+  <div class="" ng-repeat="(shopName, shop) in externalCategories">
+    <br> shopName: {{shopName}}
+    <br>
     <ul>
-      <li ng-repeat="cat in shop.categories track by $index" ng-click="linkToExternalCategory(cat.categoryId)">
-        {{cat.name}}
+      <li ng-repeat="externalCat in shop.categories track by $index">
+
+        {{externalCat.name}}
+
+        <div style="display: inline-block;" ng-if="externalCategoryWasAlreadyLinked(shopName, externalCat)">
+          <!-- Show the remove button. -->
+          <button type="button" ng-click="removeLinkToExternalCategory(shopName,externalCat)">Remove</button>
+        </div>
+        <div style="display: inline-block;" ng-if="!externalCategoryWasAlreadyLinked(shopName, externalCat)">
+          <button type="button" ng-click="addLinkToExternalCategory(shopName,externalCat)">Add</button>
+          <!-- Show the add button. -->
+        </div>
+
       </li>
     </ul>
     <hr style="margin: 0px" width="400px">
   </div>
-</div> -->
+</div>

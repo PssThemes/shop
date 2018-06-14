@@ -17,6 +17,7 @@ import ShopsService from "./services/ShopsService.js"
 
 // import Directives
 import onEnter from "./directives/onEnter.js"
+import onEsc from "./directives/onEsc.js"
 
 const admin = angular.module("admin", ["ngRoute"]);
 admin.config(function($routeProvider) {
@@ -66,3 +67,4 @@ admin.service("ShopsService", ShopsService);
 
 // directives
 admin.directive("onEnter", onEnter);
+admin.directive("onEsc", onEsc);
