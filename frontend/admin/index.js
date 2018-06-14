@@ -15,6 +15,9 @@ import SettingsCtrl from "./controllers/SettingsCtrl.js"
 import BackendService from "./services/BackendService.js"
 import ShopsService from "./services/ShopsService.js"
 
+// import Directives
+import onEnter from "./directives/onEnter.js"
+
 const admin = angular.module("admin", ["ngRoute"]);
 admin.config(function($routeProvider) {
   $routeProvider
@@ -60,3 +63,6 @@ admin.controller("SettingsCtrl", SettingsCtrl);
 // admin.service("CategoriesService", CategoriesService);
 admin.service("BackendService", BackendService);
 admin.service("ShopsService", ShopsService);
+
+// directives
+admin.directive("onEnter", onEnter);

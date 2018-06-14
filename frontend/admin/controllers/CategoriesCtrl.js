@@ -23,6 +23,7 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
   // -----------------------------------------------------
   $scope.catBox = "";
   $scope.addCustomCategory = () => {
+    console.log("addCustomCategory")
     BackendService.createCustomCategory(name)
       .then(() => {
         $scope.catBox = "";
