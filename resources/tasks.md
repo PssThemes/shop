@@ -1,7 +1,8 @@
 #### Load categories .
-- create the functionality in the controller. 1
-- turn on child_added event only after the hole list of custom categories are loaded .. such that we don't do dumb shit with duplication..
+- REMOVED: create the functionality in the controller. 1
+- REMOVED:  turn on child_added event only after the hole list of custom categories are loaded .. such that we don't do dumb shit with duplication..
 I mean there will not be any data transfer since firebase cache is good.. but is still a pointless render for angular.
+I've implemented this in terms of child_added event.
 
 #### Add categories
 - ui stuff 1
@@ -25,3 +26,12 @@ I mean there will not be any data transfer since firebase cache is good.. but is
 - in controller add an event listener for the deleted one. 1
 - build the backendService functionality of the on delete. 1
 - test that it works 1
+
+
+#### Edit categories
+- handle the ui 1
+- add actions in the controller.
+- update in firebase.
+
+- add event for update.
+- create the onUpdateCustomCategory functionality using child_changed

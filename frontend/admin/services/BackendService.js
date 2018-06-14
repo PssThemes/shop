@@ -37,16 +37,27 @@ export default function BackendService() {
       });
     },
 
+
     // UPDATE
     updateCustomCategory: (catId, cat) => {
       return new Promise((resolve, reject) => {
-        resolve();
+        db.ref("/categories/" + catId)
+          .set(cat)
+          .then(result => {
+            resolve();
+          })
+          .catch(err => reject(catId, cat, error))
       });
     },
 
     onUpdateCustomCategory: (observer) => {
-      observer("catId", "cat");
+      categoriesRef.on("child_changed", snap => {
+        const catData = snap.val();
+        const cat = new CustomCategory(snap.key, catData.name, catData.products);
+        observer(cat.id, cat);
+      });
     },
+
 
     // DELETE
     deleteCustomCategory: (catId) => {

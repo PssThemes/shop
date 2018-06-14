@@ -3,13 +3,16 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
   // Initialization stuff:
 
 
+  // #region -- Load Categories
   // -----------------------------------------------------
   // Load Categories
   // -----------------------------------------------------
   // Load custom categories form backend.. and attach a default ui-state.
   // is impemented with: BackendService.onCreateCustomCategory() below.
   $scope.customCategories = {};
-
+  // #/region -- Load Categories
+  //
+  // #region -- Add Category
   // -----------------------------------------------------
   // Add Category
   // -----------------------------------------------------
@@ -29,12 +32,15 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
     // this is implemented on terms of child_added event
     // meaning will fire the first time app loads ..
     // and populates the categories list.
+    console.log("onCreateCustomCategory")
     $scope.customCategories[catId] = cat;
     $timeout(() => {
       $scope.$apply();
     }, 10);
   });
-
+  // #/region -- Add Category
+  //
+  // #region Edit Category
   // -----------------------------------------------------
   // Edit Category
   // -----------------------------------------------------
@@ -50,7 +56,6 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
   };
 
   $scope.saveEdit = (catId) => {
-    $scope.customCategories[catId].updateName($scope.editNameState);
     BackendService.updateCustomCategory(catId, $scope.customCategories[catId].getData());
     $scope.editNameState = ""
     $scope.categorySelectedForEditing = null;
@@ -60,6 +65,15 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
     $scope.categorySelectedForEditing = null;
   };
 
+  BackendService.onUpdateCustomCategory((catId, cat) => {
+    $scope.customCategories[catId] = cat;
+    $timeout(() => {
+      $scope.$apply();
+    }, 10);
+  });
+  // #/region Edit Category
+  //
+  // #region Remove Category
   // -----------------------------------------------------
   // Remove Category
   // -----------------------------------------------------
@@ -70,6 +84,17 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
   BackendService.onDeleteCustomCategory((catId) => {
     delete $scope.customCategories[catId];
   })
+  // #/region Remove Category
+  //
+
+
+
+
+
+
+
+
+
   /////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////
