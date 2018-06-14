@@ -9,32 +9,6 @@ export default function BackendService() {
     // Categories Resource
     // ------------------------------------------
 
-    getCustomCategories: () => {
-      // TODO: ask firebase for a list of all custom categories.
-      return categoriesRef
-        .once('value')
-        .then(snap => {
-          return snap.val();
-        })
-        .then(catsData => {
-          return Object.keys(catsData)
-            .map(key => {
-              return {
-                catId: key,
-                data: catsData[key]
-              };
-            })
-            .map(catData => {
-              const customCategory = new CustomCategory(catData.catId, catData.data.name, catData.data.products);
-              return customCategory;
-            })
-            .reduce((acc, cat) => {
-              acc[cat.id] = cat;
-              return acc;
-            }, {});
-        });
-    },
-
     // CREATE
     createCustomCategory: catName => {
       const newCat = {

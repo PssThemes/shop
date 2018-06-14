@@ -6,22 +6,9 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
   // -----------------------------------------------------
   // Load Categories
   // -----------------------------------------------------
-
-  $scope.customCategories = {};
   // Load custom categories form backend.. and attach a default ui-state.
-  BackendService.getCustomCategories()
-    .then(obj => {
-      $scope.customCategories = obj;
-      $scope.$apply();
-
-      // start listening for new categories beeing created..
-      // underneath uses the child added event.
-
-
-    })
-    .catch(err => console.log("error when loading categories: ", err));
-
-
+  // is impemented with: BackendService.onCreateCustomCategory() below.
+  $scope.customCategories = {};
 
   // -----------------------------------------------------
   // Add Category
