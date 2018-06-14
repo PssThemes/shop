@@ -13,6 +13,11 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
     .then(obj => {
       $scope.customCategories = obj;
       $scope.$apply();
+
+      // start listening for new categories beeing created..
+      // underneath uses the child added event.
+
+
     })
     .catch(err => console.log("error when loading categories: ", err));
 
@@ -23,15 +28,20 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
   // -----------------------------------------------------
   $scope.catBox = "";
   $scope.addCustomCategory = () => {
-    console.log("addCustomCategory")
-    BackendService.createCustomCategory(name)
-      .then(() => {
-        $scope.catBox = "";
-      })
-      .catch(err => console.log("error when creating the category: ", err));
+    if ($scope.catBox.trim() != "") {
+      BackendService.createCustomCategory($scope.catBox)
+        .then(() => {
+          $scope.catBox = "";
+          $scope.$apply();
+        })
+        .catch(err => console.log("error when creating the category: ", err));
+    }
   };
 
   BackendService.onCreateCustomCategory((catId, cat) => {
+    // this is implemented on terms of child_added event
+    // meaning will fire the first time app loads ..
+    // and populates the categories list.
     $scope.customCategories[catId] = cat;
     $timeout(() => {
       $scope.$apply();
@@ -45,7 +55,8 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
   $scope.categorySelectedForEditing = null;
   $scope.updateEditNameState = (value) => {
     $scope.editNameState = value;
-  }
+  };
+
   $scope.startEditingCategoryName = (catId) => {
     $scope.editNameState = $scope.customCategories[catId].name;
     $scope.categorySelectedForEditing = catId;

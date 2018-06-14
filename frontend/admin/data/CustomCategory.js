@@ -1,9 +1,14 @@
 export default class CustomCategory {
-  constructor(id, name, products) {
-    this.id = id;
+  constructor(id, name, products, linkedTo) {
+    if (id) {
+      this.id = id;
+    } else {
+      console.log(new Error("When creating a customCategory, you provided a invalid id: "), id);
+      this.id = "-1";
+    }
     this.name = name || "no name?";
     this.products = products || [];
-    this.linkedTo = [];
+    this.linkedTo = linkedTo || [];
   }
 
   updateName(newName) {

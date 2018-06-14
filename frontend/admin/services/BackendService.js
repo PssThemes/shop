@@ -2,6 +2,7 @@ import CustomCategory from "../data/CustomCategory.js"
 
 export default function BackendService() {
   const db = firebase.database();
+  const categoriesRef = db.ref("/categories");
   return {
 
     // ------------------------------------------
@@ -10,7 +11,7 @@ export default function BackendService() {
 
     getCustomCategories: () => {
       // TODO: ask firebase for a list of all custom categories.
-      return db.ref("/categories")
+      return categoriesRef
         .once('value')
         .then(snap => {
           return snap.val();
@@ -33,33 +34,7 @@ export default function BackendService() {
             }, {});
         });
     },
-    // getCustomCategories: () => {
-    //   // TODO: ask firebase for a list of all custom categories.
-    //   return new Promise((resolve, reject) => {
-    //       resolve([{
-    //           id: "adwjkjkn",
-    //           name: "Monitoare",
-    //           products: []
-    //         },
-    //         {
-    //           id: "ajdwhhjkawdnkjad",
-    //           name: "Casa si gradina",
-    //           products: []
-    //         }
-    //       ])
-    //     })
-    //     .then(catsData => {
-    //       return catsData
-    //         .map(catData => {
-    //           const customCategory = new CustomCategory(catData.id, catData.name, catData.products);
-    //           return customCategory;
-    //         })
-    //         .reduce((acc, cat) => {
-    //           acc[cat.id] = cat;
-    //           return acc;
-    //         }, {});
-    //     });
-    // },
+
     // CREATE
     createCustomCategory: catName => {
       const newCat = {
@@ -69,12 +44,23 @@ export default function BackendService() {
       }
 
       return new Promise((resolve, reject) => {
-        resolve();
+        categoriesRef.push(newCat)
+          .then(result => {
+            resolve()
+          })
+          .catch(err => {
+            reject(err)
+          })
+
       });
     },
 
     onCreateCustomCategory: observer => {
-      observer("catId", "cat");
+      categoriesRef.on("child_added", (snap) => {
+        const catData = snap.val();
+        const cat = new CustomCategory(snap.key, catData.name, catData.products);
+        observer(cat.id, cat);
+      });
     },
 
     // UPDATE
@@ -93,7 +79,9 @@ export default function BackendService() {
       return db.ref("/categories/" + catId).set(null)
     },
     onDeleteCustomCategory: (observer) => {
-      observer("catId");
+      categoriesRef.on("child_removed", (snap) => {
+        observer(snap.key);
+      });
     }
 
 
