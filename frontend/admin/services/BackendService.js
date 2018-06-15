@@ -7,6 +7,9 @@ export default function BackendService() {
   const db = firebase.database();
   const categoriesRef = db.ref("/categories");
   const productsRef = db.ref("/products");
+  const productRef = (id) => {
+    return db.ref("/products/" + id);
+  }
   return {
     // #region Custom Categoryies
     // ------------------------------------------
@@ -78,62 +81,168 @@ export default function BackendService() {
     //
     //
     // #region Products
-    getAllProducts: () => {
-      return new Promise((resolve, reject) => {
-        const reviews = {
-          "reviewId|0000": new Review(
-            "reviewId|0000",
-            3,
-            "hey great product!!",
-            "uid|awd892u739awd a",
-            {},
-          ),
-          "reviewId|1111":  new Review(
-            "reviewId|1111",
-            null,
-            "i like it! :)",
-            "uid|qddqwdwqd739awd a",
-            {
-              "replyId|9999": new Reply (
-                "replyId|8888",
-                "I'm glad you do. Do you need any help with the setup?",
-                "admin"
-              ),
-              "replyId|8888": new Reply (
-                "replyId|8888",
-                "no i'm fine, thanks..",
-                "client"
-              )
-            }
-          )
-        };
-        const product = new Product(
-          "productId|123",
-          "ProductName",
-          "Product Description..",
-          120,
-          false,
-          reviews
-        );
+    // getAllProducts: () => {
+    //   return new Promise((resolve, reject) => {
+    //     productsRef.once()
+    //       .then(snap => {
+    //         const allProducts = snap.value();
+    //         console.log("allProducts: ", allProducts);
+    //         resolve(
+    //           Object.keys(allProducts).map(key => {
+    //             decodeProduct(key, allProducts[key]);
+    //           })
+    //         );
+    //       })
+    //       .catch(err => {
+    //         reject(err);
+    //       });
+    //   });
+    // },
 
-        resolve({
-          "productId|123": product
-        });
-        // productsRef.once()
-        //   .then(snap => {
-        //     resolve();
-        //   })
-        //   .catch(err => {
-        //     reject();
-        //   });
+    onProductAdded: (observer) =>  {
+      productsRef.on("child_added", snap => {
+        const pushKey = snap.key;
+        const data = snap.val();
+        observer(pushKey, decodeProduct(pushKey, data));
       });
     },
+
+    updateProduct : (productId, newProduct) => {
+      return new Promise ((resolve, reject) => {
+        productRef(productId).set(newProduct)
+        .then(res => {
+          resolve();
+        })
+        .catch(err => {
+          reject(err);
+        });
+      });
+    },
+
+    // onProductUpdate : (observer)  => {
+    //   productsRef.on("child_changed", snap => {
+    //     observer(decodeProduct(snap.key, snap.val()));
+    //   });
+    // },
+
+    create3FakeProducts: () => {
+      const p1 = createDummyProduct("Monitor")
+      const p2 = createDummyProduct("Mouse")
+      const p3 = createDummyProduct("Tastatura")
+
+      productsRef.push(p1.getData())
+      productsRef.push(p2.getData())
+      productsRef.push(p3.getData())
+        // .then(result => {
+        //   console.log("Fake Products added")
+        //   console.log("result:", result)
+        // })
+        // .catch(err => {
+        //   console.log("error on adding fake products: ", err);
+        // })
+    }
+
     // #/region Products
     //
     //
 
   }
 }
+
+function decodeProduct(firebasePushKey, productData){
+  if(productData){
+
+    let reviews = {};
+
+    if(productData.reviews){
+      reviews = Object.keys(productData.reviews).reduce((acc,key) => {
+        const review =  decodeReview(key, productData.reviews[key]);
+        acc[key] = review;
+        return acc;
+      }, {});
+    }
+
+    return new Product(
+      firebasePushKey,
+      productData.mainImageUrl,
+      productData.name,
+      productData.short_description,
+      productData.price,
+      productData.isHidden,
+      reviews,
+    );
+
+  }else{
+    console.log("decodeProduct has been passed a bad value");
+    return createDummyProduct("dummy product..")
+  }
+}
+
+function decodeReview(firebasePushKey,reviewData){
+  let replyes = null;
+  if(reviewData.replies){
+    replyes = Object.keys(reviewData.replies).reduce((acc, key) => {
+      return acc[key] = decodeReply(key, reviewData.replies[key]);
+    }, {});
+  }
+
+  if(reviewData){
+    return new Review(
+      firebasePushKey,
+      reviewData.value,
+      reviewData.messsage,
+      reviewData.clientId,
+      replyes
+    );
+  }
+}
+
+function decodeReply(firebasePushKey, replyData){
+  if(replyData){
+    return new Reply(firebasePushKey, replyData.text, replyData.who);
+  }
+}
+
+function createDummyProduct(productName){
+  const reviews = {
+    "reviewId|0000": new Review(
+      "reviewId|0000",
+      3,
+      "hey great product!!",
+      "uid|awd892u739awd a",
+      {},
+    ),
+    "reviewId|1111":  new Review(
+      "reviewId|1111",
+      null,
+      "i like it! :)",
+      "uid|qddqwdwqd739awd a",
+      {
+        "replyId|9999": new Reply (
+          "replyId|8888",
+          "I'm glad you do. Do you need any help with the setup?",
+          "admin"
+        ),
+        "replyId|8888": new Reply (
+          "replyId|8888",
+          "no i'm fine, thanks..",
+          "client"
+        )
+      }
+    )
+  };
+  const product = new Product(
+    "productId|123",
+    "no image",
+    productName,
+    "Product Description..",
+    120,
+    false,
+    reviews
+  );
+  return product;
+}
+
 // resolve({
 //   "productId|123": {
 //     id: "productId|123",

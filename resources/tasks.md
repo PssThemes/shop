@@ -35,3 +35,9 @@ I've implemented this in terms of child_added event.
 
 - add event for update.
 - create the onUpdateCustomCategory functionality using child_changed
+
+
+
+#### Products.
+0. creeating at least 1 product in firebase. 1
+1. loading products from firebase. 

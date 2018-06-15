@@ -10,7 +10,7 @@ export default class Review {
     }
 
     this.id = id;
-    this.value = value || null;
+    this.value = value || 0;
     this.messsage = messsage || "";
     this.clientId = clientId;
     this.replies = replies || {};

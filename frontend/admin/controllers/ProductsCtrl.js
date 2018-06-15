@@ -1,28 +1,38 @@
-function ProductsCtrl($scope,BackendService) {
-  $scope.name = "cucubabbus";
+function ProductsCtrl($scope, BackendService) {
+  // ---------------------
+  // DEV STUFF
+  // ---------------------
+  // BackendService.create3FakeProducts()
+
   $scope.allProducts = {};
 
-  BackendService.getAllProducts()
-    .then(products => {
-      $scope.allProducts = products;
-      console.log($scope.allProducts);
-      $scope.$apply();
-    })
-    .catch(err => console.log("Failed to load products: ", err));
+  BackendService.onProductAdded((productId, product) => {
+    $scope.allProducts[productId] = product;
+    $scope.$apply();
+  });
+
+  // BackendService.getAllProducts()
+  //   .then(products => {
+  //     $scope.allProducts = products;
+  //     console.log($scope.allProducts);
+  //     $scope.$apply();
+  //   })
+  //   .catch(err => console.log("Failed to load products: ", err));
 
 
   $scope.calculateTotalRating = (productId) => {
-    const rating = $scope.allProducts[productId].calculateTotalRating();
-    console.log("rating ", rating);
-    return rating;
+    return $scope.allProducts[productId].calculateTotalRating();
   };
+
   $scope.getNrOfReviews = (productId) => {
-    const num = $scope.allProducts[productId].getNrOfReviews();
-    console.log("num ", num);
-    return num;
+    return $scope.allProducts[productId].getNrOfReviews();
   };
+
   $scope.toggleProductVisiblity = (productId) => {
     $scope.allProducts[productId].toggleProductVisiblity();
+    // TODO: update in firebase.
+    BackendService.updateProduct(productId,$scope.allProducts[productId].getData())
+      .catch(err => console.log("failed to update the product: ", err));
   };
 
 }

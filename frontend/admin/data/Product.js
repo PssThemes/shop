@@ -1,16 +1,18 @@
 export default class Product {
 
-  constructor(id, name, short_description, price, isHidden, reviews) {
+  constructor(id, mainImageUrl, name, short_description, price, isHidden, reviews) {
     if (!id || id == "") {
       throw new Error("invalid Product id: ", id);
     }
 
     this.id = id;
+    this.mainImageUrl = mainImageUrl || "no image";
     this.name = name || "no product name";
     this.short_description = short_description || "";
     this.price = price || 0;
     this.isHidden = isHidden || false;
     this.reviews = reviews || {};
+    // TODO: add prodcut category..
   }
 
   getData() {
@@ -24,11 +26,20 @@ export default class Product {
   }
 
   calculateTotalRating(){
-    return 4.4;
+    const reviews = this.reviews;
+    return Object.keys(reviews).reduce((acc, key) => {
+      const review = reviews[key].value;
+      acc = acc + review.value;
+      return acc;
+    }, 0);
   }
 
   getNrOfReviews(){
-    return 3;
+    const reviews = this.reviews;
+    return Object.keys(reviews).reduce((acc, key) => {
+      acc = acc + 1;
+      return acc;
+    }, 0);
   }
 
   toggleProductVisiblity(){
