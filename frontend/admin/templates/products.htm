@@ -1,1 +1,48 @@
-<h1>Products page. {{name}}</h1>
+<h1>Products page.</h1>
+<ul>
+  <li ng-repeat="product in allProducts">
+    <!-- Image -->
+    <div class="">
+      TODO: img here
+    </div>
+
+    <!-- name -->
+    <div class="">
+      {{product.name}}
+    </div>
+
+    <!-- description -->
+    <div class="">
+      {{product.short_description}}
+    </div>
+
+    <!-- price -->
+    <div class="">
+      price: {{product.price |currency }}
+    </div>
+
+    <!-- rating -->
+    <div class="">
+      total rating: {{calculateTotalRating(product.id)}}
+    </div>
+
+    <!-- access reviews page for this product -->
+    <div class="">
+      <span class="">
+        {{getNrOfReviews(product.id)}}
+      </span>
+      <a href="!#/reviews:{{product.id}}">reviews</a>
+    </div>
+
+    <!-- block - hide the product to the users.. -->
+    <button
+        type="button"
+        ng-click="toggleProductVisiblity(product.id)"
+        >
+        {{
+          (product.isHidden ? "show" : "hide")
+        }}
+    </button>
+    <hr>
+  </li>
+</ul>

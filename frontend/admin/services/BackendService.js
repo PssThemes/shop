@@ -80,41 +80,45 @@ export default function BackendService() {
     // #region Products
     getAllProducts: () => {
       return new Promise((resolve, reject) => {
+        const reviews = {
+          "reviewId|0000": new Review(
+            "reviewId|0000",
+            3,
+            "hey great product!!",
+            "uid|awd892u739awd a",
+            {},
+          ),
+          "reviewId|1111":  new Review(
+            "reviewId|1111",
+            null,
+            "i like it! :)",
+            "uid|qddqwdwqd739awd a",
+            {
+              "replyId|9999": new Reply (
+                "replyId|8888",
+                "I'm glad you do. Do you need any help with the setup?",
+                "admin"
+              ),
+              "replyId|8888": new Reply (
+                "replyId|8888",
+                "no i'm fine, thanks..",
+                "client"
+              )
+            }
+          )
+        };
+        const product = new Product(
+          "productId|123",
+          "ProductName",
+          "Product Description..",
+          120,
+          false,
+          reviews
+        );
 
-        // new Product()
-        // resolve({
-        //   "productId|123": {
-        //     id: "productId|123",
-        //     name: "ProductName",
-        //     short_description: "Product Description..",
-        //     price: 120,
-        //     reviews: {
-        //       "reviewId|0000": {
-        //         value: 3,
-        //         messsage: "hey great product!!",
-        //         clientId: "uid|awd892u739awd a",
-        //         replies: {}
-        //       },
-        //       "reviewId|1111": {
-        //         value: null,
-        //         messsage: "i like it! :)",
-        //         clientId: "uid|qddqwdwqd739awd a",
-        //         replies: {
-        //           "replyId|9999": {
-        //             text: "I'm glad you do. Do you need any help with the setup?",
-        //             who: "admin"
-        //           },
-        //           "replyId|8888": {
-        //             text: "no i'm fine, thanks..",
-        //             who: "client"
-        //           }
-        //         }
-        //       },
-        //     }
-        //     isHidden: false
-        //   }
-        // })
-        resolve();
+        resolve({
+          "productId|123": product
+        });
         // productsRef.once()
         //   .then(snap => {
         //     resolve();
@@ -130,7 +134,38 @@ export default function BackendService() {
 
   }
 }
-
+// resolve({
+//   "productId|123": {
+//     id: "productId|123",
+//     name: "ProductName",
+//     short_description: "Product Description..",
+//     price: 120,
+//     reviews: {
+//       "reviewId|0000": {
+//         value: 3,
+//         messsage: "hey great product!!",
+//         clientId: "uid|awd892u739awd a",
+//         replies: {}
+//       },
+//       "reviewId|1111": {
+//         value: null,
+//         messsage: "i like it! :)",
+//         clientId: "uid|qddqwdwqd739awd a",
+//         replies: {
+//           "replyId|9999": {
+//             text: "I'm glad you do. Do you need any help with the setup?",
+//             who: "admin"
+//           },
+//           "replyId|8888": {
+//             text: "no i'm fine, thanks..",
+//             who: "client"
+//           }
+//         }
+//       },
+//     }
+//     isHidden: false
+//   }
+// })
 
 // { id : FirebasePushId
 // , name: ProductName

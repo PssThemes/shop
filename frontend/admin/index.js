@@ -48,7 +48,7 @@ admin.config(function($routeProvider) {
     })
     .otherwise({
       template: "<h1> otherwise route was hit. this route does not exist.. add it to your config. </h1>"
-    });
+    }); 
 });
 
 // controllers.

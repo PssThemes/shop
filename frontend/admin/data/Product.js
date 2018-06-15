@@ -22,4 +22,16 @@ export default class Product {
       reviews: this.reviews
     }
   }
+
+  calculateTotalRating(){
+    return 4.4;
+  }
+
+  getNrOfReviews(){
+    return 3;
+  }
+
+  toggleProductVisiblity(){
+    this.isHidden =  ! this.isHidden;
+  }
 }

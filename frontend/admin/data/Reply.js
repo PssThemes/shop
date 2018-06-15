@@ -15,7 +15,9 @@ export default class Reply {
   }
 
   getData() {
-    text: this.text,
-    who: this.who
+    return {
+      text: this.text,
+      who: this.who
+    }
   }
 }
