@@ -78,33 +78,14 @@ export default function BackendService() {
     },
 
     // #/region Custom Categoryies
+
     //
     //
     // #region Products
-    // getAllProducts: () => {
-    //   return new Promise((resolve, reject) => {
-    //     productsRef.once()
-    //       .then(snap => {
-    //         const allProducts = snap.value();
-    //         console.log("allProducts: ", allProducts);
-    //         resolve(
-    //           Object.keys(allProducts).map(key => {
-    //             decodeProduct(key, allProducts[key]);
-    //           })
-    //         );
-    //       })
-    //       .catch(err => {
-    //         reject(err);
-    //       });
-    //   });
-    // },
 
     onProductAdded: (observer) =>  {
       productsRef.on("child_added", snap => {
-        const pushKey = snap.key;
-        const data = snap.val();
-        data.id = pushKey;
-        observer(pushKey, new Product(data));
+        observer(pushKey, makeProduct(snap));
       });
     },
 
@@ -120,11 +101,11 @@ export default function BackendService() {
       });
     },
 
-    // onProductUpdate : (observer)  => {
-    //   productsRef.on("child_changed", snap => {
-    //     observer(decodeProduct(snap.key, snap.val()));
-    //   });
-    // },
+    onProductUpdate : (observer)  => {
+      productsRef.on("child_changed", snap => {
+        observer(pushKey, makeProduct(snap));
+      });
+    },
 
     create3FakeProducts: () => {
       const p1 = createDummyProduct("Monitor");
@@ -132,66 +113,16 @@ export default function BackendService() {
     }
 
     // #/region Products
-    //
-    //
 
   }
 }
-//
-// function decodeProduct(firebasePushKey, productData){
-//   if(productData){
-//
-//     let reviews = {};
-//
-//     if(productData.reviews){
-//       reviews = Object.keys(productData.reviews).reduce((acc,key) => {
-//         const review =  decodeReview(key, productData.reviews[key]);
-//         acc[key] = review;
-//         return acc;
-//       }, {});
-//     }
-//
-//     return new Product(
-//       firebasePushKey,
-//       productData.mainImageUrl,
-//       productData.name,
-//       productData.short_description,
-//       productData.price,
-//       productData.isHidden,
-//       reviews,
-//     );
-//
-//   }else{
-//     console.log("decodeProduct has been passed a bad value");
-//     return createDummyProduct("dummy product..")
-//   }
-// }
-//
-// function decodeReview(firebasePushKey,reviewData){
-//   let replyes = null;
-//   if(reviewData.replies){
-//     replyes = Object.keys(reviewData.replies).reduce((acc, key) => {
-//       return acc[key] = decodeReply(key, reviewData.replies[key]);
-//     }, {});
-//   }
-//
-//   if(reviewData){
-//     return new Review(
-//       firebasePushKey,
-//       reviewData.value,
-//       reviewData.messsage,
-//       reviewData.clientId,
-//       replyes
-//     );
-//   }
-// }
-//
-// function decodeReply(firebasePushKey, replyData){
-//   if(replyData){
-//     return new Reply(firebasePushKey, replyData.text, replyData.who);
-//   }
-// }
 
+function makeProduct(snap){
+  const pushKey = snap.key;
+  const data = snap.val();
+  data.id = pushKey;
+  return new Product(data);
+}
 
 function createDummyProduct(productName){
   const productData = {
