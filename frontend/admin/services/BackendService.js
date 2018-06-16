@@ -103,7 +103,8 @@ export default function BackendService() {
       productsRef.on("child_added", snap => {
         const pushKey = snap.key;
         const data = snap.val();
-        observer(pushKey, decodeProduct(pushKey, data));
+        data.id = pushKey;
+        observer(pushKey, new Product(data));
       });
     },
 
@@ -126,20 +127,8 @@ export default function BackendService() {
     // },
 
     create3FakeProducts: () => {
-      const p1 = createDummyProduct("Monitor")
-      const p2 = createDummyProduct("Mouse")
-      const p3 = createDummyProduct("Tastatura")
-
-      productsRef.push(p1.getData())
-      productsRef.push(p2.getData())
-      productsRef.push(p3.getData())
-        // .then(result => {
-        //   console.log("Fake Products added")
-        //   console.log("result:", result)
-        // })
-        // .catch(err => {
-        //   console.log("error on adding fake products: ", err);
-        // })
+      const p1 = createDummyProduct("Monitor");
+      productsRef.push(p1.getData());
     }
 
     // #/region Products
@@ -148,155 +137,88 @@ export default function BackendService() {
 
   }
 }
+//
+// function decodeProduct(firebasePushKey, productData){
+//   if(productData){
+//
+//     let reviews = {};
+//
+//     if(productData.reviews){
+//       reviews = Object.keys(productData.reviews).reduce((acc,key) => {
+//         const review =  decodeReview(key, productData.reviews[key]);
+//         acc[key] = review;
+//         return acc;
+//       }, {});
+//     }
+//
+//     return new Product(
+//       firebasePushKey,
+//       productData.mainImageUrl,
+//       productData.name,
+//       productData.short_description,
+//       productData.price,
+//       productData.isHidden,
+//       reviews,
+//     );
+//
+//   }else{
+//     console.log("decodeProduct has been passed a bad value");
+//     return createDummyProduct("dummy product..")
+//   }
+// }
+//
+// function decodeReview(firebasePushKey,reviewData){
+//   let replyes = null;
+//   if(reviewData.replies){
+//     replyes = Object.keys(reviewData.replies).reduce((acc, key) => {
+//       return acc[key] = decodeReply(key, reviewData.replies[key]);
+//     }, {});
+//   }
+//
+//   if(reviewData){
+//     return new Review(
+//       firebasePushKey,
+//       reviewData.value,
+//       reviewData.messsage,
+//       reviewData.clientId,
+//       replyes
+//     );
+//   }
+// }
+//
+// function decodeReply(firebasePushKey, replyData){
+//   if(replyData){
+//     return new Reply(firebasePushKey, replyData.text, replyData.who);
+//   }
+// }
 
-function decodeProduct(firebasePushKey, productData){
-  if(productData){
-
-    let reviews = {};
-
-    if(productData.reviews){
-      reviews = Object.keys(productData.reviews).reduce((acc,key) => {
-        const review =  decodeReview(key, productData.reviews[key]);
-        acc[key] = review;
-        return acc;
-      }, {});
-    }
-
-    return new Product(
-      firebasePushKey,
-      productData.mainImageUrl,
-      productData.name,
-      productData.short_description,
-      productData.price,
-      productData.isHidden,
-      reviews,
-    );
-
-  }else{
-    console.log("decodeProduct has been passed a bad value");
-    return createDummyProduct("dummy product..")
-  }
-}
-
-function decodeReview(firebasePushKey,reviewData){
-  let replyes = null;
-  if(reviewData.replies){
-    replyes = Object.keys(reviewData.replies).reduce((acc, key) => {
-      return acc[key] = decodeReply(key, reviewData.replies[key]);
-    }, {});
-  }
-
-  if(reviewData){
-    return new Review(
-      firebasePushKey,
-      reviewData.value,
-      reviewData.messsage,
-      reviewData.clientId,
-      replyes
-    );
-  }
-}
-
-function decodeReply(firebasePushKey, replyData){
-  if(replyData){
-    return new Reply(firebasePushKey, replyData.text, replyData.who);
-  }
-}
 
 function createDummyProduct(productName){
-  const reviews = {
-    "reviewId|0000": new Review(
-      "reviewId|0000",
-      3,
-      "hey great product!!",
-      "uid|awd892u739awd a",
-      {},
-    ),
-    "reviewId|1111":  new Review(
-      "reviewId|1111",
-      null,
-      "i like it! :)",
-      "uid|qddqwdwqd739awd a",
-      {
-        "replyId|9999": new Reply (
-          "replyId|8888",
-          "I'm glad you do. Do you need any help with the setup?",
-          "admin"
-        ),
-        "replyId|8888": new Reply (
-          "replyId|8888",
-          "no i'm fine, thanks..",
-          "client"
-        )
+  const productData = {
+    id: "productId..",
+    mainImageUrl: "img url here",
+    name: productName || "Product Name",
+    short_description: "short_description here",
+    price: "123",
+    isHidden: "true",
+    reviews: {
+      "reviewId|1111": {
+        id: "reviewId|1111",
+        value : 0,
+        messsage : "Review msg",
+        clientId : "clientId|noproblem..",
+        replies : {
+          "replyId|9999" : {
+            who : "admin",
+            text : "How do you enjoy it?"
+          },
+          "replyId|8888" : {
+            who : "client",
+            text : "Is good thanks."
+          }
+        },
       }
-    )
+    }
   };
-  const product = new Product(
-    "productId|123",
-    "no image",
-    productName,
-    "Product Description..",
-    120,
-    false,
-    reviews
-  );
-  return product;
+  return new Product(productData);
 }
-
-// resolve({
-//   "productId|123": {
-//     id: "productId|123",
-//     name: "ProductName",
-//     short_description: "Product Description..",
-//     price: 120,
-//     reviews: {
-//       "reviewId|0000": {
-//         value: 3,
-//         messsage: "hey great product!!",
-//         clientId: "uid|awd892u739awd a",
-//         replies: {}
-//       },
-//       "reviewId|1111": {
-//         value: null,
-//         messsage: "i like it! :)",
-//         clientId: "uid|qddqwdwqd739awd a",
-//         replies: {
-//           "replyId|9999": {
-//             text: "I'm glad you do. Do you need any help with the setup?",
-//             who: "admin"
-//           },
-//           "replyId|8888": {
-//             text: "no i'm fine, thanks..",
-//             who: "client"
-//           }
-//         }
-//       },
-//     }
-//     isHidden: false
-//   }
-// })
-
-// { id : FirebasePushId
-// , name: ProductName
-// , description: String
-// , description_short: String
-// , price: Float
-// , media: List {  url: String, alt: String }
-// , category: ?
-// , reviews: List Review
-// }
-
-// ## Review
-// ```
-// { value: Maybe Int
-// , messsage: String
-// , user: UserName // this is user name not userId..
-// , replies: List Reply // only the admin can reply.. and only the client an add more messages.
-// }
-// ```
-//
-// ## Reply
-// ```
-// { text : String
-// , who: Admin | Client
-// }

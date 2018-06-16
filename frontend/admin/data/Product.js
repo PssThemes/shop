@@ -1,17 +1,32 @@
+import Review from "./Review.js"
+
 export default class Product {
 
-  constructor(id, mainImageUrl, name, short_description, price, isHidden, reviews) {
-    if (!id || id == "") {
-      throw new Error("invalid Product id: ", id);
+  constructor(productData) {
+    if(!productData){
+      throw new Error("invalid value for Product constructor: ", productData );
     }
 
-    this.id = id;
-    this.mainImageUrl = mainImageUrl || "no image";
-    this.name = name || "no product name";
-    this.short_description = short_description || "";
-    this.price = price || 0;
-    this.isHidden = isHidden || false;
-    this.reviews = reviews || {};
+    if (!productData.id || productData.id == "") {
+      throw new Error("invalid Product id: ", productData.id);
+    }
+
+    let reviews = {};
+
+    if(productData.reviews){
+      reviews = Object.keys(productData.reviews).reduce((acc, key) => {
+        acc[key] = new Review(productData.reviews[key]);
+        return acc;
+      }, {});
+    }
+    const isHidden = (productData.isHidden == "true");
+    this.id = productData.id;
+    this.mainImageUrl = productData.mainImageUrl || "no image";
+    this.name = productData.name || "no product name";
+    this.short_description = productData.short_description || "";
+    this.price = productData.price || 0;
+    this.isHidden = isHidden;
+    this.reviews = reviews;
     // TODO: add prodcut category..
   }
 
@@ -28,8 +43,7 @@ export default class Product {
   calculateTotalRating(){
     const reviews = this.reviews;
     return Object.keys(reviews).reduce((acc, key) => {
-      const review = reviews[key].value;
-      acc = acc + review.value;
+      acc = acc + reviews[key].value;
       return acc;
     }, 0);
   }
