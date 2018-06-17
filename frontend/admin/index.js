@@ -6,12 +6,12 @@
 import MainCtrl from "./controllers/MainCtrl.js"
 import CategoriesCtrl from "./controllers/CategoriesCtrl.js"
 import ProductsCtrl from "./controllers/ProductsCtrl.js"
+import ProductReviewsCtrl from "./controllers/ProductReviewsCtrl.js"
 import OrdersCtrl from "./controllers/OrdersCtrl.js"
 import UsersCtrl from "./controllers/UsersCtrl.js"
 import SettingsCtrl from "./controllers/SettingsCtrl.js"
 
 // import Serives
-// import CategoriesService from "./services/CategoriesService.js"
 import BackendService from "./services/BackendService.js"
 import ShopsService from "./services/ShopsService.js"
 
@@ -20,6 +20,7 @@ import onEnter from "./directives/onEnter.js"
 import onEsc from "./directives/onEsc.js"
 
 const admin = angular.module("admin", ["ngRoute"]);
+
 admin.config(function($routeProvider) {
   $routeProvider
     .when("/", {
@@ -34,6 +35,19 @@ admin.config(function($routeProvider) {
       templateUrl: "templates/products.htm",
       controller: "ProductsCtrl"
     })
+    // .when("/blue", {
+    //   template: "<h1> Shit</h1>"
+    //   // templateUrl: "templates/productReviews.htm",
+    //   // controller: "ProductReviewsCtrl"
+    // })
+    .when("/productReviews/:productId", {
+      templateUrl: "templates/productReviews.htm",
+      controller: "ProductReviewsCtrl"
+    })
+    // .when("/productReviews/:productId", {
+    //   templateUrl: "templates/productReviews.htm",
+    //   controller: "ProductReviewsCtrl"
+    // })
     .when("/orders", {
       templateUrl: "templates/orders.htm",
       controller: "OrdersCtrl"
@@ -48,12 +62,13 @@ admin.config(function($routeProvider) {
     })
     .otherwise({
       template: "<h1> otherwise route was hit. this route does not exist.. add it to your config. </h1>"
-    }); 
+    });
 });
 
 // controllers.
 admin.controller("MainCtrl", MainCtrl);
 admin.controller("CategoriesCtrl", CategoriesCtrl);
+admin.controller("ProductReviewsCtrl", ProductReviewsCtrl);
 admin.controller("ProductsCtrl", ProductsCtrl);
 admin.controller("OrdersCtrl", OrdersCtrl);
 admin.controller("UsersCtrl", UsersCtrl);
@@ -61,7 +76,6 @@ admin.controller("SettingsCtrl", SettingsCtrl);
 
 
 // services
-// admin.service("CategoriesService", CategoriesService);
 admin.service("BackendService", BackendService);
 admin.service("ShopsService", ShopsService);
 

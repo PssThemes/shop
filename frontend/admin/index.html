@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-
 <head>
+
+  <!-- Without the base specified, angular does not work.
+  Docs here: https://docs.angularjs.org/error/$location/nobase
+  -->
+  <base href="">
+
   <meta charset="utf-8">
   <title>Admin Dashboard</title>
 
@@ -15,32 +20,37 @@
   <nav class="header">
     <ul style="display: inline-block ">
       <li>
-        <a href="#/categories ">Categories</a>
+        <a href="#/categories">Categories</a>
       </li>
       <li>
-        <a href="#/products ">Products</a>
+        <a href="#/products">Products</a>
       </li>
       <li>
-        <a href="#/orders ">Orders</a>
+        <a href="#/orders">Orders</a>
       </li>
       <li>
-        <a href="#/users ">Users</a>
+        <a href="#/users">Users</a>
       </li>
       <li>
-        <a href="#/settings ">Settings</a>
+        <a href="#/settings">Settings</a>
       </li>
     </ul>
   </nav>
-  <!-- <div ng-controller="testCtrl ">
-      <h1>Loaded {{name}}</h1>
-    </div>  -->
+
   <ng-view></ng-view>
 
   <!-- firebase config -->
-  <!-- <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script> -->
+  <!-- Firebase App is always required and must be first -->
+  <!-- <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-app.js"></script> -->
 
-  <script type="text/javascript" src="../assets/firebase.js"></script>
-  <!-- <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-firestore.js"></script> -->
+  <!-- Add additional services you want to use -->
+  <!-- <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-database.js"></script> -->
+
+  <script type="text/javascript" src="../assets/firebase-app.js"></script>
+  <script type="text/javascript" src="../assets/firebase-auth.js"></script>
+  <script type="text/javascript" src="../assets/firebase-database.js"></script>
+
   <script type="text/javascript">
     firebase.initializeApp({
       apiKey: "AIzaSyBHFgL85LAezq8GV-MIqDvBz53g4LSrk1I",
@@ -51,11 +61,6 @@
       messagingSenderId: "809051870205"
     });
 
-    const firestore = firebase.firestore();
-    const settings = { /* your settings... */
-      timestampsInSnapshots: true
-    };
-    firestore.settings(settings);
   </script>
 
 

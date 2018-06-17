@@ -1,14 +1,15 @@
 export default class CustomCategory {
-  constructor(id, name, products, linkedTo) {
-    if (id) {
-      this.id = id;
+  // constructor(id, name, products, linkedTo) {
+  constructor(catData) {
+    if (catData.id) {
+      this.id = catData.id;
     } else {
-      console.log(new Error("When creating a customCategory, you provided a invalid id: "), id);
-      this.id = "-1";
+      throw new Error("When creating a customCategory, you provided a invalid id: " +  catData.id);
     }
-    this.name = name || "no name?";
-    this.products = products || [];
-    this.linkedTo = linkedTo || {
+
+    this.name = catData.name || "no name :| ";
+    this.products = catData.products || [];
+    this.linkedTo = catData.linkedTo || {
       shopify: {
         categories: {}
       },

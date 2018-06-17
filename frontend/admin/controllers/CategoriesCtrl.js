@@ -1,23 +1,13 @@
 function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
 
-  // Initialization stuff:
-
-
-  // #region -- Load Categories
-  // -----------------------------------------------------
-  // Load Categories
-  // -----------------------------------------------------
-  // Load custom categories form backend.. and attach a default ui-state.
-  // is impemented with: BackendService.onCreateCustomCategory() below.
   $scope.customCategories = {};
-  // #/region -- Load Categories
-  //
-  // #region -- Add Category
+
+  // #region -- Create and load Categories
   // -----------------------------------------------------
   // Add Category
   // -----------------------------------------------------
   $scope.catBox = "";
-  $scope.addCustomCategory = () => {
+  $scope.createCustomCategory = () => {
     if ($scope.catBox.trim() != "") {
       BackendService.createCustomCategory($scope.catBox)
         .then(() => {
@@ -28,17 +18,19 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
     }
   };
 
-  BackendService.onCreateCustomCategory((catId, cat) => {
+  BackendService.onCustomCategoryAdded( cat => {
     // this is implemented on terms of child_added event
     // meaning will fire the first time app loads ..
     // and populates the categories list.
-    $scope.customCategories[catId] = cat;
+    $scope.customCategories[cat.id] = cat;
     $timeout(() => {
       $scope.$apply();
-    }, 10);
+    }, 10); 
   });
-  // #/region -- Add Category
-  //
+  // #/region -- Create and load Categories
+
+
+
   // #region Edit Category
   // -----------------------------------------------------
   // Edit Category
@@ -57,7 +49,7 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
   $scope.saveEdit = (catId) => {
     // NOTE: the actual updating of the field is done by black magic with ng-model.
     // if there is a bug in editing .. start here.
-    BackendService.updateCustomCategory(catId, $scope.customCategories[catId].getData());
+    BackendService.updateCustomCategory($scope.customCategories[catId]);
     $scope.editNameState = ""
     $scope.categorySelectedForEditing = null;
   };
@@ -66,12 +58,13 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
     $scope.categorySelectedForEditing = null;
   };
 
-  BackendService.onUpdateCustomCategory((catId, cat) => {
-    $scope.customCategories[catId] = cat;
-    $timeout(() => {
+  BackendService.onCustomCategoryUpdate(cat => {
+    $scope.customCategories[cat.id] = cat;
+    $timeout(()=>{
       $scope.$apply();
-    }, 10);
+    }, 10)
   });
+
   // #/region Edit Category
   //
   // #region Remove Category
@@ -82,8 +75,8 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
     BackendService.deleteCustomCategory(catId)
       .catch(err => console.log("failed to delete custom category: ", err));
   }
-  BackendService.onDeleteCustomCategory((catId) => {
 
+  BackendService.onDeleteCustomCategory( catId => {
     // hide the modal if the selected category is the one beeing deleted.
     if ($scope.selectedForLinking == catId) {
       $scope.selectedForLinking = null;
@@ -136,11 +129,11 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
     $scope.customCategories[catId].addLinkToExternalCategory(shopName, externalCat);
 
     // update on server..
-    BackendService.updateCustomCategory(catId, $scope.customCategories[catId].getData())
+    BackendService.updateCustomCategory( $scope.customCategories[catId])
       .catch(err => {
         console.log("could not create a link to an external cateogry: ", shopName, externalCat, err);
       });
-  }
+  };
 
 
   $scope.removeLinkToExternalCategory = (shopName, externalCat) => {
@@ -150,7 +143,7 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
     $scope.customCategories[catId].removeLinkToExternalCategory(shopName, externalCat);
 
     // update the server.
-    BackendService.updateCustomCategory(catId, $scope.customCategories[catId].getData())
+    BackendService.updateCustomCategory($scope.customCategories[catId])
       .catch(err => {
         console.log("could not remove a link to an external cateogry: ", shopName, externalCat, err);
       });

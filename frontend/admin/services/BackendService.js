@@ -18,6 +18,7 @@ export default function BackendService() {
 
     // CREATE
     createCustomCategory: catName => {
+
       const newCat = {
         name: catName,
         products: [],
@@ -32,47 +33,44 @@ export default function BackendService() {
           .catch(err => {
             reject(err)
           })
-
       });
+
     },
 
-    onCreateCustomCategory: observer => {
-      categoriesRef.on("child_added", (snap) => {
-        const catData = snap.val();
-        const cat = new CustomCategory(snap.key, catData.name, catData.products, catData.linkedTo);
-        observer(cat.id, cat);
+    onCustomCategoryAdded: observer => {
+      categoriesRef.on("child_added", snap => {
+        observer(makeCustomCategory(snap));
       });
     },
 
 
     // UPDATE
-    updateCustomCategory: (catId, cat) => {
+    updateCustomCategory: cat => {
       return new Promise((resolve, reject) => {
-        db.ref("/categories/" + catId)
-          .set(cat)
+        const catData = cat.getData();
+        db.ref("/categories/" + cat.id)
+          .set(catData)
           .then(result => {
             resolve();
           })
-          .catch(err => reject(catId, cat, error))
+          .catch(err => reject(cat, error))
       });
     },
 
-    onUpdateCustomCategory: (observer) => {
+    onCustomCategoryUpdate: observer => {
       categoriesRef.on("child_changed", snap => {
-        const catData = snap.val();
-        const cat = new CustomCategory(snap.key, catData.name, catData.products, catData.linkedTo);
-        observer(cat.id, cat);
+        observer(makeCustomCategory(snap));
       });
     },
 
 
     // DELETE
-    deleteCustomCategory: (catId) => {
+    deleteCustomCategory: catId => {
       return db.ref("/categories/" + catId).set(null)
     },
 
-    onDeleteCustomCategory: (observer) => {
-      categoriesRef.on("child_removed", (snap) => {
+    onDeleteCustomCategory: observer => {
+      categoriesRef.on("child_removed", snap => {
         observer(snap.key);
       });
     },
@@ -83,9 +81,23 @@ export default function BackendService() {
     //
     // #region Products
 
+    getProduct: id => {
+      return new Promise((resolve, reject) => {
+        productRef(id).once("value")
+          .then(snap => {
+            const product = makeProduct(snap);
+            console.log("product: ", product);
+            resolve(product);
+          })
+          .catch(err => {
+            reject(err);
+          })
+      })
+    },
+
     onProductAdded: (observer) =>  {
       productsRef.on("child_added", snap => {
-        observer(pushKey, makeProduct(snap));
+        observer(makeProduct(snap));
       });
     },
 
@@ -103,18 +115,24 @@ export default function BackendService() {
 
     onProductUpdate : (observer)  => {
       productsRef.on("child_changed", snap => {
-        observer(pushKey, makeProduct(snap));
+        observer(makeProduct(snap));
       });
     },
 
-    create3FakeProducts: () => {
-      const p1 = createDummyProduct("Monitor");
-      productsRef.push(p1.getData());
-    }
+    // create3FakeProducts: () => {
+    //   const p1 = createDummyProduct("Monitor");
+    //   productsRef.push(p1.getData());
+    // }
 
     // #/region Products
 
   }
+}
+
+function makeCustomCategory(snap){
+  const catData = snap.val();
+  catData.id = snap.key;
+  return new CustomCategory(catData)
 }
 
 function makeProduct(snap){
