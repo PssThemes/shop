@@ -1,4 +1,45 @@
 <h1>Product reviews page.</h1>
-{{id}}
-{{fakeId }}
- 
+
+<div ng-if="product">
+
+  <h2>Product Name: {{product.name}}</h2>
+
+  <div class="">
+    <div class="review" ng-repeat="(revId, review) in product.reviews">
+
+      <!-- Review rating -->
+      <div class="">
+        {{review.value}}
+      </div>
+
+      <!-- Review message -->
+      <div class="">
+        {{review.message}}
+      </div>
+
+      <!-- Review replies -->
+      <div class="">
+        <div ng-repeat="reply in review.replies">
+
+          <div ng-if="reply.who == 'client'">
+            <span>{{ getClientName(reply.clientId) }}</span>
+            <span>says: </span>
+            <p>{{reply.text}}</p>
+          </div>
+
+          <div ng-if="reply.who == 'admin'">
+            "you: {{reply.text}}"
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Add new reply -->
+
+      <hr>
+    </div>
+
+  </div>
+
+
+</div>

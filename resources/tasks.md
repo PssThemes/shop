@@ -40,4 +40,16 @@ I've implemented this in terms of child_added event.
 
 #### Products.
 0. creeating at least 1 product in firebase. 1
-1. loading products from firebase. 
+1. loading products from firebase.
+
+
+#### Users
+Load some fake users .. like 3 of them.
+  - make userProfile data strucutre.
+  - create a fake user fprofile function in backendService
+  - call it to make 3 users.
+  - delete the product, and make the dummy product point to this user ids. 
+  - get the user from firebase when the product page loads.
+  - get ti's name and put it in the review page.
+
+next build the functionalty for adding a reply to a review .. form the admin side.

@@ -2,14 +2,22 @@ import CustomCategory from "../data/CustomCategory.js"
 import Product from "../data/Product.js"
 import Reply from "../data/Reply.js"
 import Review from "../data/Review.js"
+import UserProfile from "../data/UserProfile.js"
 
 export default function BackendService() {
   const db = firebase.database();
+
   const categoriesRef = db.ref("/categories");
+
   const productsRef = db.ref("/products");
   const productRef = (id) => {
     return db.ref("/products/" + id);
   }
+
+  const userProfileRef = (id) => {
+    return db.ref("/users/" + id);
+  }
+
   return {
     // #region Custom Categoryies
     // ------------------------------------------
@@ -119,6 +127,11 @@ export default function BackendService() {
       });
     },
 
+    onSpecificProductUpdate: (productId, observer) =>{
+      productRef(productId).on("value", snap => {
+        observer(makeUserProfile(snap));
+      });
+    },
     // create3FakeProducts: () => {
     //   const p1 = createDummyProduct("Monitor");
     //   productsRef.push(p1.getData());
@@ -126,7 +139,32 @@ export default function BackendService() {
 
     // #/region Products
 
+    // #region Users
+
+    getUserProfile : userId => {
+      return new Promise((resolve, reject) => {
+
+        userProfileRef(userId).once()
+          .then(snap => {
+            resolve(makeUserProfile(snap))
+          })
+          .catch( err => {
+            reject(err);
+          });
+
+      });
+    }
+
+    // #/region Users
+
+
   }
+}
+
+function makeUserProfile(snap){
+  const profileData = snap.val();
+  profileData.id = snap.key;
+  return new UserProfile(profileData);
 }
 
 function makeCustomCategory(snap){

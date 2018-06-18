@@ -59,4 +59,10 @@ export default class Product {
   toggleProductVisiblity(){
     this.isHidden =  ! this.isHidden;
   }
+
+  getClientsIds(){
+    return Object.keys(this.reviews).map(key => {
+      return this.reviews[key].clientId;
+    });
+  }
 }
