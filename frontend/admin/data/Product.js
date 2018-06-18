@@ -24,7 +24,7 @@ export default class Product {
     this.mainImageUrl = productData.mainImageUrl || "no image";
     this.name = productData.name || "no product name";
     this.short_description = productData.short_description || "";
-    this.price = productData.price || 0;
+    this.price = productData.price || 0; 
     this.isHidden = isHidden;
     this.reviews = reviews;
     // TODO: add prodcut category..
