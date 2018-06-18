@@ -15,7 +15,10 @@ export default class Product {
 
     if(productData.reviews){
       reviews = Object.keys(productData.reviews).reduce((acc, key) => {
-        acc[key] = new Review(productData.reviews[key]);
+        const reviewData = productData.reviews[key];
+        reviewData.id = key;
+        
+        acc[key] = new Review(reviewData);
         return acc;
       }, {});
     }
@@ -24,19 +27,25 @@ export default class Product {
     this.mainImageUrl = productData.mainImageUrl || "no image";
     this.name = productData.name || "no product name";
     this.short_description = productData.short_description || "";
-    this.price = productData.price || 0; 
+    this.price = productData.price || 0;
     this.isHidden = isHidden;
     this.reviews = reviews;
     // TODO: add prodcut category..
   }
 
   getData() {
+
+    const reviewsData =
+      Object.keys(this.reviews).map(key => {
+        return this.reviews[key].getData();
+      });
+
     return {
       name: this.name,
       short_description: this.short_description,
       price: this.price,
       isHidden: this.isHidden,
-      reviews: this.reviews
+      reviews: reviewsData
     }
   }
 

@@ -1,5 +1,13 @@
 function SettingsCtrl($scope) {
-  $scope.name = "cucubabbus";
+  $scope.settings = {}
+
+
+  BackendService.onSettingsLoaded((settings) => {
+    $scope.settings = settings;
+    $scope.$apply();
+  });
+
+
 }
 
 export default SettingsCtrl;

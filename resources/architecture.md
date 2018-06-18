@@ -64,13 +64,20 @@ We can't modify passwords directly.. only
 **REPLY:** yes, we use /users reference to store other types of data.
 
 
-## User
+## User - is handled by firebase auth..
 ```
 { uid: UserId
 , name: UserName
 , email: String
 , password: String
-, allChats: List Chat
+}
+
+## UserProfile
+```
+{ uid: UserId
+, name: UserName
+, email: String
+<!-- , allChats: List Chat -->
 }
 ```
 **??** Is the chat based on a particular product .. or is based on an order??

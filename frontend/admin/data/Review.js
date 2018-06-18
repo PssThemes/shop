@@ -26,17 +26,30 @@ export default class Review {
 
     this.id = reviewData.id;
     this.value = reviewData.value || 0;
-    this.messsage = reviewData.messsage || "";
+    this.message = reviewData.message || "";
     this.clientId = reviewData.clientId;
     this.replies = replies;
+    this.replyBox = "";
   }
 
   getData() {
+
+    const repliesData =
+      Object.keys(this.replies).map(key => {
+        return this.replies[key].getData();
+      });
+
     return {
       value: this.value,
-      messsage: this.messsage,
+      message: this.message,
       clientId: this.clientId,
-      replies: this.replies
+      replies: repliesData
     }
   }
+
+  clearReplyBox(){
+    this.replyBox = "";
+  }
+
+
 }

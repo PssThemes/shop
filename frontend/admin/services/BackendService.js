@@ -94,7 +94,6 @@ export default function BackendService() {
         productRef(id).once("value")
           .then(snap => {
             const product = makeProduct(snap);
-            console.log("product: ", product);
             resolve(product);
           })
           .catch(err => {
@@ -129,31 +128,44 @@ export default function BackendService() {
 
     onSpecificProductUpdate: (productId, observer) =>{
       productRef(productId).on("value", snap => {
-        observer(makeUserProfile(snap));
+        observer(makeProduct(snap));
       });
     },
-    // create3FakeProducts: () => {
-    //   const p1 = createDummyProduct("Monitor");
-    //   productsRef.push(p1.getData());
-    // }
 
+    createAdminReplyForReview: (productId, reviewId, value) => {
+      const reply = {
+        text: value,
+        who: "admin"
+      };
+
+      return new Promise((resolve, reject) => {
+        db.ref(`products/${productId}/reviews/${reviewId}/replies`).push(reply)
+          .then( res => {
+            resolve();
+          })
+          .catch(err => {
+            reject(err);
+          })
+      });
+    },
     // #/region Products
 
     // #region Users
 
     getUserProfile : userId => {
       return new Promise((resolve, reject) => {
-
-        userProfileRef(userId).once()
+        userProfileRef(userId).once("value")
           .then(snap => {
-            resolve(makeUserProfile(snap))
+            resolve(makeUserProfile(snap));
           })
           .catch( err => {
             reject(err);
           });
-
       });
-    }
+    },
+
+
+
 
     // #/region Users
 
@@ -163,12 +175,13 @@ export default function BackendService() {
 
 function makeUserProfile(snap){
   const profileData = snap.val();
-  profileData.id = snap.key;
+  profileData.uid = snap.key;
   return new UserProfile(profileData);
 }
 
 function makeCustomCategory(snap){
   const catData = snap.val();
+  console.log("catData: ", catData);
   catData.id = snap.key;
   return new CustomCategory(catData)
 }
@@ -178,34 +191,4 @@ function makeProduct(snap){
   const data = snap.val();
   data.id = pushKey;
   return new Product(data);
-}
-
-function createDummyProduct(productName){
-  const productData = {
-    id: "productId..",
-    mainImageUrl: "img url here",
-    name: productName || "Product Name",
-    short_description: "short_description here",
-    price: "123",
-    isHidden: "true",
-    reviews: {
-      "reviewId|1111": {
-        id: "reviewId|1111",
-        value : 0,
-        messsage : "Review msg",
-        clientId : "clientId|noproblem..",
-        replies : {
-          "replyId|9999" : {
-            who : "admin",
-            text : "How do you enjoy it?"
-          },
-          "replyId|8888" : {
-            who : "client",
-            text : "Is good thanks."
-          }
-        },
-      }
-    }
-  };
-  return new Product(productData);
 }

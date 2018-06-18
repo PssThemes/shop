@@ -9,12 +9,12 @@
 
       <!-- Review rating -->
       <div class="">
-        {{review.value}}
+        Review rating: {{review.value}}
       </div>
 
       <!-- Review message -->
       <div class="">
-        {{review.message}}
+        Review message: {{review.message}}
       </div>
 
       <!-- Review replies -->
@@ -22,20 +22,27 @@
         <div ng-repeat="reply in review.replies">
 
           <div ng-if="reply.who == 'client'">
-            <span>{{ getClientName(reply.clientId) }}</span>
+            <span>{{ getClientName(review.clientId) }}</span>
             <span>says: </span>
             <p>{{reply.text}}</p>
           </div>
 
           <div ng-if="reply.who == 'admin'">
-            "you: {{reply.text}}"
+            <span>you: </span>
+            <p>{{reply.text}}</p>
           </div>
 
         </div>
       </div>
 
       <!-- Add new reply -->
+      <!-- <input type="text" ng-model="value" ng-blur="updateReply(value)" on-Enter="createReply(review value)" on-Esc="cancelEdit(catId)" > -->
+      <input type="text"
+        ng-model="review.replyBox"
+        on-Enter="createAdminReply(review.id)"
+        >
 
+      <button type="button" ng-click="createAdminReply(review.id, replyValue)">Add reply</button>
       <hr>
     </div>
 
