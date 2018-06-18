@@ -1,4 +1,4 @@
-export default function ProductReviewsCtrl($scope,$timeout, $routeParams, BackendService){
+export default function ProductReviewsCtrl($scope, $timeout, $routeParams, BackendService){
 
   const productId = $routeParams.productId;
   $scope.product = null;
@@ -46,7 +46,6 @@ export default function ProductReviewsCtrl($scope,$timeout, $routeParams, Backen
 
 
   BackendService.onSpecificProductUpdate(productId, newProduct => {
-    console.log("onSpecificProductUpdate: ",  newProduct);
     $scope.product = newProduct;
 
     $timeout(() => {

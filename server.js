@@ -19,10 +19,10 @@ app.use(express.static(devPath));
 // app.use(express.static(frontendPath + "/assets"));
 // app.use(express.static(adminPath));
 
-app.get("/admin", (req, res)=>{
+app.get("/admin", (req, res) => {
   res.sendFile(adminPath + "/index.html");
 });
-
+ 
 app.listen(port, ()=>{
   console.log("listening on localhost:" + port);
 });
