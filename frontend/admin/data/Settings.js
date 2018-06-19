@@ -11,21 +11,21 @@ export default class Settings {
       apiKey: settingsData.shopify.apiKey || "",
       apiSecret: settingsData.shopify.apiSecret || "",
       sync: settingsData.shopify.sync || true
-    }
+    };
 
     this.magento = {
       configured: settingsData.magento.configured || false,
       apiKey: settingsData.magento.apiKey || "",
       apiSecret: settingsData.magento.apiSecret || "",
       sync: settingsData.magento.sync || true
-    }
+    };
 
     this.woocomerce = {
       configured: settingsData.woocomerce.configured || false,
       apiKey: settingsData.woocomerce.apiKey || "",
       apiSecret: settingsData.woocomerce.apiSecret || "",
       sync: settingsData.woocomerce.sync || true
-    }
+    };
 
   }
 
