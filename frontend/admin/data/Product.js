@@ -17,7 +17,7 @@ export default class Product {
       reviews = Object.keys(productData.reviews).reduce((acc, key) => {
         const reviewData = productData.reviews[key];
         reviewData.id = key;
-        
+
         acc[key] = new Review(reviewData);
         return acc;
       }, {});

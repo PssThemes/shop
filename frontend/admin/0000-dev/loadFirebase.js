@@ -21,6 +21,25 @@ const userProfileRef = (id) => {
 
 // create3FakeProducts()
 // create3DummyUserProfiles()
+// createSettings();
+
+function createSettings(){
+  db.ref("settings").set(
+    { shopify: {
+        configured: false,
+        sync: true
+      },
+      magento: {
+        configured: false,
+        sync: true
+      },
+      woocomerce: {
+        configured: false,
+        sync: true
+      }
+    }
+  )
+}
 
 function create3DummyUserProfiles(){
     const userProfile = createDummyUserProfile("jony macarony");

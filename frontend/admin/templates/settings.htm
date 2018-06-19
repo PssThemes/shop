@@ -1,1 +1,82 @@
 <h1>Settings Page</h1>
+
+
+
+<!-- Shopify -->
+<div class="">
+
+  <div class="">
+    Shopify Settings
+  </div>
+
+  <div class="">
+    Api Key: <br>
+    <input type="text" ng-model="shopifyKey">
+  </div>
+
+  <div class="">
+    Api Secret <br>
+    <input type="text" ng-model="shopifySecret">
+  </div>
+
+  <button type="button" ng-click="saveShopifySettings()">Save</button>
+
+  <button type="button" ng-click="toggleSync('shopify')">{{settings.shopify.sync ? "Stop Sync" : "Start Sync"}}</button>
+  <br>
+  <hr>
+  <br>
+</div>
+
+
+
+
+<!-- Magento  -->
+<div class="">
+
+  <div class="">
+    Magento Settings
+  </div>
+
+  <div class="">
+    Api Key: <br>
+    <input type="text" ng-model="magentoKey">
+  </div>
+
+  <div class="">
+    Api Secret <br>
+    <input type="text" ng-model="magentoSecret">
+  </div>
+
+  <button type="button" ng-click="saveMagentoSettings()">Save</button>
+  <button type="button" ng-click="toggleSync('magento')">{{settings.magento.sync ? "Stop Sync" : "Start Sync"}}</button>
+  <br>
+  <hr>
+  <br>
+</div>
+
+
+
+
+<!-- Woocomerce  -->
+<div class="">
+
+  <div class="">
+    Woocomerce Settings
+  </div>
+
+  <div class="">
+    Api Key: <br>
+    <input type="text" ng-model="woocomerceKey">
+  </div>
+
+  <div class="">
+    Api Secret <br>
+    <input type="text" ng-model="woocomerceSecret">
+  </div>
+
+  <button type="button" ng-click="saveWoocomerceSettings()">Save</button>
+  <button type="button" ng-click="toggleSync('woocomerce')">{{settings.woocomerce.sync ? "Stop Sync" : "Start Sync"}}</button>
+  <br>
+  <hr>
+  <br>
+</div>

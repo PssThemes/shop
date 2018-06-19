@@ -3,6 +3,7 @@ import Product from "../data/Product.js"
 import Reply from "../data/Reply.js"
 import Review from "../data/Review.js"
 import UserProfile from "../data/UserProfile.js"
+import Settings from "../data/Settings.js"
 
 export default function BackendService() {
   const db = firebase.database();
@@ -16,6 +17,10 @@ export default function BackendService() {
 
   const userProfileRef = (id) => {
     return db.ref("/users/" + id);
+  }
+
+  const settingsRef = () => {
+    return db.ref("/settings");
   }
 
   return {
@@ -170,7 +175,41 @@ export default function BackendService() {
     // #/region Users
 
 
+    // #region Settings
+
+    getSettings: () => {
+      return new Promise((resolve, reject) => {
+        settingsRef().once("value")
+          .then(snap => {
+            resolve(makeSettings(snap));
+          })
+          .catch(err => {
+            reject(err);
+          });
+      })
+    },
+
+    updateSettings: settings => {
+      return new Promise((resolve, reject) => {
+        console.log(settings.getData())
+        settingsRef().set(settings.getData())
+          .then(result => {
+            resolve();
+          })
+          .catch(err => {
+            reject(err);
+          })
+      });
+    }
+
+    // #/region Settings
+
+
   }
+}
+
+function makeSettings(snap){
+  return new Settings(snap.val());
 }
 
 function makeUserProfile(snap){
