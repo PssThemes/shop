@@ -18,14 +18,13 @@ export class Order {
       throw new Error(`Error when creating an Order obj. Order date was not provided, it is:  ${orderData.date}`);
     }
 
-    const purchases = [];
+    let purchases = [];
 
     if(orderData.purchases && Array.isArray(orderData.purchases)){
       purchases = orderData.purchases.map(puchaseData => {
         return new Purchase(puchaseData);
       });
     }
-
 
     this.id = orderData.id;
     this.date = orderData.date;
@@ -36,7 +35,7 @@ export class Order {
 
   getData() {
     return {
-      date: this.date;
+      date: this.date,
       purchases: this.purchases.map(purchase => {
         return purchase.getData();
       }),
@@ -46,39 +45,81 @@ export class Order {
   }
 
   switchOrderStatus(){
+    if(this.orderStatus == DELIVERED){
+      this.orderStatus = RECEIVED;
+    }
+
+    else if(this.orderStatus == PROCESSED){
+      this.orderStatus = DELIVERED;
+    }
+
+    else if(this.orderStatus == RECEIVED){
+      this.orderStatus = PROCESSED;
+    }
+
+  }
+
+  getTotalPrice(){
+    return this.purchases.reduce((acc, purchase) => {
+      return acc + (purchase.price * purchase.howMany);
+    }, 0);
+  }
+
+  getActionName(){
     if(this.orderStatus == RECEIVED){
-      this.orderStatus == PROCESSED;
+      return "this order has been processed"
     }
 
     if(this.orderStatus == PROCESSED){
-      this.orderStatus == DELIVERED;
+      return "this order has been delivered"
     }
 
     if(this.orderStatus == DELIVERED){
-      this.orderStatus == RECEIVED;
+      return "restart"
     }
   }
-
 }
 
-export class Purchase (){
+export class Purchase {
+
   constructor(purchaseData){
 
     if(purchaseData.attributes && !Array.isArray(purchaseData.attributes)){
-      throw new Error ("Purchase attributes must be an array.");
+      throw new Error("Purchase attributes must be an array.");
+    }
+
+    if(!purchaseData.productId || !isString(purchaseData.productId)){
+      throw new Error(`every purchase requires a product id, which is a string. The productId is: ${purchaseData.productId}`);
     }
 
     this.productId = purchaseData.productId;
-    this.productName = purchaseData.productName;
+    this.productName = purchaseData.productName || "no product name";
 
     // adding a default dummy image here to not distory the layout if the image is not present.
     this.productImage = purchaseData.productImage || "http://www.whitevilla.co.uk/img/missing_product.png";
-    this.howMany = purchaseData.howMany;
+
+    this.price = purchaseData.price || 0;
+    this.howMany = purchaseData.howMany || 0;
     this.attributes = purchaseData.attributes || [];
   }
+
+  getData(){
+    return {
+      productId : this.productId,
+      productName : this.productName,
+      productImage : this.productImage,
+      price : this.price,
+      howMany : this.howMany,
+      attributes : this.attributes
+    }
+  }
+
+
 }
 
-
+function isString (obj) {
+  return (Object.prototype.toString.call(obj) === '[object String]');
+}
 
 // #### Order
 // ```

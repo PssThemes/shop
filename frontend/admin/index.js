@@ -8,6 +8,7 @@ import CategoriesCtrl from "./controllers/CategoriesCtrl.js"
 import ProductsCtrl from "./controllers/ProductsCtrl.js"
 import ProductReviewsCtrl from "./controllers/ProductReviewsCtrl.js"
 import OrdersCtrl from "./controllers/OrdersCtrl.js"
+import OrderCtrl from "./controllers/OrderCtrl.js"
 import UsersCtrl from "./controllers/UsersCtrl.js"
 import SettingsCtrl from "./controllers/SettingsCtrl.js"
 
@@ -18,6 +19,8 @@ import ShopsService from "./services/ShopsService.js"
 // import Directives
 import onEnter from "./directives/onEnter.js"
 import onEsc from "./directives/onEsc.js"
+import purchase from "./directives/purchase/purchase.js"
+import detailedPurchase from "./directives/detailed-purchase/detailed-purchase.js"
 
 const admin = angular.module("admin", ["ngRoute"]);
 
@@ -52,6 +55,10 @@ admin.config(function($routeProvider) {
       templateUrl: "templates/orders.htm",
       controller: "OrdersCtrl"
     })
+    .when("/order/:orderId", {
+      templateUrl: "templates/order.htm",
+      controller: "OrderCtrl"
+    })
     .when("/users", {
       templateUrl: "templates/users.htm",
       controller: "UsersCtrl"
@@ -71,6 +78,7 @@ admin.controller("CategoriesCtrl", CategoriesCtrl);
 admin.controller("ProductReviewsCtrl", ProductReviewsCtrl);
 admin.controller("ProductsCtrl", ProductsCtrl);
 admin.controller("OrdersCtrl", OrdersCtrl);
+admin.controller("OrderCtrl", OrderCtrl);
 admin.controller("UsersCtrl", UsersCtrl);
 admin.controller("SettingsCtrl", SettingsCtrl);
 
@@ -82,3 +90,5 @@ admin.service("ShopsService", ShopsService);
 // directives
 admin.directive("onEnter", onEnter);
 admin.directive("onEsc", onEsc);
+admin.directive("purchase", purchase);
+admin.directive("detailedPurchase", detailedPurchase);

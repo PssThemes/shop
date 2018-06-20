@@ -3,71 +3,54 @@
 <div class="">
 
   <!-- One Order -->
-  <div class="">
+  <div class="" ng-repeat="order in orders">
 
 
     <!-- Date -->
     <div class="">
-      "17 june 2018"
+      date: {{order.date}}
+      <br>
     </div>
 
 
+
+
     <!-- Purchases -->
-    <div class="" style="" >
 
-      <!-- One Purchase -->
-      <div>
-        <div class="" style="display:flex">
-          <div class="">
-            2  <span>x</span>
-          </div>
-
-          <img style="width:50px; height:50px" src="http://www.whitevilla.co.uk/img/missing_product.png" alt="">
-
-          <div class="">
-            Name of the product
-          </div>
-        </div>
-        <hr>
-      </div>
-
-      <!-- One Purchase -->
-      <div>
-        <div class="" style="display:flex">
-          <div class="">
-            2  <span>x</span>
-          </div>
-
-          <img style="width:50px; height:50px" src="http://www.whitevilla.co.uk/img/missing_product.png" alt="">
-
-          <div class="">
-            Name of the product
-          </div>
-        </div>
-        <hr>
-      </div>
-
+    <div class="" ng-repeat="purchase in order.purchases">
+      <purchase data="purchase"></purchase>
+      <br>
     </div>
 
 
     <!-- Total -->
     <div class="">
-      {{200 | currency}}
+      total: {{ calculateTotalPrice(order.id) | currency}}
+      <br>
     </div>
+
 
 
     <!-- Order status -->
     <div class="">
-
+      orderStatus: {{order.orderStatus}}
+      <br>
+      your action:
+      <button type="button" ng-click="switchOrderStatus(order.id)">{{getActionName(order.id)}}</button>
     </div>
+
+
 
     <!-- Details Button -->
     <div class="">
-
+      <a href="#/order/{{order.id}}">
+        <button type="button"> Order Details </button>
+      </a>
     </div>
 
+      <!-- <a href="#/productReviews/{{product.id}}">Settings</a> -->
 
+    <hr>
   </div>
-
 
 </div>

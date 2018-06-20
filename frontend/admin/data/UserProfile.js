@@ -14,6 +14,7 @@ export default class UserProfile {
       street: profileData.address.street || "",
       more: profileData.address.more || "",
       city: profileData.address.city || "",
+      county: profileData.address.county || "",
       country: profileData.address.country || "",
       postalCode: profileData.address.postalCode || "",
     }

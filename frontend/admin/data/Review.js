@@ -27,7 +27,7 @@ export default class Review {
     this.id = reviewData.id;
     this.value = reviewData.value || 0;
     this.message = reviewData.message || "";
-    this.clientId = reviewData.clientId;
+    this.clientId = reviewData.clientId; 
     this.replies = replies;
     this.replyBox = "";
   }

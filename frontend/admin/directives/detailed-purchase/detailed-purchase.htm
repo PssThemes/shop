@@ -1,0 +1,43 @@
+<!-- Detailed Purchase -->
+<div>
+  <div class="">
+
+    <div class="" style="width: 500px">
+
+      <div class="" style="display:flex;  align-items: center; justify-content: space-between">
+
+        <!-- How many have been ordered. -->
+        <div class="">
+          {{data.howMany}}  <span>x</span>
+        </div>
+
+
+        <!-- Product Image  -->
+        <!-- <img style="width:50px; height:50px" src="http://www.whitevilla.co.uk/img/missing_product.png" alt=""> -->
+        <img style="width:50px; height:50px" src="{{data.productImage}}" alt="">
+
+
+        <!-- Product Name -->
+        <div class="">
+          {{data.productName}}
+        </div>
+
+        <!-- cost per each piece -->
+        <div class="">
+          {{data.price | currency}}
+        </div>
+
+
+        <!-- subtotal -->
+        <div class="">
+          {{data.price * data.howMany | currency }}
+        </div>
+
+
+      </div>
+
+    </div>
+
+    <hr style="margin: 0;">
+  </div>
+</div>

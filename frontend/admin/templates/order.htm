@@ -1,0 +1,51 @@
+<div ng-if="order">
+
+  <!-- Do we show the id? is a firebase key after all. -->
+  <h1>Order Id: {{order.id}}</h1>
+
+  <!-- Date of this order-->
+  <h4>date: {{order.date}}</h4>
+
+  <!-- What was ordered -->
+  <div class="">
+    Purchases:
+    <br>
+
+    <div class="" ng-repeat="purchase in order.purchases">
+      <detailed-purchase data="purchase"></detailed-purchase>
+      <br>
+    </div>
+
+  </div>
+
+  <!-- Total -->
+  <div class="">
+    total: {{calculateTotalPrice()}}
+  </div>
+
+
+  <!-- Order status -->
+  <div class="">
+    orderStatus: {{order.orderStatus}}
+    <br>
+    your action:
+    <button type="button" ng-click="switchOrderStatus()">{{getActionName()}}</button>
+  </div>
+
+
+  <!-- Who orderd it -->
+  <h3>Client Details: </h3>
+  <div class="">
+    name: {{userProfile.name}} <br>
+    phone: {{userProfile.phone}} <br>
+    email: {{userProfile.email}} <br>
+    <br>
+    address1: {{userProfile.address.street}} <br>
+    address2: {{userProfile.address.more}} <br>
+    <br>
+    city: {{userProfile.address.city}} <br>
+    state: {{userProfile.address.county}} <br>
+    zip code: {{userProfile.address.postalCode}} <br>
+  </div>
+
+</div>
