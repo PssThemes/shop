@@ -4,6 +4,7 @@ import Reply from "../data/Reply.js"
 import Review from "../data/Review.js"
 import UserProfile from "../data/UserProfile.js"
 import Settings from "../data/Settings.js"
+import {Order} from "../data/Order.js"
 
 export default function BackendService() {
   const db = firebase.database();
@@ -25,6 +26,14 @@ export default function BackendService() {
 
   const settingsRef = () => {
     return db.ref("/settings");
+  }
+
+  const ordersRef = () => {
+    return db.ref("/orders");
+  }
+
+  const orderRef = (id) => {
+    return db.ref("/orders/" + id);
   }
 
   return {
@@ -228,12 +237,48 @@ export default function BackendService() {
             reject(err);
           })
       });
-    }
+    },
 
     // #/region Settings
 
 
+    // #region ORDERS
+
+    onOrderChanged: observer => {
+      ordersRef().on("child_changed", snap => {
+        observer(makeOrder(snap));
+      });
+      return;
+    },
+
+    onOrderAdded: observer => {
+      ordersRef().on("child_added", snap => {
+        observer(makeOrder(snap));
+      });
+      return;
+    },
+
+    updateOrder : order => {
+      return new Promise((resolve, reject) => {
+        orderRef(order.id).set(order.getData())
+        .then(result => {
+          resolve()
+        })
+        .catch(err => {
+          reject(err);
+        });
+      })
+    }
+
+    // #/region ORDERS
+
   }
+}
+
+function makeOrder(snap){
+  const orderData = snap.val();
+  orderData.id = snap.key;
+  return new Order(orderData);
 }
 
 function makeSettings(snap){

@@ -43,8 +43,8 @@ export default function OrderCtrl($scope, $timeout, $routeParams, BackendService
     //   howMany : "this.howMany",
     //   attributes : []
     // }
-    ],
-  });
+    // ],
+  // });
 
   // const fakeUserAddress = {
   //   street: "5 May",

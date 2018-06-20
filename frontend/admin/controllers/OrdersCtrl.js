@@ -1,6 +1,6 @@
 import {RECEIVED, PROCESSED, DELIVERED, Order} from "./../data/Order.js"
 
-function OrdersCtrl($scope) {
+function OrdersCtrl($scope, $timeout, BackendService) {
   // $scope.name = "cucubabbus";
   //
   // const fakeOrder = new Order({
@@ -47,10 +47,16 @@ function OrdersCtrl($scope) {
 
   BackendService.onOrderAdded((order) => {
     $scope.orders[order.id] = order;
+    $timeout(() => {
+      $scope.$apply();
+    },10);
   });
 
   BackendService.onOrderChanged((order) => {
     $scope.orders[order.id] = order;
+    $timeout(() => {
+      $scope.$apply();
+    },10);
   });
 
   $scope.calculateTotalPrice = orderId => {
@@ -66,7 +72,7 @@ function OrdersCtrl($scope) {
     BackendService.updateOrder($scope.orders[orderId])
       .catch(err => {
         console.log("could not update order: ", err);
-      })
+      });
   };
 
 }
