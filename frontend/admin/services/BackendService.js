@@ -244,18 +244,43 @@ export default function BackendService() {
 
     // #region ORDERS
 
+    // productRef(id).once("value")
+    //   .then(snap => {
+    //     const product = makeProduct(snap);
+    //     resolve(product);
+    //   })
+    //   .catch(err => {
+    //     reject(err);
+    //   })
+
+    getOrder: orderId => {
+      return new Promise((resolve, reject) => {
+        orderRef(orderId).once("value")
+          .then(snap => {
+            resolve(makeOrder(snap));
+          })
+          .catch(err => {
+            reject(err);
+          })
+        });
+    },
+
+    onSpecificOrderChanged : (orderId, observer) => {
+      orderRef(orderId).on("value", snap => {
+        observer(makeOrder(snap));
+      })
+    },
+
     onOrderChanged: observer => {
       ordersRef().on("child_changed", snap => {
         observer(makeOrder(snap));
       });
-      return;
     },
 
     onOrderAdded: observer => {
       ordersRef().on("child_added", snap => {
         observer(makeOrder(snap));
       });
-      return;
     },
 
     updateOrder : order => {

@@ -63,8 +63,38 @@ export default function OrderCtrl($scope, $timeout, $routeParams, BackendService
   //   isBlocked : false,
   // });
 
-  $scope.order = fakeOrder;
-  $scope.userProfile = fakeUserProfile;
+   // = fakeOrder;
+  // fakeUserProfile;
+
+  BackendService.getOrder(orderId)
+    .then(order => {
+      $scope.order =  order;
+      $timeout(() => {
+        $scope.$apply();
+      },10);
+
+      // Load user the user profile that is attached to this order.
+      BackendService.getUserProfile(order.userProfileId)
+        .then(userProfile => {
+          $scope.userProfile = userProfile;
+          $timeout(() => {
+            $scope.$apply();
+          },10);
+        })
+        .catch(err => {
+          console.log(`could not get order with id: ${orderId}`, err)
+        });
+    })
+    .catch(err => {
+      console.log(`could not get order with id: ${orderId}`, err)
+    })
+
+  BackendService.onSpecificOrderChanged(orderId, newOrder => {
+    $scope.order =  newOrder;
+    $timeout(() => {
+      $scope.$apply();
+    },10);
+  })
 
   $scope.calculateTotalPrice = () => {
     return $scope.order.getTotalPrice();

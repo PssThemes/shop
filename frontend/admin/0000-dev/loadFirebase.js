@@ -100,22 +100,27 @@ function createSettings(){
 // --------------------------------------------------------------
 
 
-// create3DummyUserProfiles()
-
 const userProfileRef = (id) => {
   return db.ref("/users/" + id);
 }
+const usersProfilesRef = () => {
+  return db.ref("/users");
+}
 
+// create3DummyUserProfiles()
 
 function create3DummyUserProfiles(){
+  console.log("create3DummyUserProfiles..")
     const userProfile = createDummyUserProfile("jony macarony");
-    userProfileRef(userProfile.uid).set(userProfile.getData());
+    // userProfileRef(userProfile.uid).set(userProfile.getData());
+    usersProfilesRef().push(userProfile)
+      .then(() => console.log);
 }
 
 function createDummyUserProfile(userName){
   const fakeUserAddress = {
     street: "5 May",
-    more: "Aleea infundata",
+    more: "Aleea infundata", 
     city: "Timisoara",
     county: "Timis",
     postalCode: "732888",
