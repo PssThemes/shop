@@ -37,6 +37,10 @@ export default class UserProfile {
     }
   }
 
+  toggleBlockUser(){
+    this.isBlocked = !this.isBlocked;
+  }
+
 }
 //
 //

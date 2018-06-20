@@ -19,6 +19,10 @@ export default function BackendService() {
     return db.ref("/users/" + id);
   }
 
+  const usersProfilesRef = () => {
+    return db.ref("/users");
+  }
+
   const settingsRef = () => {
     return db.ref("/settings");
   }
@@ -169,7 +173,31 @@ export default function BackendService() {
       });
     },
 
+    onUserProfileChanged: (observer) => {
+      usersProfilesRef().on("child_changed", snap => {
+        observer(makeUserProfile(snap));
+      });
+      return;
+    },
 
+    onUserProfileAdded: (observer) => {
+      usersProfilesRef().on("child_added", snap => {
+        observer(makeUserProfile(snap));
+      });
+      return;
+    },
+
+    updateUserProfile: (userProfile) => {
+      return new Promise((resolve, reject) => {
+        userProfileRef(userProfile.uid).set(userProfile.getData())
+        .then(ok => {
+          resolve();
+        })
+        .catch(err => {
+          reject(err);
+        });
+      });
+    },
 
 
     // #/region Users

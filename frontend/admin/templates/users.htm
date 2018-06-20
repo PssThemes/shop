@@ -1,1 +1,37 @@
-<h1>users page</h1>
+<h1>Your Clients: </h1>
+
+<div class="" style="width: 500px; margin:auto;">
+  <div class="" ng-repeat="user in users">
+
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+
+      <!-- user name -->
+      <div class="">
+        {{user.name}}
+      </div>
+
+
+      <!-- user email -->
+      <div class="">
+        {{user.email}}
+      </div>
+
+
+      <!-- user email -->
+      <div class="">
+        {{user.phone}}
+      </div>
+
+
+      <!-- actions -->
+      <div class="">
+        <button type="button" ng-click="toggleBlockState(user.uid)">
+          {{user.isBlocked? "block this user" : "unblock this user" }}
+        </button>
+      </div>
+
+    </div>
+
+
+  </div>
+</div>
