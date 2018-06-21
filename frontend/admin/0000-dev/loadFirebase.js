@@ -120,7 +120,7 @@ function create3DummyUserProfiles(){
 function createDummyUserProfile(userName){
   const fakeUserAddress = {
     street: "5 May",
-    more: "Aleea infundata", 
+    more: "Aleea infundata",
     city: "Timisoara",
     county: "Timis",
     postalCode: "732888",

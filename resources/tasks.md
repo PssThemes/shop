@@ -53,3 +53,12 @@ Load some fake users .. like 3 of them.
   - get ti's name and put it in the review page.
 
 Next build the functionalty for adding a reply to a review .. form the admin side.
+
+
+
+
+
+
+## Tasks
+
+- 2 select .. minute huour.

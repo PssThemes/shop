@@ -20,6 +20,10 @@
   </div>
 
   <button type="button" ng-click="saveShopifySettings()">Save</button>
+  <br>
+
+  configure sync rate: <input type="number" ng-model="shopifySyncRate" ng-blur="saveSyncRate('shopify', shopifySyncRate)">
+  <br>
 
   <button type="button" ng-click="toggleSync('shopify')">{{settings.shopify.sync ? "Stop Sync" : "Start Sync"}}</button>
   <br>
@@ -48,6 +52,11 @@
   </div>
 
   <button type="button" ng-click="saveMagentoSettings()">Save</button>
+  <br>
+
+  configure sync rate: <input type="number" ng-model="magentoSyncRate" ng-blur="saveSyncRate('magento', magentoSyncRate)">
+  <br>
+
   <button type="button" ng-click="toggleSync('magento')">{{settings.magento.sync ? "Stop Sync" : "Start Sync"}}</button>
   <br>
   <hr>
@@ -75,6 +84,11 @@
   </div>
 
   <button type="button" ng-click="saveWoocomerceSettings()">Save</button>
+  <br>
+
+  configure sync rate: <input type="number" ng-model="woocomerceSyncRate" ng-blur="saveSyncRate('woocomerce', woocomerceSyncRate)">
+  <br>
+
   <button type="button" ng-click="toggleSync('woocomerce')">{{settings.woocomerce.sync ? "Stop Sync" : "Start Sync"}}</button>
   <br>
   <hr>

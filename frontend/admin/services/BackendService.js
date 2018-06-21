@@ -103,8 +103,7 @@ export default function BackendService() {
 
     // #/region Custom Categoryies
 
-    //
-    //
+    
     // #region Products
 
     getProduct: id => {
@@ -167,6 +166,7 @@ export default function BackendService() {
       });
     },
     // #/region Products
+
 
     // #region Users
 
