@@ -23,13 +23,16 @@ export default class Product {
       }, {});
     }
     const isHidden = (productData.isHidden == "true");
+
     this.id = productData.id;
-    this.mainImageUrl = productData.mainImageUrl || "no image";
+    this.mainImageUrl = productData.mainImageUrl || "/assets/imgs/no-product.png";
     this.name = productData.name || "no product name";
     this.short_description = productData.short_description || "";
     this.price = productData.price || 0;
     this.isHidden = isHidden;
     this.reviews = reviews;
+    // this.long_descriptionId = url...;
+
     // TODO: add prodcut category..
   }
 

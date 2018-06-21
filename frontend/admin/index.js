@@ -38,19 +38,10 @@ admin.config(function($routeProvider) {
       templateUrl: "templates/products.htm",
       controller: "ProductsCtrl"
     })
-    // .when("/blue", {
-    //   template: "<h1> Shit</h1>"
-    //   // templateUrl: "templates/productReviews.htm",
-    //   // controller: "ProductReviewsCtrl"
-    // })
     .when("/productReviews/:productId", {
       templateUrl: "templates/productReviews.htm",
       controller: "ProductReviewsCtrl"
     })
-    // .when("/productReviews/:productId", {
-    //   templateUrl: "templates/productReviews.htm",
-    //   controller: "ProductReviewsCtrl"
-    // })
     .when("/orders", {
       templateUrl: "templates/orders.htm",
       controller: "OrdersCtrl"

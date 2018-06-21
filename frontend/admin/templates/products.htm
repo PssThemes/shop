@@ -1,21 +1,20 @@
-{{allProducts}}
-<hr>
 <h1>Products page.</h1>
 <ul>
   <li ng-repeat="product in allProducts">
+
     <!-- Image -->
     <div class="">
-      TODO: img here
+      <img style="width: 150px; height: 150px;" ng-src={{product.mainImageUrl}} alt="no image">
     </div>
 
     <!-- name -->
     <div class="">
-      {{product.name}}
+      product name: {{product.name}}
     </div>
 
     <!-- description -->
     <div class="">
-      {{product.short_description}}
+      product description: {{product.short_description}}
     </div>
 
     <!-- price -->
@@ -33,10 +32,11 @@
       <span class="">
         {{getNrOfReviews(product.id)}}
       </span>
-      <a href="#/productReviews/{{product.id}}">Settings</a>
+      <!-- TODO: change the plural here: review vs reviews-->
+      <a href="#/productReviews/{{product.id}}">reviews</a>
     </div>
 
-    <!-- block - hide the product to the users.. -->
+    <!-- Block This Product functionality - hide the product from the users.. -->
     <button
         type="button"
         ng-click="toggleProductVisiblity(product.id)"

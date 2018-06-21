@@ -103,7 +103,7 @@ export default function BackendService() {
 
     // #/region Custom Categoryies
 
-    
+
     // #region Products
 
     getProduct: id => {
@@ -318,7 +318,6 @@ function makeUserProfile(snap){
 
 function makeCustomCategory(snap){
   const catData = snap.val();
-  console.log("catData: ", catData);
   catData.id = snap.key;
   return new CustomCategory(catData)
 }

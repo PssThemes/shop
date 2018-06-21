@@ -107,6 +107,7 @@ export default function OrderCtrl($scope, $timeout, $routeParams, BackendService
   $scope.switchOrderStatus = () => {
     // console.log("switchOrderStatus.. ");
     $scope.order.switchOrderStatus();
+    // // TODO: Update firebase..
   };
 
 }

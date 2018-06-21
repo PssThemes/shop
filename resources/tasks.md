@@ -61,4 +61,14 @@ Next build the functionalty for adding a reply to a review .. form the admin sid
 
 ## Tasks
 
+### Categories:
+
+
 - 2 select .. minute huour.
+- check out why is id inside category in firbase.
+- why delete in firebase does not work in client.
+- de ce linkurile nu vin cu push id ..
+- product hide bug.
+- update firebase when order status has changed.
+- remove the hard coded user.
+- change county to state..

@@ -1,8 +1,4 @@
 function ProductsCtrl($scope,$timeout, BackendService) {
-  // ---------------------
-  // DEV STUFF
-  // ---------------------
-  // BackendService.create3FakeProducts()
 
   $scope.allProducts = {};
 

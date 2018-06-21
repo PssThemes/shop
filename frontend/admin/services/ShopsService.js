@@ -7,18 +7,27 @@ export default function ShopsService() {
         resolve({
           "shopify": {
             categories: {
-              "11111111": {
+              "externalCatId1": {
                 name: "Monitors",
-                id: "11111111"
+                externalCatId: "externalCatId1"
               },
-              "123": {
+              "externalCatId2": {
                 name: "Home and Garden",
-                id: "123"
+                externalCatId: "externalCatId2"
               }
             }
           },
           "magento": {
-            categories: []
+            categories: {
+              "externalCatId1": {
+                name: "Monitors",
+                externalCatId: "externalCatId1"
+              },
+              "externalCatId2": {
+                name: "Home and Garden",
+                externalCatId: "externalCatId2"
+              }
+            }
           },
           "woocommerce": {
             categories: []

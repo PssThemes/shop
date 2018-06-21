@@ -2,7 +2,9 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
 
   $scope.customCategories = {};
 
-  // #region -- Create and load Categories
+
+
+
   // -----------------------------------------------------
   // Add Category
   // -----------------------------------------------------
@@ -25,13 +27,12 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
     $scope.customCategories[cat.id] = cat;
     $timeout(() => {
       $scope.$apply();
-    }, 10); 
+    }, 10);
   });
-  // #/region -- Create and load Categories
 
 
 
-  // #region Edit Category
+
   // -----------------------------------------------------
   // Edit Category
   // -----------------------------------------------------
@@ -65,9 +66,9 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
     }, 10)
   });
 
-  // #/region Edit Category
-  //
-  // #region Remove Category
+
+
+
   // -----------------------------------------------------
   // Remove Category
   // -----------------------------------------------------
@@ -77,14 +78,22 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
   }
 
   BackendService.onDeleteCustomCategory( catId => {
+
     // hide the modal if the selected category is the one beeing deleted.
     if ($scope.selectedForLinking == catId) {
       $scope.selectedForLinking = null;
     }
+
     delete $scope.customCategories[catId];
-  })
-  // #/region Remove Category
-  //
+
+    $timeout(()=>{
+      $scope.$apply();
+    }, 10);
+
+  });
+
+
+
 
 
   // ---------------------------------------
@@ -102,6 +111,10 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
     $scope.selectedForLinking = null;
   };
 
+
+
+
+
   // ---------------------------------------
   // External Categories
   // ---------------------------------------
@@ -116,6 +129,8 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
     .catch(err => {
       console.log("failed to load the external categories: ", err);
     });
+
+
 
 
   // ---------------------------------------
@@ -150,7 +165,9 @@ function CategoriesCtrl($scope, $timeout, BackendService, ShopsService) {
   }
 
   $scope.externalCategoryWasAlreadyLinked = (shopName, externalCat) => {
+
     const catId = $scope.selectedForLinking;
+
     if ($scope.customCategories[catId]) {
       // console.log("categoryHasAlreadyBeenLinked: ", $scope.customCategories[catId].categoryHasAlreadyBeenLinked);
       const crap = $scope.customCategories[catId].categoryHasAlreadyBeenLinked(shopName, externalCat);
