@@ -1,7 +1,6 @@
 export default class Settings {
 
   constructor(settingsData){
-    console.log("settingsData: ", settingsData);
     if(!settingsData){
       throw new Error(`bad parameter for Settings object: ${settingsData}`);
     }

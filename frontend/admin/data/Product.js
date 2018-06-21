@@ -22,10 +22,11 @@ export default class Product {
         return acc;
       }, {});
     }
-    const isHidden = (productData.isHidden == "true");
+
+    const isHidden = (productData.isHidden.toString() == "true");
 
     this.id = productData.id;
-    this.mainImageUrl = productData.mainImageUrl || "/assets/imgs/no-product.png";
+    this.mainProductImage = productData.mainProductImage || "https://www.shelvingshopgroup.co.nz/wp-content/uploads/placeholder-image-1000x1000.png";
     this.name = productData.name || "no product name";
     this.short_description = productData.short_description || "";
     this.price = productData.price || 0;

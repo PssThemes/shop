@@ -17,15 +17,18 @@
       product description: {{product.short_description}}
     </div>
 
+
     <!-- price -->
     <div class="">
       price: {{product.price |currency }}
     </div>
 
+
     <!-- rating -->
     <div class="">
       total rating: {{calculateTotalRating(product.id)}}
     </div>
+
 
     <!-- access reviews page for this product -->
     <div class="">
@@ -35,6 +38,7 @@
       <!-- TODO: change the plural here: review vs reviews-->
       <a href="#/productReviews/{{product.id}}">reviews</a>
     </div>
+
 
     <!-- Block This Product functionality - hide the product from the users.. -->
     <button

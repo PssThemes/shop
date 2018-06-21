@@ -125,9 +125,9 @@ export default function BackendService() {
       });
     },
 
-    updateProduct : (productId, newProduct) => {
+    updateProduct : (newProduct) => {
       return new Promise ((resolve, reject) => {
-        productRef(productId).set(newProduct)
+        productRef(newProduct.id).set(newProduct.getData())
         .then(res => {
           resolve();
         })
@@ -189,6 +189,13 @@ export default function BackendService() {
       return;
     },
 
+    onSpecificUserProfileChanged: (uid, observer) => {
+      userProfileRef(uid).on("value", snap => {
+        observer(makeUserProfile(snap));
+      });
+      return;
+    },
+
     onUserProfileAdded: (observer) => {
       usersProfilesRef().on("child_added", snap => {
         observer(makeUserProfile(snap));
@@ -208,6 +215,12 @@ export default function BackendService() {
       });
     },
 
+    onUserProfileRemoved: (observer) => {
+      usersProfilesRef().on("child_removed", snap => {
+        observer(snap.key);
+      });
+      return;
+    },
 
     // #/region Users
 

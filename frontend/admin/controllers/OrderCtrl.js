@@ -5,66 +5,6 @@ import UserProfile from "./../data/UserProfile.js"
 export default function OrderCtrl($scope, $timeout, $routeParams, BackendService){
 
   const orderId = $routeParams.orderId;
-  //
-  // const fakeOrder = new Order({
-  //   id: orderId,
-  //   date: "17 may 2019",
-  //   orderStatus: RECEIVED,
-  //   userProfileId: "user profile id.",
-  //   purchases: [{
-  //     productId : "productId1",
-  //     productName : "Monitor",
-  //     productImage : null,
-  //     price : 200,
-  //     howMany : 1,
-  //     attributes : []
-  //   },
-  //   {
-  //     productId : "productId2",
-  //     productName : "Tastatura",
-  //     productImage : null,
-  //     price : 50,
-  //     howMany : 3,
-  //     attributes : []
-  //   },
-  //   {
-  //     productId : "productId3",
-  //     productName : "Mouse",
-  //     productImage : null,
-  //     price : 50,
-  //     howMany : 1,
-  //     attributes : []
-  //   },
-    // {
-    //   productId : "this.productId",
-    //   productName : "this.productName",
-    //   productImage : "this.productImage",
-    //   price : "this.price",
-    //   howMany : "this.howMany",
-    //   attributes : []
-    // }
-    // ],
-  // });
-
-  // const fakeUserAddress = {
-  //   street: "5 May",
-  //   more: "Aleea infundata",
-  //   city: "Timisoara",
-  //   county: "Timis",
-  //   postalCode: "732888",
-  // };
-  //
-  // const fakeUserProfile = new UserProfile({
-  //   uid : "user profile id",
-  //   name :  null,
-  //   email :  "joncastron@gmail.com",
-  //   address :  fakeUserAddress,
-  //   phone : "07928034923",
-  //   isBlocked : false,
-  // });
-
-   // = fakeOrder;
-  // fakeUserProfile;
 
   BackendService.getOrder(orderId)
     .then(order => {
@@ -73,6 +13,7 @@ export default function OrderCtrl($scope, $timeout, $routeParams, BackendService
         $scope.$apply();
       },10);
 
+
       // Load user the user profile that is attached to this order.
       BackendService.getUserProfile(order.userProfileId)
         .then(userProfile => {
@@ -80,10 +21,22 @@ export default function OrderCtrl($scope, $timeout, $routeParams, BackendService
           $timeout(() => {
             $scope.$apply();
           },10);
+          console.log("userProfile: ", userProfile);
+
+
+          // get real time updates while the user profile changes..
+          BackendService.onSpecificUserProfileChanged($scope.userProfile.uid, newProfile => {
+              $scope.userProfile = newProfile;
+              $timeout(() => {
+                $scope.$apply();
+              },10);
+            });
+
         })
         .catch(err => {
           console.log(`could not get order with id: ${orderId}`, err)
         });
+
     })
     .catch(err => {
       console.log(`could not get order with id: ${orderId}`, err)
@@ -96,6 +49,8 @@ export default function OrderCtrl($scope, $timeout, $routeParams, BackendService
     },10);
   })
 
+
+
   $scope.calculateTotalPrice = () => {
     return $scope.order.getTotalPrice();
   };
@@ -105,9 +60,13 @@ export default function OrderCtrl($scope, $timeout, $routeParams, BackendService
   };
 
   $scope.switchOrderStatus = () => {
-    // console.log("switchOrderStatus.. ");
+
     $scope.order.switchOrderStatus();
-    // // TODO: Update firebase..
+
+    BackendService.updateOrder($scope.order)
+      .catch(err => {
+        console.log("could not update order: ", err);
+      });
   };
 
 }

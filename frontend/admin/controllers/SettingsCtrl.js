@@ -4,7 +4,6 @@ function SettingsCtrl($scope, BackendService) {
 
   BackendService.getSettings()
     .then(settings => {
-      console.log(settings);
       $scope.shopifyKey = settings.shopify.apiKey;
       $scope.shopifySecret = settings.shopify.apiSecret;
       $scope.magentoKey = settings.magento.apiKey;

@@ -22,8 +22,17 @@
   <button type="button" ng-click="saveShopifySettings()">Save</button>
   <br>
 
+  <!-- TODO: ask vlad what to do here .. he sais is 1 liner.. i don't see how.--> 
+  <!-- <select ng-model="shopifySyncRate"
+    ng-change="saveSyncRate('shopify', shopifySyncRate)"
+    >
+    <option value="{{i}}" ng-repeat="i in [1,3,4,5,6]">{{i}}
+  </select> -->
+
   configure sync rate: <input type="number" ng-model="shopifySyncRate" ng-blur="saveSyncRate('shopify', shopifySyncRate)">
   <br>
+
+
 
   <button type="button" ng-click="toggleSync('shopify')">{{settings.shopify.sync ? "Stop Sync" : "Start Sync"}}</button>
   <br>

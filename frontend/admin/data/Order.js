@@ -96,7 +96,7 @@ export class Purchase {
     this.productName = purchaseData.productName || "no product name";
 
     // adding a default dummy image here to not distory the layout if the image is not present.
-    this.productImage = purchaseData.productImage || "http://www.whitevilla.co.uk/img/missing_product.png";
+    this.mainProductImage = purchaseData.mainProductImage || "http://www.whitevilla.co.uk/img/missing_product.png";
 
     this.price = purchaseData.price || 0;
     this.howMany = purchaseData.howMany || 0;
@@ -107,7 +107,7 @@ export class Purchase {
     return {
       productId : this.productId,
       productName : this.productName,
-      productImage : this.productImage,
+      mainProductImage : this.mainProductImage,
       price : this.price,
       howMany : this.howMany,
       attributes : this.attributes
@@ -140,7 +140,7 @@ function isString (obj) {
 // ```
 // { productId: ProductId
 // , productName : String
-// , productImage: String
+// , mainProductImage: String
 // , howMany: Int
 // , attributes : List String?? this will be problematic.
 // }

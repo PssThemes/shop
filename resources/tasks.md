@@ -56,19 +56,22 @@ Next build the functionalty for adding a reply to a review .. form the admin sid
 
 
 
-
-
-
 ## Tasks
 
 ### Categories:
 
+ 
+- 2 select .. minute huour. PENDING..
 
-- 2 select .. minute huour.
-- check out why is id inside category in firbase.
-- why delete in firebase does not work in client.
-- de ce linkurile nu vin cu push id ..
-- product hide bug.
-- update firebase when order status has changed.
-- remove the hard coded user.
-- change county to state..
+- check out why is id inside category in firbase. DONE.
+
+
+- why delete in firebase does not work in client. DONE.
+
+- de ce linkurile nu vin cu push id .. Pentru ca nu ar truebuii sa vina.
+Ce se intampla e ca indexez dupa externalCategoryId.. si aia o luam din external shops..
+
+- product hide bug. DONE.
+- update firebase when order status has changed. DONE.
+- remove the hard coded user. DONE.
+- change county to state.. Done.

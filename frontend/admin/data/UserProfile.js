@@ -14,7 +14,7 @@ export default class UserProfile {
       street: profileData.address.street || "",
       more: profileData.address.more || "",
       city: profileData.address.city || "",
-      county: profileData.address.county || "",
+      state: profileData.address.state || "",
       country: profileData.address.country || "",
       postalCode: profileData.address.postalCode || "",
     }
@@ -42,26 +42,3 @@ export default class UserProfile {
   }
 
 }
-//
-//
-// #### UserProfile
-// ```
-// { uid: String
-// , name : String
-// , email : String
-// , address : Address
-// , phone: String
-// , address: Address
-// , isBlocked: Bool
-// }
-// ```
-//
-// #### Address
-// ```
-// { street: String
-// , more: String
-// , city: String
-// , country: String
-// , postalCode: String
-// }
-// ```

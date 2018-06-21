@@ -23,12 +23,13 @@ const categoriesRef = db.ref("/categories");
 // Product
 // --------------------------------------------------------------
 
-// create3FakeProducts();
 
 const productsRef = db.ref("/products");
 const productRef = (id) => {
   return db.ref("/products/" + id);
 }
+
+// create3FakeProducts();
 
 function create3FakeProducts(){
   const p1 = createDummyProduct("Monitor");
@@ -40,7 +41,7 @@ function create3FakeProducts(){
 function createDummyProduct(productName){
   const productData = {
     id: "productId..",
-    mainImageUrl: "img url here",
+    mainProductImage: "img url here",
     name: productName || "Product Name",
     short_description: "short_description here",
     price: "123",
@@ -165,7 +166,7 @@ function createFakeOrder(){
     purchases: [{
       productId : "productId1",
       productName : "Monitor",
-      productImage : null,
+      mainProductImage : null,
       price : 200,
       howMany : 1,
       attributes : []
@@ -173,15 +174,15 @@ function createFakeOrder(){
     {
       productId : "productId2",
       productName : "Tastatura",
-      productImage : null,
-      price : 50,
+      mainProductImage : null,
+      price : 50, 
       howMany : 3,
       attributes : []
     },
     {
       productId : "productId3",
       productName : "Mouse",
-      productImage : null,
+      mainProductImage : null,
       price : 50,
       howMany : 1,
       attributes : []
