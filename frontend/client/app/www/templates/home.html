@@ -1,0 +1,79 @@
+<ion-content id="scrollContent" scroll-watch>
+
+
+            <div class="home_banner grad-light p-t-50 p-b-50 p-l-10 p-r-10">
+                    <div class="row">
+                      <div class="col">
+                          <h1 class="m-0">The <span class="primary">fastest</span> smartphone ever.</h1>
+                          <p class="m-0 p-b-20">Introducing the latest <strong>Galaxy S9/S9+.</strong> Packed with an array of innovative features, like Pro Mode.</p>
+                          <button class="button button-outline button-positive round-big">
+                                Browse <span class="lnr lnr-arrow-right p-l-20"></span>
+                          </button>
+                      </div>
+                      <div class="col">
+                        <img src="https://www.buymobiles.net/library/images/handsets/samsung/samsung-galaxy-s9-black.png">
+                      </div>
+                    </div>
+                  </div>
+
+                  <h4 class="p-20 m-b-0 p-b-10">Categories <span class="right"><span class="lnr lnr-arrow-right"></span></span></h4>
+
+                        <ion-scroll direction="x" class="scroll-area categories-scroll">
+
+                            <a class="inline" ng-repeat="category in categories">
+                                    <span class="lnr lnr-{{category.cat_icon}}"></span>
+                                    <p class="m-0">{{category.cat_name}}</p>
+                            </a>
+
+                        </ion-scroll>
+
+
+                <h4 class="p-20 m-b-0 p-b-10">Featured | Newest | Best <span class="right"><span class="lnr lnr-arrow-right"></span></span></h4>
+
+                <ion-scroll direction="x" class="scroll-area products-scroll row">
+                        <div class="col col-90 inline relative text-center border p-b-20">
+                                <img src="https://demo2.chethemes.com/multimarket/wp-content/uploads/2017/07/1.1_720x660-300x300.jpg" width="100%">
+                                <h4 class="product-price">$220</h4>
+                                <p class="wrap">American Tourister Expandable Check-in Luggage <br> 21 inch (Purple)</p>
+                                <a href="#"><button class="button button-outline button-positive round-big">
+                                        Details
+                                      </button></a>
+                            </div>
+                            <div class="col col-90 inline relative text-center border p-b-20">
+                                    <img src="https://demo2.chethemes.com/multimarket/wp-content/uploads/2017/07/2_720x6601-300x300.jpg" width="100%">
+                                    <h4 class="product-price">$220</h4>
+                                <p class="wrap">American Tourister Expandable Check-in Luggage <br> 21 inch (Purple)</p>
+                                <button class="button button-outline button-positive round-big">
+                                        Details
+                                      </button>
+                                </div>
+                                <div class="col col-90 inline relative text-center border p-b-20">
+                                        <img src="https://demo2.chethemes.com/multimarket/wp-content/uploads/2017/07/3_720x660-300x300.jpg" width="100%">
+                                        <h4 class="product-price">$220</h4>
+                                <p class="wrap">American Tourister Expandable Check-in Luggage <br> 21 inch (Purple)</p>
+                                <button class="button button-outline button-positive round-big">
+                                        Details
+                                      </button>
+                                    </div>
+                                    <div class="col col-90 inline relative text-center border p-b-20">
+                                            <img src="https://demo2.chethemes.com/multimarket/wp-content/uploads/2017/07/4_720x660-300x300.jpg" width="100%">
+                                            <h4 class="product-price">$220</h4>
+                                <p class="wrap">American Tourister Expandable Check-in Luggage <br> 21 inch (Purple)</p>
+                                <button class="button button-outline button-positive round-big">
+                                        Details
+                                      </button>
+                                        </div>
+                                       <div class="col col-90 inline relative text-center border p-b-20">
+                                                <img src="https://demo2.chethemes.com/multimarket/wp-content/uploads/2017/07/5_720x6604-300x300.jpg" width="100%">
+                                                <h4 class="product-price">$220</h4>
+                                <p class="wrap">American Tourister Expandable Check-in Luggage <br> 21 inch (Purple)</p>
+                                <button class="button button-outline button-positive round-big">
+                                        Details
+                                      </button>
+                                            </div>
+                </ion-scroll>
+
+                <div class="p-b-50"></div>
+
+
+</ion-content>

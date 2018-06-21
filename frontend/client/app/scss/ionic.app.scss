@@ -3,17 +3,22 @@ To customize the look and feel of Ionic, you can override the variables
 in ionic's _variables.scss file.
 
 For example, you might change some of the default colors:
+*/
 
-$light:                           #fff !default;
+
+$white:                           #fff !default;
+$light:                           #fafafa !default;
+$gray:                            #8389af !default;
 $stable:                          #f8f8f8 !default;
-$positive:                        #387ef5 !default;
+$positive:                        #28aac1 !default;
 $calm:                            #11c1f3 !default;
 $balanced:                        #33cd5f !default;
 $energized:                       #ffc900 !default;
 $assertive:                       #ef473a !default;
 $royal:                           #886aea !default;
-$dark:                            #444 !default;
-*/
+$dark:                            #444c67  !default;
+$black:                            #000 !default;
+
 
 // The path for our ionicons font files, relative to the built CSS in www/css
 $ionicons-font-path: "../lib/ionic/fonts" !default;
@@ -21,3 +26,392 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 // Include all of Ionic
 @import "www/lib/ionic/scss/ionic";
 
+
+/* Custom CSS */
+
+ /*Generals*/
+ html, body, .pane, .scroll {
+   height: 100% !important;
+ }
+ html, body, * {
+    color: $dark;
+}
+.light {
+   color: $positive;
+}
+.primary {
+   color:$positive;
+}
+
+.bg-white {
+    background-color: $white;
+}
+.bg-light {
+    background-color: $light;
+}
+.bg-gray {
+  background-color: $gray;
+}
+.bg-stable {
+    background-color: $stable;
+}
+.bg-positive {
+    background-color: $positive;
+}
+.bg-calm {
+    background-color: $calm;
+}
+.bg-balanced {
+    background-color: $balanced;
+}
+.bg-energized {
+    background-color: $energized;
+}
+.bg-assertive {
+    background-color: $assertive;
+}
+.bg-royal {
+    background-color: $royal;
+}
+.bg-dark {
+    background-color: $dark;
+}
+.bg-black {
+    background-color: $black;
+}
+.bg-tr {
+  background: transparent !important;
+}
+
+
+.text-white {
+  color: $white;
+}
+.text-gray {
+  color: $gray;
+}
+.text-blue {
+  color: $positive;
+}
+.text-dark {
+  color: $dark;
+}
+
+
+/* borders */
+.no-round {
+  border-radius: 0px !important;
+}
+.round {
+  border-radius: 500px;
+}
+.round-small {
+  border-radius: 5px;
+}
+.round-small-top {
+  border-radius: 5px 5px 0 0;
+}
+.round-small-bottom {
+  border-radius: 0 0 5px 5px;
+}
+.round-small-top-bottom-left {
+  border-radius: 5px 0 0 5px;
+}
+.round-small-top-bottom-right {
+  border-radius: 0 5px 5px 0;
+}
+.round-small-bottom-left {
+  border-radius: 5px 0 0 5px;
+}
+.round-small-bottom-right {
+  border-radius: 0 5px 5px 0;
+}
+.round-medium {
+  border-radius: 10px;
+}
+.round-big {
+  border-radius: 50px;
+}
+.no-border {
+  border: none !important;
+}
+.no-decoration {
+  text-decoration: none !important;
+}
+
+input, .item-input-wrapper {
+    background-color: transparent !important;
+    border: 0px !important;
+}
+
+
+.grad-light {
+   background-image: linear-gradient(to right, #dff6fc 0%, #dbe7e9 100%);
+}
+
+.lnr .badge {
+   margin-left: -7px;
+   padding: 0px 5px;
+   font-family: 'Roboto', sans-serif;
+   font-size: 11px;
+   background-color: $positive;
+   color: #fff;
+
+}
+
+.header_search {
+    border-bottom: 1px solid rgba(0,0,0,.05) !important;
+}
+
+.home_banner {
+    max-height: 400px;
+    overflow: hidden;
+}
+
+.scroll {
+    min-width: 100%;
+}
+
+.scroll-area {
+    overflow: scroll;
+    white-space: nowrap;
+  }
+  .scroll {
+    min-width: 100%;
+  }
+  .inline-button {
+      display: inline;
+  }
+
+  .categories-scroll {
+      padding: 10px 0px;
+  }
+  .categories-scroll a {
+      border: 1px solid rgba(0,0,0,.05);
+      padding: 5px 20px;
+      margin: 5px;
+      text-align: center;
+  }
+  .categories-scroll a span {
+    font-size: 24px;
+    padding-right: 5px;
+}
+.categories-scroll a p {
+    font-size: 10px;
+    padding-right: 5px;
+    text-transform: uppercase;
+}
+
+
+
+
+/*Left side menu*/
+.menu-left {
+    background-image: linear-gradient(120deg, $dark 0%, $black 100%);
+}
+
+.menu-left a.primary {
+    display: block;
+    text-transform: uppercase;
+    padding: 20px 0px;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+    background-color: rgba(255,255,255,.05);
+}
+.menu-left a.primary span, .menu-left a.primary p {
+    display: block;
+    text-align: center;
+    margin: 0px;
+    color: $light;
+}
+.menu-left a.primary span {
+    font-size: 24px;
+    color: $positive;
+}
+.menu-left a.primary p {
+    font-size: 10px;
+    padding-top: 10px;
+
+}
+.menu-left a.secondary {
+    display: block;
+    text-transform: uppercase;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.menu-left a.secondary span, .menu-left a.secondary p {
+    display: inline-block;
+    text-align: center;
+    margin: 0px;
+    color: $light;
+}
+.menu-left a.secondary span {
+    font-size: 12px;
+}
+.menu-left a.secondary p {
+    font-size: 10px;
+    padding: 10px;
+}
+
+.shadow {
+    -webkit-box-shadow: 0 0 15px 5px rgba(0,0,0,.05);
+    box-shadow: 0 0 15px 5px rgba(0,0,0,.05);
+}
+
+.product-price {
+    color: $positive;
+}
+
+.button {
+    padding: 5px 20px !important;
+    min-height: 20px !important;
+    line-height: 20px !important;
+    font-size: 14px !important;
+}
+
+input, select, textarea, .item-input-wrapper {
+    -webkit-border-radius: 0px !important;
+    border-radius: 0px !important;
+}
+
+
+/*Animations / transitions*/
+.fade-element-in.ng-enter {
+    transition: 0.3s ease all;
+    -moz-transform: translateY(50px);
+-webkit-transform: translateY(50px);
+-o-transform: translateY(50px);
+-ms-transform: translateY(50px);
+transform: translateY(50px);
+  }
+
+  .fade-element-in-init .fade-element-in.ng-enter {
+    -moz-transform: translateY(0px);
+-webkit-transform: translateY(0px);
+-o-transform: translateY(0px);
+-ms-transform: translateY(0px);
+transform: translateY(0px);
+  }
+
+  .fade-element-in.ng-enter.ng-enter-active {
+    -moz-transform: translateY(0px);
+-webkit-transform: translateY(0px);
+-o-transform: translateY(0px);
+-ms-transform: translateY(0px);
+transform: translateY(0px);
+  }
+
+  .fade-element-in.ng-leave {
+    transition: 0.1s ease all;
+    -moz-transform: translateY(0px);
+-webkit-transform: translateY(0px);
+-o-transform: translateY(0px);
+-ms-transform: translateY(0px);
+transform: translateY(0px);
+  }
+  .fade-element-in.ng-leave.ng-leave-active {
+    -moz-transform: translateY(50px);
+-webkit-transform: translateY(50px);
+-o-transform: translateY(50px);
+-ms-transform: translateY(50px);
+transform: translateY(50px);
+  }
+
+
+.btn-filled {
+  border: 1px solid #28aac1 !important;
+  padding: 5px 20px !important;
+  color: #28aac1;
+}
+
+.cover {
+  background-size: cover !important;
+}
+.box-shadow {
+  -webkit-box-shadow: 0 0 50px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 0 50px 10px rgba(0,0,0,0.05);
+}
+.box-shadow2 {
+  -webkit-box-shadow: 0 0 15px 5px rgba(0,0,0,.05);
+  box-shadow: 0 0 15px 5px rgba(0,0,0,.05);
+}
+
+
+input:focus ~ .floating-label,
+input:not(:focus):valid ~ .floating-label{
+  top: 8px;
+  bottom: 10px;
+  left: 10px;
+  font-size: 11px;
+  opacity: 1;
+  margin-top: -20px;
+}
+.inputText {
+  font-size: 14px;
+  width: 100%;
+  height: 35px;
+  padding-left: 10px;
+}
+.inputText2 {
+  font-size: 14px;
+  min-width: 400px;
+  height: 35px;
+  padding-left: 10px;
+}
+.floating-label {
+  position: absolute;
+  pointer-events: none;
+  left: 10px;
+  top: 10px;
+  transition: 0.2s ease all;
+}
+textarea::placeholder {
+  color: #8389af !important;
+}
+
+
+.elem-big {
+  width: 100px;
+  height: 100px;
+}
+
+.selectParent{
+    width:80px;
+    overflow:hidden;
+    display: inline-block;
+}
+.selectParent select{
+    width: 100px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: 2px 2px 2px 2px;
+    border: none;
+    background: transparent url("https://png.icons8.com/ios/12/8389af/expand-arrow-filled.png") no-repeat 60px center;
+}
+
+
+.fixed-bottom {
+  position: fixed !important;
+  z-index: 999;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  width: 100%;
+}
+
+.fixed-top {
+  position: fixed;
+  z-index: 999;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  width: 100%;
+}
+
+/*
+Used-new
+make offer
+trade
+buy now
+fees - featured and fees to get user contact
+*/
