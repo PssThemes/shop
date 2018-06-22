@@ -1,9 +1,6 @@
 
-console.log("app js is loaded...")
-
-// // Importing controllers..
+// Importing controllers..
 import AppCtrl from "./controllers/AppCtrl.js"
-
 import HomeCtrl from "./controllers/HomeCtrl.js"
 import SingleProductCtrl from "./controllers/SingleProductCtrl.js"
 import UserProfileCtrl from "./controllers/UserProfileCtrl.js"
@@ -16,10 +13,20 @@ import OrdersCtrl from "./controllers/OrdersCtrl.js"
 import MessagesCtrl from "./controllers/MessagesCtrl.js"
 import SettingsCtrl from "./controllers/SettingsCtrl.js"
 import SingleOrderCtrl from "./controllers/SingleOrderCtrl.js"
-//
-//
+
+
+
 // // Importing directives
 import scrollWatch from "./directives/scrollWatch.js"
+
+
+
+// // Importing services
+import BackendService from "./services/BackendService.js"
+
+
+
+
 
 const app = angular.module('app', ['ionic']);
 
@@ -80,7 +87,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
     })
 
     .state('app.category', {
-      url: '/category',
+      url: '/category/:categoryId',
       views: {
         'menuContent': {
           templateUrl: 'templates/category.html',
@@ -174,6 +181,8 @@ app.config(function($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/app/register');
 });
 
+
+
 // Binding controllers..
 app.controller("AppCtrl", AppCtrl);
 app.controller("HomeCtrl", HomeCtrl);
@@ -188,6 +197,13 @@ app.controller("OrdersCtrl", OrdersCtrl);
 app.controller("MessagesCtrl", MessagesCtrl);
 app.controller("SettingsCtrl", SettingsCtrl);
 app.controller("SingleOrderCtrl", SingleOrderCtrl);
-//
-// // Binding directives..
+
+
+
+// Binding directives..
 app.directive("scrollWatch", scrollWatch);
+
+
+
+// Binding services..
+app.service("BackendService", BackendService);

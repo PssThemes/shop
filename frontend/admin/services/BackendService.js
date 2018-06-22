@@ -46,7 +46,7 @@ export default function BackendService() {
     createCustomCategory: catName => {
 
       const newCat = {
-        name: catName,
+        name: catName.trim(),
         products: [],
         linkedTo: []
       }

@@ -6,8 +6,7 @@ export default function scrollWatch () {
           var limit = 50;
           scope.$root.scrollTop = false;
           elem.bind('scroll', function(e) {
-            console.log(e);
-            if(e.detail.scrollTop - start > limit || start - e.detail.scrollTop > limit ) {
+            if(e.target.scrollTop - start > limit || start - e.target.scrollTop > limit ) {
               scope.$apply(function() {
                 scope.$root.scrollTop = true;
               });

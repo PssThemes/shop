@@ -1,8 +1,9 @@
-export default function HomeCtrl($scope, $http) {
+export default function HomeCtrl($scope,$timeout, BackendService) {
 
-  $http.get("https://ccs.pssthemes.com/mobile/get_categories")
-    .then(function(response) {
-        $scope.categories = response.data;
-    });
+  $scope.categories = {};
 
+  BackendService.onCategoryAdded(cat => {
+    $scope.categories[cat.id]= cat;
+    $timeout(() => {$scope.$apply()}, 10)
+  });
 }

@@ -36,5 +36,23 @@
 
   <body ng-app="app">
     <ion-nav-view></ion-nav-view>
+
+    <script src="lib/firebase/firebase-app.js"></script>
+    <script src="lib/firebase/firebase-auth.js"></script>
+    <script src="lib/firebase/firebase-database.js"></script>
+
+    <script>
+      // Initialize Firebase
+      const config = {
+        apiKey: "AIzaSyBHFgL85LAezq8GV-MIqDvBz53g4LSrk1I",
+        authDomain: "shop-0000.firebaseapp.com",
+        databaseURL: "https://shop-0000.firebaseio.com",
+        projectId: "shop-0000",
+        storageBucket: "shop-0000.appspot.com",
+        messagingSenderId: "809051870205"
+      };
+      firebase.initializeApp(config);
+    </script>
+
   </body>
 </html>
