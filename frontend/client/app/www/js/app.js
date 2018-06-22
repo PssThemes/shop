@@ -1,5 +1,25 @@
 
-import AppCtrl from "/controllers/AppCtrl.js"
+console.log("app js is loaded...")
+
+// // Importing controllers..
+import AppCtrl from "./controllers/AppCtrl.js"
+
+import HomeCtrl from "./controllers/HomeCtrl.js"
+import SingleProductCtrl from "./controllers/SingleProductCtrl.js"
+import UserProfileCtrl from "./controllers/UserProfileCtrl.js"
+import CategoryCtrl from "./controllers/CategoryCtrl.js"
+import LoginCtrl from "./controllers/LoginCtrl.js"
+import RegisterCtrl from "./controllers/RegisterCtrl.js"
+import ProductsCtrl from "./controllers/ProductsCtrl.js"
+import FavoritesCtrl from "./controllers/FavoritesCtrl.js"
+import OrdersCtrl from "./controllers/OrdersCtrl.js"
+import MessagesCtrl from "./controllers/MessagesCtrl.js"
+import SettingsCtrl from "./controllers/SettingsCtrl.js"
+import SingleOrderCtrl from "./controllers/SingleOrderCtrl.js"
+//
+//
+// // Importing directives
+import scrollWatch from "./directives/scrollWatch.js"
 
 const app = angular.module('app', ['ionic']);
 
@@ -89,15 +109,15 @@ app.config(function($stateProvider, $urlRouterProvider) {
       }
     })
 
-    .state('app.products', {
-      url: '/products',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/products.html',
-          controller: 'ProductsCtrl'
-        }
-      }
-    })
+    // .state('app.products', {
+    //   url: '/products',
+    //   views: {
+    //     'menuContent': {
+    //       templateUrl: 'templates/products.html',
+    //       controller: 'ProductsCtrl'
+    //     }
+    //   }
+    // })
 
     .state('app.favorites', {
       url: '/favorites',
@@ -154,4 +174,20 @@ app.config(function($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/app/register');
 });
 
+// Binding controllers..
 app.controller("AppCtrl", AppCtrl);
+app.controller("HomeCtrl", HomeCtrl);
+app.controller("SingleProductCtrl", SingleProductCtrl);
+app.controller("UserProfileCtrl", UserProfileCtrl);
+app.controller("CategoryCtrl", CategoryCtrl);
+app.controller("LoginCtrl", LoginCtrl);
+app.controller("RegisterCtrl", RegisterCtrl);
+app.controller("ProductsCtrl", ProductsCtrl);
+app.controller("FavoritesCtrl", FavoritesCtrl);
+app.controller("OrdersCtrl", OrdersCtrl);
+app.controller("MessagesCtrl", MessagesCtrl);
+app.controller("SettingsCtrl", SettingsCtrl);
+app.controller("SingleOrderCtrl", SingleOrderCtrl);
+//
+// // Binding directives..
+app.directive("scrollWatch", scrollWatch);

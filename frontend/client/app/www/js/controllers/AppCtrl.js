@@ -1,3 +1,5 @@
+console.log("AppCtrl loaded..");
+
 export default function AppCtrl($scope) {
 
   $scope.menu = [
