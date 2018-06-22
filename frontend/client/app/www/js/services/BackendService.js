@@ -7,12 +7,12 @@ const db = firebase.database();
 
 const categoriesRef = db.ref("/categories");
 const oneCategoryRef = (id) => {
-  db.ref("/categories/" + id);
+  return db.ref("/categories/" + id);
 }
 
 const productsRef = db.ref("/products");
 const oneProductRef = (id) => {
-  db.ref("/products/" + id);
+  return db.ref("/products/" + id);
 }
 
 export default class BackendService {
@@ -29,11 +29,15 @@ export default class BackendService {
 
   getCategory(id){
     return new Promise((resolve, reject) => {
-      oneCategoryRef(id).once("value")
+      oneCategoryRef(id).once('value')
         .then(snap => {
+          console.log("getCategory: ", id);
+          console.log("getCategory", snap.val());
           resolve(makeCategory(snap));
         })
         .catch(err => {
+          console.log("getCategory: ", id);
+          console.log("getCategory", err);
           reject(err);
         });
     });

@@ -28,8 +28,11 @@ export default function CategoryCtrl($scope, $timeout, $stateParams, BackendServ
         .catch(err => {
           console.log("could not load the category with id: ", categoryId);
         });
+
   }else{
+
     console.log("Dev Error: i forgot to pass the categoryId parameter into the ui-router sref call.");
+
   }
 
 }

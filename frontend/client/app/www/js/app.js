@@ -7,7 +7,6 @@ import UserProfileCtrl from "./controllers/UserProfileCtrl.js"
 import CategoryCtrl from "./controllers/CategoryCtrl.js"
 import LoginCtrl from "./controllers/LoginCtrl.js"
 import RegisterCtrl from "./controllers/RegisterCtrl.js"
-import ProductsCtrl from "./controllers/ProductsCtrl.js"
 import FavoritesCtrl from "./controllers/FavoritesCtrl.js"
 import OrdersCtrl from "./controllers/OrdersCtrl.js"
 import MessagesCtrl from "./controllers/MessagesCtrl.js"
@@ -191,7 +190,6 @@ app.controller("UserProfileCtrl", UserProfileCtrl);
 app.controller("CategoryCtrl", CategoryCtrl);
 app.controller("LoginCtrl", LoginCtrl);
 app.controller("RegisterCtrl", RegisterCtrl);
-app.controller("ProductsCtrl", ProductsCtrl);
 app.controller("FavoritesCtrl", FavoritesCtrl);
 app.controller("OrdersCtrl", OrdersCtrl);
 app.controller("MessagesCtrl", MessagesCtrl);
