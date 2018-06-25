@@ -22,6 +22,8 @@ import scrollWatch from "./directives/scrollWatch.js"
 
 // // Importing services
 import BackendService from "./services/BackendService.js"
+import UserService from "./services/UserService.js"
+import DataService from "./services/DataService.js"
 
 
 
@@ -205,3 +207,5 @@ app.directive("scrollWatch", scrollWatch);
 
 // Binding services..
 app.service("BackendService", BackendService);
+app.service("UserService", UserService);
+app.service("DataService", DataService);

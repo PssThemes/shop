@@ -29,19 +29,21 @@ const productRef = (id) => {
   return db.ref("/products/" + id);
 }
 
-// create3FakeProducts();
+create3FakeProducts();
 
 function create3FakeProducts(){
   const p1 = createDummyProduct("Monitor");
-  console.log("p1: ", p1)
-  console.log("p1 data: ", p1.getData());
+  const p2 = createDummyProduct("Tastatura");
+  const p3 = createDummyProduct("Mouse");
   productsRef.push(p1.getData());
+  productsRef.push(p2.getData());
+  productsRef.push(p3.getData());
 }
 
 function createDummyProduct(productName){
   const productData = {
     id: "productId..",
-    mainProductImage: "img url here",
+    mainProductImage: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=89e5fd826f8bdc563ab1743608690f39&auto=format&fit=crop&w=800&q=80",
     name: productName || "Product Name",
     short_description: "short_description here",
     price: "123",
@@ -63,7 +65,8 @@ function createDummyProduct(productName){
           }
         },
       }
-    }
+    },
+    categoryId: "-LFWaisUPF_XssTJE10r"
   };
   return new Product(productData);
 }
@@ -175,7 +178,7 @@ function createFakeOrder(){
       productId : "productId2",
       productName : "Tastatura",
       mainProductImage : null,
-      price : 50, 
+      price : 50,
       howMany : 3,
       attributes : []
     },

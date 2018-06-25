@@ -3,6 +3,7 @@ import Review from "./Review.js"
 export default class Product {
 
   constructor(productData) {
+    console.log("productData:  ", productData);
     if(!productData){
       throw new Error("invalid value for Product constructor: ", productData );
     }
@@ -32,9 +33,10 @@ export default class Product {
     this.price = productData.price || 0;
     this.isHidden = isHidden;
     this.reviews = reviews;
-    // this.long_descriptionId = url...;
+    this.categoryId = productData.categoryId
 
-    // TODO: add prodcut category..
+    // TODO: add a way to access the long product description
+    // this.long_descriptionId = url...;
   }
 
   getData() {
@@ -49,7 +51,9 @@ export default class Product {
       short_description: this.short_description,
       price: this.price,
       isHidden: this.isHidden,
-      reviews: reviewsData
+      reviews: reviewsData,
+      categoryId: this.categoryId,
+      mainProductImage: this.mainProductImage,
     }
   }
 

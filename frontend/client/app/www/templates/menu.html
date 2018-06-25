@@ -9,9 +9,25 @@
                 <span ng-if="scrollTop" class=" inline p-l-10 p-r-10 fade-element-in"><img src="img/icons/map.png"></span>
             </div>
             <div class="col text-right">
-                <span class="lnr inline p-l-10 p-r-10"><img src="img/icons/appointment-reminders.png"><span class="badge">7</span></span>
-                <span class="lnr inline p-l-10 p-r-10"><img src="img/icons/hearts.png"><span class="badge">7</span></span>
-                <span class="lnr inline p-l-10 p-r-10"><img src="img/icons/gender-neutral-user.png"></span>
+
+                <!-- Favorites notification -->
+                <!-- TODO: what the notficication functionality looks like. -->
+                <!-- <a ui-sref="app.user-profile">
+                  <span class="lnr inline p-l-10 p-r-10"><img src="img/icons/appointment-reminders.png"><span class="badge">7</span></span>
+                </a>     -->
+
+
+                <!-- Favorites -->
+                <a ui-sref="app.user-profile">
+                  <span class="lnr inline p-l-10 p-r-10"><img src="img/icons/hearts.png"><span class="badge">{{ getNumberOfFavorites() }}</span></span>
+                </a>
+
+
+                <!-- access user account -->
+                <a ui-sref="app.user-profile">
+                  <span class="lnr inline p-l-10 p-r-10"><img src="img/icons/gender-neutral-user.png"></span>
+                </a>
+
             </div>
           </div>
 

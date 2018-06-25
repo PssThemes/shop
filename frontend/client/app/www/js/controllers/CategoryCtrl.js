@@ -3,6 +3,8 @@ export default function CategoryCtrl($scope, $timeout, $stateParams, BackendServ
 
   $scope.category = null;
 
+
+
   if(categoryId){
     BackendService.getCategory(categoryId)
         .then(cat => {
@@ -11,22 +13,22 @@ export default function CategoryCtrl($scope, $timeout, $stateParams, BackendServ
           BackendService.getFirstXProductsOfACategory(cat.id, 20)
             .then(products => {
 
-              products.map(product => {
-                $scope.category.addProductToCategory(product);
-              });
+              Object.keys(products).map(key => {
+                $scope.category.addProductToCategory(products[key]);
+              })
 
               $timeout(() => { $scope.$apply() }, 10);
 
             })
             .catch( err => {
-              console.log(`Could not get products for the category with name: ${cat.name} and ${cat.id}`);
+              console.log(`Could not get products for the category with name: ${cat.name} and ${cat.id}`, err);
             });
 
           $timeout(() => { $scope.$apply() }, 10);
 
         })
         .catch(err => {
-          console.log("could not load the category with id: ", categoryId);
+          console.log("could not load the category with id: ", categoryId, err);
         });
 
   }else{
@@ -34,5 +36,7 @@ export default function CategoryCtrl($scope, $timeout, $stateParams, BackendServ
     console.log("Dev Error: i forgot to pass the categoryId parameter into the ui-router sref call.");
 
   }
+
+
 
 }

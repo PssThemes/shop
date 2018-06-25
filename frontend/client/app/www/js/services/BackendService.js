@@ -31,13 +31,9 @@ export default class BackendService {
     return new Promise((resolve, reject) => {
       oneCategoryRef(id).once('value')
         .then(snap => {
-          console.log("getCategory: ", id);
-          console.log("getCategory", snap.val());
           resolve(makeCategory(snap));
         })
         .catch(err => {
-          console.log("getCategory: ", id);
-          console.log("getCategory", err);
           reject(err);
         });
     });
@@ -108,15 +104,12 @@ function makeProductsList(snap){
   // raw firebase list of dumb json objects.
   const listOfProductsAsData = snap.val();
 
-  // Dev crap
-  console.log("listOfProductsAsData: ", listOfProductsAsData);
-
-
   // transform it to a list of Products.
-  const products = Object.keys(listOfProductsAsData).reduce((add, key) => {
+  const products = Object.keys(listOfProductsAsData).reduce((acc, key) => {
+
     const productData = listOfProductsAsData[key];
     productData.id = key;
-
+    
     // construct a new Product and addd it to the products list(is actually an object).
     acc[key] = new Product(productData);
 
@@ -130,9 +123,7 @@ function makeProductsList(snap){
 
 function makeCategory(snap){
   const catData = snap.val();
-  console.log("catData: ", catData);
   catData.id = snap.key;
   const cat = new Category(catData);
-  console.log("cat: ", cat);
   return cat;
 }

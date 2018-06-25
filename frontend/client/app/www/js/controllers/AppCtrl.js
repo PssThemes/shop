@@ -1,6 +1,6 @@
 console.log("AppCtrl loaded..");
 
-export default function AppCtrl($scope) {
+export default function AppCtrl($scope, UserService) {
 
   $scope.menu = [
     { title: 'Home', icon: 'home', type: 'primary', state: "app.home" },
@@ -20,5 +20,9 @@ export default function AppCtrl($scope) {
 
     { title: 'Settings', icon: 'cog', type: 'secondary', state: "app.settings" },
   ];
+
+  $scope.getNumberOfFavorites = () => {
+    return UserService.getNumberOfFavorites();
+  };
 
 }
