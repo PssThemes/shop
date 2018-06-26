@@ -67,7 +67,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
     })
 
     .state('app.single-product', {
-      url: '/single-product',
+      url: '/single-product/:productId',
       views: {
         'menuContent': {
           templateUrl: 'templates/single-product.html',

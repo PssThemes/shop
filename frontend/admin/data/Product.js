@@ -33,7 +33,8 @@ export default class Product {
     this.price = productData.price || 0;
     this.isHidden = isHidden;
     this.reviews = reviews;
-    this.categoryId = productData.categoryId
+    this.categoryId = productData.categoryId;
+    this.media = productData.media || [];
 
     // TODO: add a way to access the long product description
     // this.long_descriptionId = url...;
@@ -54,6 +55,7 @@ export default class Product {
       reviews: reviewsData,
       categoryId: this.categoryId,
       mainProductImage: this.mainProductImage,
+      media: this.media,
     }
   }
 

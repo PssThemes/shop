@@ -21,6 +21,7 @@ export default class UserProfile {
 
     this.uid = profileData.uid;
     this.name =  profileData.name || "anonim user";
+    this.profileImage =  profileData.profileImage || "https://randomuser.me/api/portraits/men/2.jpg";
     this.email =  profileData.email || "";
     this.address =  address;
     this.phone = profileData.phone || "";

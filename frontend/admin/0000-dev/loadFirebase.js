@@ -29,7 +29,7 @@ const productRef = (id) => {
   return db.ref("/products/" + id);
 }
 
-create3FakeProducts();
+// create3FakeProducts();
 
 function create3FakeProducts(){
   const p1 = createDummyProduct("Monitor");
@@ -66,7 +66,12 @@ function createDummyProduct(productName){
         },
       }
     },
-    categoryId: "-LFWaisUPF_XssTJE10r"
+    categoryId: "-LFWaisUPF_XssTJE10r",
+    media : [
+      "https://images.unsplash.com/photo-1504670073073-6123e39e0754?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=23c233a430f2ca6be8d78f8608b416d5&auto=format&fit=crop&w=1050&q=80",
+      "https://images.unsplash.com/19/desktop.JPG?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=60f9c32ab84b0de2266d6afca2fabf4c&auto=format&fit=crop&w=750&q=80",
+      "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=d1046925db0fb1f15417d71ad1676880&auto=format&fit=crop&w=1050&q=80"
+    ]
   };
   return new Product(productData);
 }
@@ -111,7 +116,7 @@ const usersProfilesRef = () => {
   return db.ref("/users");
 }
 
-// create3DummyUserProfiles()
+create3DummyUserProfiles()
 
 function create3DummyUserProfiles(){
   console.log("create3DummyUserProfiles..")
@@ -133,6 +138,7 @@ function createDummyUserProfile(userName){
   const fakeUserProfile = new UserProfile({
     uid : "user profile id",
     name :  userName,
+    profileImage: "https://randomuser.me/api/portraits/men/2.jpg",
     email :  "joncastron@gmail.com",
     address :  fakeUserAddress,
     phone : "07928034923",

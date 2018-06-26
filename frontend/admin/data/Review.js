@@ -27,9 +27,10 @@ export default class Review {
     this.id = reviewData.id;
     this.value = reviewData.value || 0;
     this.message = reviewData.message || "";
-    this.clientId = reviewData.clientId; 
+    this.clientId = reviewData.clientId;
     this.replies = replies;
     this.replyBox = "";
+    this.date = reviewData.date || null;
   }
 
   getData() {
@@ -43,7 +44,8 @@ export default class Review {
       value: this.value,
       message: this.message,
       clientId: this.clientId,
-      replies: repliesData
+      replies: repliesData,
+      date: this.date
     }
   }
 
