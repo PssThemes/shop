@@ -23,7 +23,7 @@ export default class UserProfile {
     this.email =  profileData.email || "";
     this.address =  address;
     this.phone = profileData.phone || "";
-    this.isBlocked = profileData.isBlocked || false;
+    this.isBlocked = profileData.isBlocked || false; 
   }
 
   getData(){
