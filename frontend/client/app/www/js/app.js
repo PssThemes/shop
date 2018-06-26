@@ -28,8 +28,7 @@ import DataService from "./services/DataService.js"
 
 
 
-
-const app = angular.module('app', ['ionic']);
+const app = angular.module('app', ["ionic", "firebase"]);
 
 app.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -209,3 +208,5 @@ app.directive("scrollWatch", scrollWatch);
 app.service("BackendService", BackendService);
 app.service("UserService", UserService);
 app.service("DataService", DataService);
+
+// Importing factories

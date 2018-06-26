@@ -20,7 +20,7 @@
 
                         <ion-scroll direction="x" class="scroll-area categories-scroll">
 
-                            <a class="inline" ng-repeat="category in categories" ui-sref="app.category({ categoryId : category.id})">
+                            <a class="inline" ng-repeat="category in categories" ui-sref="app.category({ categoryId : category.$id })">
                                     <!-- NOTE: we have no icon for categories.. we need to add
                                       this as a special functionality in admin .. and ask the admin to load an icon for each category he creates..
                                       which i feel is not worth it at this point.
