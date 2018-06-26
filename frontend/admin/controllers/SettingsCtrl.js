@@ -4,7 +4,6 @@ function SettingsCtrl($scope, BackendService) {
 
   BackendService.getSettings()
     .then(settings => {
-      console.log(settings);
       $scope.shopifyKey = settings.shopify.apiKey;
       $scope.shopifySecret = settings.shopify.apiSecret;
       $scope.magentoKey = settings.magento.apiKey;
@@ -12,6 +11,8 @@ function SettingsCtrl($scope, BackendService) {
       $scope.woocomerceKey = settings.woocomerce.apiKey;
       $scope.woocomerceSecret = settings.woocomerce.apiSecret;
       $scope.settings = settings;
+      syncronizeSyncRate($scope);
+
       $scope.$apply();
     })
     .catch(err => {
@@ -35,7 +36,23 @@ function SettingsCtrl($scope, BackendService) {
   };
 
 
+  $scope.saveSyncRate = (shopName, syncRate) => {
+
+    $scope.settings.setSyncRate(shopName, syncRate);
+
+    syncronizeSyncRate($scope);
+
+    // Save it in backend:
+    BackendService.updateSettings($scope.settings)
+      .catch(err => {
+        console.log("could not update the settings because: ", err );
+      })
+  };
+
+
+  // ---------------------------------------------------
   // Shopify
+  // ---------------------------------------------------
   $scope.shopifyKey = "";
   $scope.shopifySecret = "";
   $scope.saveShopifySettings = () => {
@@ -47,10 +64,12 @@ function SettingsCtrl($scope, BackendService) {
           console.log("could not update the settings because: ", err );
         })
     }
-
   };
 
+
+  // ---------------------------------------------------
   // Magento
+  // ---------------------------------------------------
   $scope.magentoKey = "";
   $scope.magentoSecret = "";
   $scope.saveMagentoSettings = () => {
@@ -63,7 +82,9 @@ function SettingsCtrl($scope, BackendService) {
     }
   };
 
+  // ---------------------------------------------------
   // Woocomerce
+  // ---------------------------------------------------
   $scope.woocomerceKey = "";
   $scope.woocomerceSecret = "";
   $scope.saveWoocomerceSettings = () => {
@@ -80,3 +101,9 @@ function SettingsCtrl($scope, BackendService) {
 }
 
 export default SettingsCtrl;
+
+function syncronizeSyncRate($scope){
+  $scope.shopifySyncRate = $scope.settings.shopify.syncRate;
+  $scope.magentoSyncRate = $scope.settings.magento.syncRate;
+  $scope.woocomerceSyncRate = $scope.settings.woocomerce.syncRate;
+}

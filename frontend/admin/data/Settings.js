@@ -1,7 +1,6 @@
 export default class Settings {
 
   constructor(settingsData){
-
     if(!settingsData){
       throw new Error(`bad parameter for Settings object: ${settingsData}`);
     }
@@ -10,21 +9,24 @@ export default class Settings {
       configured: settingsData.shopify.configured || false,
       apiKey: settingsData.shopify.apiKey || "",
       apiSecret: settingsData.shopify.apiSecret || "",
-      sync: settingsData.shopify.sync || true
+      sync: settingsData.shopify.sync || true,
+      syncRate: settingsData.shopify.syncRate || 5000,
     };
 
     this.magento = {
       configured: settingsData.magento.configured || false,
       apiKey: settingsData.magento.apiKey || "",
       apiSecret: settingsData.magento.apiSecret || "",
-      sync: settingsData.magento.sync || true
+      sync: settingsData.magento.sync || true,
+      syncRate: settingsData.magento.syncRate || 5000,
     };
 
     this.woocomerce = {
       configured: settingsData.woocomerce.configured || false,
       apiKey: settingsData.woocomerce.apiKey || "",
       apiSecret: settingsData.woocomerce.apiSecret || "",
-      sync: settingsData.woocomerce.sync || true
+      sync: settingsData.woocomerce.sync || true,
+      syncRate: settingsData.woocomerce.syncRate || 5000,
     };
 
   }
@@ -34,6 +36,28 @@ export default class Settings {
       shopify : this.shopify,
       magento : this.magento,
       woocomerce : this.woocomerce
+    }
+  }
+
+  setSyncRate(shopName, syncRate){
+
+    if(!isNumber(syncRate)){
+      return;
+    }
+
+    // cap the syncRate between 100 miliseconds and 24 hours.
+    syncRate = capValue(syncRate, 1000, 86400000);
+
+    if(shopName == "shopify"){
+      this.shopify.syncRate = syncRate;
+    }
+
+    if(shopName == "magento"){
+      this.magento.syncRate = syncRate;
+    }
+
+    if(shopName == "woocomerce"){
+      this.woocomerce.syncRate = syncRate;
     }
   }
 
@@ -105,3 +129,16 @@ export default class Settings {
   }
 
 }
+
+function capValue(value, min, max){
+  if (value <= min){
+    return min;
+  }
+  else if(value >= max){
+    return max;
+  }else{
+    return value;
+  }
+}
+
+function isNumber(n) { return !isNaN(parseFloat(n)) && !isNaN(n - 0) }

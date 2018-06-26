@@ -1,0 +1,219 @@
+<ion-content id="scrollContent" scroll-watch>
+
+            {{product | json}}
+            <hr class="bg-gray op-2">
+            <hr class="bg-gray op-2">
+
+            <ion-scroll direction="x" class="scroll-area products-scroll row">
+                <div class="col col-90 inline relative text-center border p-b-20"
+                  ng-repeat="imgUrl in product.media"
+                  >
+                  <img ng-src={{imgUrl}} width="100%" alt="no image could be loaded">
+                </div>
+            </ion-scroll>
+
+            <!-- Product description -->
+            <div class="p-20">
+
+              <h4 class="m-t-0">{{product.name}}
+                <a class="v-center right fs-12 fw-500 up bg-positive text-white round p-t-5 p-b-5 p-l-15 p-r-15"> add to cart</a>
+              </h4>
+
+              <p class="right text-blue absolute right-20 fs-18 fw-500">{{product.price | currency}}</p>
+            </div>
+
+            <hr class="bg-gray op-2">
+
+            <p class="text-gray lh-25">{{longDescription}}</p>
+
+            <!-- Share product functionality. -->
+            <button type="button" class="bg-tr border round p-10 m-b-10 m-r-20 no-focus btn-filled m-b-20 cap">share</button>
+
+            <!-- Read comments -->
+            <button type="button" class="bg-tr border round p-10 m-b-10 m-r-20 no-focus btn-filled m-b-20" ng-click="toggleReviews()">Read comments</button>
+
+          </div><!-- padding 20 -->
+
+
+
+          <!-- Reviews section -->
+          <div class="p-l-20 p-r-20" ng-if="showReviews">
+
+
+              <!-- Leave a comment functionalty -->
+              <input type="text" placeholder="Leave your comment here..." class="border full-width p-l-10"/>
+
+
+              <!-- One Review -->
+              <div class="" ng-repeat="(reviewId, review) in product.reviews">
+
+                <div class="v-center p-t-20 p-b-10">
+                  <img ng-src="{{ clients[review.clientId].profileImage }}" alt="1" width="35" height="35" class="round">
+                  <p class="text-dark m-b-0 p-l-10">{{ clients[review.clientId].name }} <span class="fs-12 text-gray block">{{ review.date | date }}</span></p>
+
+                  <!-- Start a new reply -->
+                  <div ng-click="toggleReply(reviewId)">
+                    <img src="https://png.icons8.com/ios/20/8389af/reply-arrow-filled.png" class="right absolute right-20">
+
+                  </div>
+
+
+                </div>
+
+
+                <!-- Review content.. is the first message left by the client.. below it is like a chat. -->
+                <p class="text-gray">{{ review.message }}</p>
+
+
+
+                <!-- For each review we can have a back and forth chat conversation -->
+                <div class="">
+
+                  <div class="" ng-repeat="reply in review.replies">
+
+
+                        <!-- this is an admin reply  -->
+                        <div ng-if="reply.who == 'admin'">
+
+                          <div class="v-center p-t-20 p-b-10">
+                            <img ng-src="{{ adminImage.$value }}" alt="1" width="35" height="35" class="round">
+                            <p class="text-dark m-b-0 p-l-10">{{ clients[review.clientId].name }} <span class="fs-12 text-gray block"></span></p>
+                            <p class="text-gray">{{ reply.text }}</p>
+                          </div>
+
+                        </div>
+
+
+                        <!-- this is a user reply  -->
+                        <div ng-if="reply.who == 'client'">
+                          <div class="v-center p-t-20 p-b-10">
+                            <img ng-src="{{ clients[review.clientId].profileImage }}" alt="1" width="35" height="35" class="round">
+                            <p class="text-dark m-b-0 p-l-10">{{ clients[review.clientId].name }} <span class="fs-12 text-gray block"></span></p>
+                            <p class="text-gray">{{ reply.text }}</p>
+                          </div>
+                        </div>
+
+
+                  </div>
+                </div>
+
+
+
+                <!-- Reply box for this review. -->
+                <div ng-if="thisReviewIsInReplyMode(reviewId)">
+                  <div>
+                    <input type="text" placeholder="reply.." class="border full-width p-l-10"/>
+                  </div>
+                </div>
+
+
+                <hr class="bg-gray op-3">
+
+              </div>
+
+            <!-- </div> -->
+
+            <!--
+            <div class="">
+
+              <div class="v-center p-t-20 p-b-10">
+                <img src="https://randomuser.me/api/portraits/men/2.jpg" alt="1" width="35" height="35" class="round">
+                <p class="text-dark m-b-0 p-l-10">Michael <span class="fs-12 text-gray block">18 minutes ago</span></p>
+                <img src="https://png.icons8.com/ios/20/8389af/reply-arrow-filled.png" class="right absolute right-20">
+              </div>
+              <p class="text-gray">At vero eos et accusamus et iusto odio dignissimos corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate</p>
+              <hr class="bg-gray op-3">
+
+              <div class="v-center p-t-20 p-b-10">
+                <img src="https://randomuser.me/api/portraits/men/3.jpg" alt="1" width="35" height="35" class="round">
+                <p class="text-dark m-b-0 p-l-10">Michael <span class="fs-12 text-gray block">18 minutes ago</span></p>
+                <img src="https://png.icons8.com/ios/20/8389af/reply-arrow-filled.png" class="right absolute right-20">
+              </div>
+              <p class="text-gray">At vero eos et accusamus et iusto odio dignissimos corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate</p>
+              <hr class="bg-gray op-3">
+
+            </div> -->
+
+          </div>
+
+          <!-- more -->
+          <!-- <div class="p-l-20 p-r-20 m-b-20">
+            <button type="button" class="bg-tr border round p-10 m-b-10 m-r-20 no-focus btn-filled m-t-20 m-b-10">View more details
+            </button>
+
+            <div class="row border p-10 m-t-20">
+              <p class="col-40 fw-500">Processor</p>
+              <p class="col-60">8th Generation Intel Core i5-8250U 1.6GHz</p>
+            </div>
+            <div class="row border p-10">
+              <p class="col-40 fw-500">RAM</p>
+              <p class="col-60">8th Generation Intel Core i5-8250U 1.6GHz</p>
+            </div>
+            <div class="row border p-10">
+              <p class="col-40 fw-500">Storage</p>
+              <p class="col-60">8GB DDR4 RAM (Upgradable)</p>
+            </div>
+            <div class="row border p-10">
+              <p class="col-40 fw-500">Graphics</p>
+              <p class="col-60">1TB HDD</p>
+            </div>
+            <div class="row border p-10">
+              <p class="col-40 fw-500">Operating System</p>
+              <p class="col-60">15.6-inch Full HD anti-glare display</p>
+            </div>
+            <div class="row border p-10">
+              <p class="col-40 fw-500">Battery Life</p>
+              <p class="col-60">Windows 10 Home 64-bit</p>
+            </div>
+          </div> -->
+
+          <!-- Products -->
+          <h4 class="p-20 m-b-0 p-b-10 text-gray fw-100">Recently Viewed Products <span class="right"><span class="lnr lnr-arrow-right"></span></span></h4>
+
+          <ion-scroll direction="x" class="scroll-area products-scroll row">
+                  <div class="col col-90 inline relative text-center border p-b-20">
+                          <img src="https://demo2.chethemes.com/multimarket/wp-content/uploads/2017/07/1.1_720x660-300x300.jpg" width="50%">
+                          <h4 class="product-price">$220</h4>
+                          <p class="wrap">American Tourister Expandable Check-in Luggage <br> 21 inch (Purple)</p>
+                          <a href="#"><button class="button button-outline button-positive round-big">
+                                  Details
+                                </button></a>
+                      </div>
+                      <div class="col col-90 inline relative text-center border p-b-20">
+                              <img src="https://demo2.chethemes.com/multimarket/wp-content/uploads/2017/07/2_720x6601-300x300.jpg" width="50%">
+                              <h4 class="product-price">$220</h4>
+                          <p class="wrap">American Tourister Expandable Check-in Luggage <br> 21 inch (Purple)</p>
+                          <button class="button button-outline button-positive round-big">
+                                  Details
+                                </button>
+                          </div>
+                          <div class="col col-90 inline relative text-center border p-b-20">
+                                  <img src="https://demo2.chethemes.com/multimarket/wp-content/uploads/2017/07/3_720x660-300x300.jpg" width="50%">
+                                  <h4 class="product-price">$220</h4>
+                          <p class="wrap">American Tourister Expandable Check-in Luggage <br> 21 inch (Purple)</p>
+                          <button class="button button-outline button-positive round-big">
+                                  Details
+                                </button>
+                              </div>
+                              <div class="col col-90 inline relative text-center border p-b-20">
+                                      <img src="https://demo2.chethemes.com/multimarket/wp-content/uploads/2017/07/4_720x660-300x300.jpg" width="50%">
+                                      <h4 class="product-price">$220</h4>
+                          <p class="wrap">American Tourister Expandable Check-in Luggage <br> 21 inch (Purple)</p>
+                          <button class="button button-outline button-positive round-big">
+                                  Details
+                                </button>
+                                  </div>
+                                 <div class="col col-90 inline relative text-center border p-b-20">
+                                          <img src="https://demo2.chethemes.com/multimarket/wp-content/uploads/2017/07/5_720x6604-300x300.jpg" width="50%">
+                                          <h4 class="product-price">$220</h4>
+                          <p class="wrap">American Tourister Expandable Check-in Luggage <br> 21 inch (Purple)</p>
+                          <button class="button button-outline button-positive round-big">
+                                  Details
+                                </button>
+                          </div>
+          </ion-scroll>
+
+          <div class="bg-dark text-gray p-t-20 p-b-20 text-center cap fs-12">&copy; all rights reserved</div>
+          <div class="p-b-50"></div>
+
+</ion-content>

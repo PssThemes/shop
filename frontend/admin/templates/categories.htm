@@ -1,13 +1,17 @@
 <h1>Categories Page</h1>
 
 
+
+<!-- Create category -->
 <div class="">
-  <pre>{{customCategories}}</pre>
   <h3>Create category</h3>
   <input type="text" ng-model="catBox" on-Enter="createCustomCategory()">
   <button type="button" ng-click="createCustomCategory()">Add</button>
 </div>
 
+
+
+<!-- Display all custom categories that we have in our system-->
 <div class="">
   <h3>Link each category with the categories you have in the online shops</h3>
   <ul>
@@ -37,6 +41,12 @@
 <button type="button" ng-click="unselectCategoryForLinking()">Exit linking mode</button>
 <hr>
 <br>
+
+
+
+<!-- This is the modal that appears when you want to link a custom category with
+  an external category form shops.
+ -->
 
 <div class="" ng-if="selectedForLinking != null">
 

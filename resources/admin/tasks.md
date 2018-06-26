@@ -53,3 +53,25 @@ Load some fake users .. like 3 of them.
   - get ti's name and put it in the review page.
 
 Next build the functionalty for adding a reply to a review .. form the admin side.
+
+
+
+## Tasks
+ 
+### Categories:
+
+
+- 2 select .. minute huour. PENDING..
+
+- check out why is id inside category in firbase. DONE.
+
+
+- why delete in firebase does not work in client. DONE.
+
+- de ce linkurile nu vin cu push id .. Pentru ca nu ar truebuii sa vina.
+Ce se intampla e ca indexez dupa externalCategoryId.. si aia o luam din external shops..
+
+- product hide bug. DONE.
+- update firebase when order status has changed. DONE.
+- remove the hard coded user. DONE.
+- change county to state.. Done.

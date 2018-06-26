@@ -1,16 +1,16 @@
 function ProductsCtrl($scope,$timeout, BackendService) {
-  // ---------------------
-  // DEV STUFF
-  // ---------------------
-  // BackendService.create3FakeProducts()
 
   $scope.allProducts = {};
 
   BackendService.onProductAdded( product => {
     $scope.allProducts[product.id] = product;
+
+    console.log("product ", product.isHidden);
+
+
     $timeout(()=>{
       $scope.$apply();
-    }, 0)
+    }, 10)
   });
 
   BackendService.onProductUpdate( product => {
@@ -24,7 +24,7 @@ function ProductsCtrl($scope,$timeout, BackendService) {
     // and this is why angular complains with $scope inprogress error.
     $timeout(()=>{
       $scope.$apply();
-    }, 0)
+    }, 10)
   });
 
   $scope.calculateTotalRating = (productId) => {
@@ -36,8 +36,12 @@ function ProductsCtrl($scope,$timeout, BackendService) {
   };
 
   $scope.toggleProductVisiblity = (productId) => {
+
+    console.log("toggleProductVisiblity ", $scope.allProducts[productId].isHidden);
     $scope.allProducts[productId].toggleProductVisiblity();
-    BackendService.updateProduct(productId, $scope.allProducts[productId].getData())
+    console.log("toggleProductVisiblity ", $scope.allProducts[productId].isHidden);
+
+    BackendService.updateProduct($scope.allProducts[productId])
       .catch(err => console.log("failed to update the product: ", err));
   };
 

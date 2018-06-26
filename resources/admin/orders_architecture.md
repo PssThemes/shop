@@ -41,6 +41,7 @@ OrderStatus = RECEIVED | PROCESSED | DELIVERED
 { street: String
 , more: String
 , city: String
+, county: String
 , country: String
 , postalCode: String
 }

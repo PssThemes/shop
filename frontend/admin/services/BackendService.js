@@ -4,6 +4,7 @@ import Reply from "../data/Reply.js"
 import Review from "../data/Review.js"
 import UserProfile from "../data/UserProfile.js"
 import Settings from "../data/Settings.js"
+import {Order} from "../data/Order.js"
 
 export default function BackendService() {
   const db = firebase.database();
@@ -19,8 +20,20 @@ export default function BackendService() {
     return db.ref("/users/" + id);
   }
 
+  const usersProfilesRef = () => {
+    return db.ref("/users");
+  }
+
   const settingsRef = () => {
     return db.ref("/settings");
+  }
+
+  const ordersRef = () => {
+    return db.ref("/orders");
+  }
+
+  const orderRef = (id) => {
+    return db.ref("/orders/" + id);
   }
 
   return {
@@ -33,7 +46,7 @@ export default function BackendService() {
     createCustomCategory: catName => {
 
       const newCat = {
-        name: catName,
+        name: catName.trim(),
         products: [],
         linkedTo: []
       }
@@ -90,8 +103,7 @@ export default function BackendService() {
 
     // #/region Custom Categoryies
 
-    //
-    //
+
     // #region Products
 
     getProduct: id => {
@@ -113,9 +125,9 @@ export default function BackendService() {
       });
     },
 
-    updateProduct : (productId, newProduct) => {
+    updateProduct : (newProduct) => {
       return new Promise ((resolve, reject) => {
-        productRef(productId).set(newProduct)
+        productRef(newProduct.id).set(newProduct.getData())
         .then(res => {
           resolve();
         })
@@ -155,6 +167,7 @@ export default function BackendService() {
     },
     // #/region Products
 
+
     // #region Users
 
     getUserProfile : userId => {
@@ -169,8 +182,45 @@ export default function BackendService() {
       });
     },
 
+    onUserProfileChanged: (observer) => {
+      usersProfilesRef().on("child_changed", snap => {
+        observer(makeUserProfile(snap));
+      });
+      return;
+    },
 
+    onSpecificUserProfileChanged: (uid, observer) => {
+      userProfileRef(uid).on("value", snap => {
+        observer(makeUserProfile(snap));
+      });
+      return;
+    },
 
+    onUserProfileAdded: (observer) => {
+      usersProfilesRef().on("child_added", snap => {
+        observer(makeUserProfile(snap));
+      });
+      return;
+    },
+
+    updateUserProfile: (userProfile) => {
+      return new Promise((resolve, reject) => {
+        userProfileRef(userProfile.uid).set(userProfile.getData())
+        .then(ok => {
+          resolve();
+        })
+        .catch(err => {
+          reject(err);
+        });
+      });
+    },
+
+    onUserProfileRemoved: (observer) => {
+      usersProfilesRef().on("child_removed", snap => {
+        observer(snap.key);
+      });
+      return;
+    },
 
     // #/region Users
 
@@ -200,12 +250,73 @@ export default function BackendService() {
             reject(err);
           })
       });
-    }
+    },
 
     // #/region Settings
 
 
+    // #region ORDERS
+
+    // productRef(id).once("value")
+    //   .then(snap => {
+    //     const product = makeProduct(snap);
+    //     resolve(product);
+    //   })
+    //   .catch(err => {
+    //     reject(err);
+    //   })
+
+    getOrder: orderId => {
+      return new Promise((resolve, reject) => {
+        orderRef(orderId).once("value")
+          .then(snap => {
+            resolve(makeOrder(snap));
+          })
+          .catch(err => {
+            reject(err);
+          })
+        });
+    },
+
+    onSpecificOrderChanged : (orderId, observer) => {
+      orderRef(orderId).on("value", snap => {
+        observer(makeOrder(snap));
+      })
+    },
+
+    onOrderChanged: observer => {
+      ordersRef().on("child_changed", snap => {
+        observer(makeOrder(snap));
+      });
+    },
+
+    onOrderAdded: observer => {
+      ordersRef().on("child_added", snap => {
+        observer(makeOrder(snap));
+      });
+    },
+
+    updateOrder : order => {
+      return new Promise((resolve, reject) => {
+        orderRef(order.id).set(order.getData())
+        .then(result => {
+          resolve()
+        })
+        .catch(err => {
+          reject(err);
+        });
+      })
+    }
+
+    // #/region ORDERS
+
   }
+}
+
+function makeOrder(snap){
+  const orderData = snap.val();
+  orderData.id = snap.key;
+  return new Order(orderData);
 }
 
 function makeSettings(snap){
@@ -220,7 +331,6 @@ function makeUserProfile(snap){
 
 function makeCustomCategory(snap){
   const catData = snap.val();
-  console.log("catData: ", catData);
   catData.id = snap.key;
   return new CustomCategory(catData)
 }

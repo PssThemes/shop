@@ -14,12 +14,14 @@ export default class UserProfile {
       street: profileData.address.street || "",
       more: profileData.address.more || "",
       city: profileData.address.city || "",
+      state: profileData.address.state || "",
       country: profileData.address.country || "",
       postalCode: profileData.address.postalCode || "",
     }
 
     this.uid = profileData.uid;
     this.name =  profileData.name || "anonim user";
+    this.profileImage =  profileData.profileImage || "https://randomuser.me/api/portraits/men/2.jpg";
     this.email =  profileData.email || "";
     this.address =  address;
     this.phone = profileData.phone || "";
@@ -36,27 +38,8 @@ export default class UserProfile {
     }
   }
 
+  toggleBlockUser(){
+    this.isBlocked = !this.isBlocked;
+  }
+
 }
-//
-//
-// #### UserProfile
-// ```
-// { uid: String
-// , name : String
-// , email : String
-// , address : Address
-// , phone: String
-// , address: Address
-// , isBlocked: Bool
-// }
-// ```
-//
-// #### Address
-// ```
-// { street: String
-// , more: String
-// , city: String
-// , country: String
-// , postalCode: String
-// }
-// ```

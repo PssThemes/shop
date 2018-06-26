@@ -3,6 +3,7 @@ import Review from "./Review.js"
 export default class Product {
 
   constructor(productData) {
+    console.log("productData:  ", productData);
     if(!productData){
       throw new Error("invalid value for Product constructor: ", productData );
     }
@@ -22,15 +23,21 @@ export default class Product {
         return acc;
       }, {});
     }
-    const isHidden = (productData.isHidden == "true");
+
+    const isHidden = (productData.isHidden.toString() == "true");
+
     this.id = productData.id;
-    this.mainImageUrl = productData.mainImageUrl || "no image";
+    this.mainProductImage = productData.mainProductImage || "https://www.shelvingshopgroup.co.nz/wp-content/uploads/placeholder-image-1000x1000.png";
     this.name = productData.name || "no product name";
     this.short_description = productData.short_description || "";
     this.price = productData.price || 0;
     this.isHidden = isHidden;
     this.reviews = reviews;
-    // TODO: add prodcut category..
+    this.categoryId = productData.categoryId;
+    this.media = productData.media || [];
+
+    // TODO: add a way to access the long product description
+    // this.long_descriptionId = url...;
   }
 
   getData() {
@@ -45,7 +52,10 @@ export default class Product {
       short_description: this.short_description,
       price: this.price,
       isHidden: this.isHidden,
-      reviews: reviewsData
+      reviews: reviewsData,
+      categoryId: this.categoryId,
+      mainProductImage: this.mainProductImage,
+      media: this.media,
     }
   }
 
