@@ -21,9 +21,10 @@ import scrollWatch from "./directives/scrollWatch.js"
 
 
 // // Importing services
-import BackendService from "./services/BackendService.js"
-import UserService from "./services/UserService.js"
-import DataService from "./services/DataService.js"
+// import BackendService from "./services/BackendService.js"
+// import UserService from "./services/UserService.js"
+// import DataService from "./services/DataService.js"
+import AuthService from "./services/AuthService.js"
 
 
 
@@ -56,12 +57,67 @@ app.config(function($stateProvider, $urlRouterProvider) {
       controller: 'AppCtrl'
     })
 
+
+    // ---------------------------
+    // Home
+    // ---------------------------
+
     .state('app.home', {
       url: '/home',
       views: {
         'menuContent': {
           templateUrl: 'templates/home.html',
           controller: 'HomeCtrl'
+        }
+      }
+    })
+
+    // ---------------------------
+    // user stuff
+    // ---------------------------
+
+    .state('app.user-profile', {
+      url: '/user-profile',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/user-profile.html',
+          controller: 'UserProfileCtrl'
+        }
+      }
+    })
+
+    .state('app.favorites', {
+      url: '/favorites',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/favorites.html',
+          controller: 'FavoritesCtrl'
+        }
+      }
+    })
+
+    .state('app.settings', {
+      url: '/settings',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/settings.html',
+          controller: 'SettingsCtrl'
+        }
+      }
+    })
+
+
+
+    // ---------------------------
+    // Category and products
+    // ---------------------------
+
+    .state('app.category', {
+      url: '/category/:categoryId',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/category.html',
+          controller: 'CategoryCtrl'
         }
       }
     })
@@ -76,26 +132,10 @@ app.config(function($stateProvider, $urlRouterProvider) {
       }
     })
 
-    .state('app.user-profile', {
-      url: '/user-profile',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/user-profile.html',
-          controller: 'UserProfileCtrl'
-        }
-      }
-    })
 
-    .state('app.category', {
-      url: '/category/:categoryId',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/category.html',
-          controller: 'CategoryCtrl'
-        }
-      }
-    })
-
+    // ---------------------------
+    // Auth
+    // ---------------------------
     .state('app.login', {
       url: '/login',
       views: {
@@ -116,25 +156,10 @@ app.config(function($stateProvider, $urlRouterProvider) {
       }
     })
 
-    // .state('app.products', {
-    //   url: '/products',
-    //   views: {
-    //     'menuContent': {
-    //       templateUrl: 'templates/products.html',
-    //       controller: 'ProductsCtrl'
-    //     }
-    //   }
-    // })
 
-    .state('app.favorites', {
-      url: '/favorites',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/favorites.html',
-          controller: 'FavoritesCtrl'
-        }
-      }
-    })
+    // ---------------------------
+    // Orders and cart
+    // ---------------------------
 
     .state('app.orders', {
       url: '/orders',
@@ -142,26 +167,6 @@ app.config(function($stateProvider, $urlRouterProvider) {
         'menuContent': {
           templateUrl: 'templates/orders.html',
           controller: 'OrdersCtrl'
-        }
-      }
-    })
-
-    .state('app.messages', {
-      url: '/messages',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/messages.html',
-          controller: 'MessagesCtrl'
-        }
-      }
-    })
-
-    .state('app.settings', {
-      url: '/settings',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/settings.html',
-          controller: 'SettingsCtrl'
         }
       }
     })
@@ -176,9 +181,34 @@ app.config(function($stateProvider, $urlRouterProvider) {
       }
     })
 
+    // this is the category.
+    // .state('app.products', {
+    //   url: '/products',
+    //   views: {
+    //     'menuContent': {
+    //       templateUrl: 'templates/products.html',
+    //       controller: 'ProductsCtrl'
+    //     }
+    //   }
+    // })
+
+    // We discussed about not having this anymore.
+    // .state('app.messages', {
+    //   url: '/messages',
+    //   views: {
+    //     'menuContent': {
+    //       templateUrl: 'templates/messages.html',
+    //       controller: 'MessagesCtrl'
+    //     }
+    //   }
+    // })
+
+
+
+
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/register');
+  $urlRouterProvider.otherwise('/app/home');
 });
 
 
@@ -202,11 +232,15 @@ app.controller("SingleOrderCtrl", SingleOrderCtrl);
 // Binding directives..
 app.directive("scrollWatch", scrollWatch);
 
-
+// factories
+app.factory("Auth", ["$firebaseAuth",
+  function($firebaseAuth) {
+    return $firebaseAuth();
+  }
+]);
 
 // Binding services..
-app.service("BackendService", BackendService);
-app.service("UserService", UserService);
-app.service("DataService", DataService);
-
-// Importing factories
+// app.service("BackendService", BackendService);
+// app.service("UserService", UserService);
+// app.service("DataService", DataService);
+app.service("AuthService", AuthService)
