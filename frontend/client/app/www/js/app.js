@@ -85,7 +85,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
         }
       },
       cache: false,
-      // resolve: { authenticate: authenticate }
+
     })
 
     .state('app.favorites', {
@@ -97,7 +97,6 @@ app.config(function($stateProvider, $urlRouterProvider) {
         }
       },
       cache: false,
-      // resolve: { authenticate: authenticate }
     })
 
     .state('app.settings', {
@@ -109,7 +108,6 @@ app.config(function($stateProvider, $urlRouterProvider) {
         }
       },
       cache: false,
-      // resolve: { authenticate: authenticate }
     })
 
 
@@ -150,6 +148,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
           controller: 'LoginCtrl'
         }
       },
+      cache: false,
     })
 
     .state('app.register', {
@@ -160,6 +159,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
           controller: 'RegisterCtrl'
         }
       },
+      cache: false,
     })
 
 
@@ -188,61 +188,13 @@ app.config(function($stateProvider, $urlRouterProvider) {
         }
       },
       cache: false,
-      // resolve: { authenticate: authenticate }
     })
-
-    // this is the category.
-    // .state('app.products', {
-    //   url: '/products',
-    //   views: {
-    //     'menuContent': {
-    //       templateUrl: 'templates/products.html',
-    //       controller: 'ProductsCtrl'
-    //     }
-    //   }
-    // })
-
-    // We discussed about not having this anymore.
-    // .state('app.messages', {
-    //   url: '/messages',
-    //   views: {
-    //     'menuContent': {
-    //       templateUrl: 'templates/messages.html',
-    //       controller: 'MessagesCtrl'
-    //     }
-    //   }
-    // })
-
-
 
 
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/app/home');
 });
-
-
-function authenticate($q, user, $state, $timeout, AuthService) {
-    if(!AuthService.isLoggedIn){
-      $state.go("app.login")
-    }
-
-    // if (user.isAuthenticated()) {
-    //   // Resolve the promise successfully
-    //   return $q.when()
-    // } else {
-    //   // The next bit of code is asynchronously tricky.
-    //
-    //   $timeout(function() {
-    //     // This code runs after the authentication promise has been rejected.
-    //     // Go to the log-in page
-    //     $state.go('logInPage')
-    //   })
-    //
-    //   // Reject the authentication promise to prevent the state from loading
-    //   return $q.reject()
-    // }
-}
 
 
 // Binding controllers..
@@ -265,11 +217,11 @@ app.controller("SingleOrderCtrl", SingleOrderCtrl);
 app.directive("scrollWatch", scrollWatch);
 
 // factories
-app.factory("Auth", ["$firebaseAuth",
-  function($firebaseAuth) {
-    return $firebaseAuth();
-  }
-]);
+// app.factory("Auth", ["$firebaseAuth",
+//   function($firebaseAuth) {
+//     return $firebaseAuth();
+//   }
+// ]);
 
 // Binding services..
 // app.service("BackendService", BackendService);

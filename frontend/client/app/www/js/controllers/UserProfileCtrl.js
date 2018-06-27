@@ -7,4 +7,9 @@ export default function UserProfileCtrl($scope, $stateParams, $state, AuthServic
     // stuff user profile here....
 
   }
+
+  $scope.logOut = () => {
+    AuthService.logOut();
+    $state.go("app.home");
+  }
 }
