@@ -83,7 +83,9 @@ app.config(function($stateProvider, $urlRouterProvider) {
           templateUrl: 'templates/user-profile.html',
           controller: 'UserProfileCtrl'
         }
-      }
+      },
+      cache: false,
+      // resolve: { authenticate: authenticate }
     })
 
     .state('app.favorites', {
@@ -93,7 +95,9 @@ app.config(function($stateProvider, $urlRouterProvider) {
           templateUrl: 'templates/favorites.html',
           controller: 'FavoritesCtrl'
         }
-      }
+      },
+      cache: false,
+      // resolve: { authenticate: authenticate }
     })
 
     .state('app.settings', {
@@ -103,7 +107,9 @@ app.config(function($stateProvider, $urlRouterProvider) {
           templateUrl: 'templates/settings.html',
           controller: 'SettingsCtrl'
         }
-      }
+      },
+      cache: false,
+      // resolve: { authenticate: authenticate }
     })
 
 
@@ -143,7 +149,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
           templateUrl: 'templates/login.html',
           controller: 'LoginCtrl'
         }
-      }
+      },
     })
 
     .state('app.register', {
@@ -153,7 +159,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
           templateUrl: 'templates/register.html',
           controller: 'RegisterCtrl'
         }
-      }
+      },
     })
 
 
@@ -168,7 +174,9 @@ app.config(function($stateProvider, $urlRouterProvider) {
           templateUrl: 'templates/orders.html',
           controller: 'OrdersCtrl'
         }
-      }
+      },
+      cache: false,
+      // resolve: { authenticate: authenticate }
     })
 
     .state('app.single-order', {
@@ -178,7 +186,9 @@ app.config(function($stateProvider, $urlRouterProvider) {
           templateUrl: 'templates/single-order.html',
           controller: 'SingleOrderCtrl'
         }
-      }
+      },
+      cache: false,
+      // resolve: { authenticate: authenticate }
     })
 
     // this is the category.
@@ -211,6 +221,28 @@ app.config(function($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/app/home');
 });
 
+
+function authenticate($q, user, $state, $timeout, AuthService) {
+    if(!AuthService.isLoggedIn){
+      $state.go("app.login")
+    }
+
+    // if (user.isAuthenticated()) {
+    //   // Resolve the promise successfully
+    //   return $q.when()
+    // } else {
+    //   // The next bit of code is asynchronously tricky.
+    //
+    //   $timeout(function() {
+    //     // This code runs after the authentication promise has been rejected.
+    //     // Go to the log-in page
+    //     $state.go('logInPage')
+    //   })
+    //
+    //   // Reject the authentication promise to prevent the state from loading
+    //   return $q.reject()
+    // }
+}
 
 
 // Binding controllers..

@@ -37,3 +37,6 @@ create and send reply.
 
 security.
 - ensure that the user logged in is the only one able to reply to stuff.
+
+
+Read trough the firestore auth..

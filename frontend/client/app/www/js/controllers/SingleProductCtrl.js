@@ -1,8 +1,16 @@
-export default function SingleProductCtrl($scope, $stateParams, $firebaseArray, $firebaseObject){
-
+export default function SingleProductCtrl(
+  $scope
+  , $stateParams
+  , $firebaseArray
+  , $firebaseObject
+  , Auth
+  , AuthService
+){
+  
   const db = firebase.database();
 
   const productId = $stateParams.productId;
+  const clientId = null;
 
   // PRODUCT
   $scope.product = $firebaseObject(db.ref("products/" + productId));
