@@ -20,7 +20,14 @@ export default class AuthService {
 
   }
 
-
+  // ---------------------
+  // Notify observers.
+  // ---------------------
+  onAuthStateChanged(observer){
+    this.authObj.$onAuthStateChanged(user => {
+      observer(user);
+    });
+  }
 
 
   // ---------------------

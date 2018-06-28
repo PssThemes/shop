@@ -26,6 +26,9 @@ import scrollWatch from "./directives/scrollWatch.js"
 // import DataService from "./services/DataService.js"
 import AuthService from "./services/AuthService.js"
 
+// // Importing directives
+import onEnter from "./directives/onEnter.js"
+
 
 
 
@@ -133,7 +136,8 @@ app.config(function($stateProvider, $urlRouterProvider) {
           templateUrl: 'templates/single-product.html',
           controller: 'SingleProductCtrl'
         }
-      }
+      },
+      cache: false,
     })
 
 
@@ -228,3 +232,6 @@ app.directive("scrollWatch", scrollWatch);
 // app.service("UserService", UserService);
 // app.service("DataService", DataService);
 app.service("AuthService", AuthService)
+
+// Directives
+app.service("onEnter", onEnter)

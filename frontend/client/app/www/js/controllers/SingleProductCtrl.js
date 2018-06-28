@@ -3,31 +3,42 @@ export default function SingleProductCtrl(
   , $stateParams
   , $firebaseArray
   , $firebaseObject
-  , Auth
   , AuthService
 ){
-  
+  console.log("SingleProductCtrl reinitialized..")
   const db = firebase.database();
 
   const productId = $stateParams.productId;
-  const clientId = null;
+
+  $scope.clientId = null;
+  AuthService.onAuthStateChanged(user => {
+    $scope.$apply(() => {
+      if(user){
+        $scope.clientId = user.uid;
+      }
+    });
+  });
 
   // PRODUCT
   $scope.product = $firebaseObject(db.ref("products/" + productId));
 
-
   // PRODUCT REVIEWS
   $scope.reviews = $firebaseArray(db.ref("products/" + productId + "/reviews"));
 
-  $scope.saveReview = (message, value) => {
-    const review = {
-      clientId : "fake client id",
-      date: Date.now(),
-      message: message,
-      replies: [],
-      value : value
+
+  $scope.saveReview = (message, nrOfStars) => {
+    if($scope.clientId){
+
+      const review = {
+        clientId : $scope.clientId,
+        date: Date.now(),
+        message: message,
+        replies: [],
+        value : nrOfStars
+      };
+
+      $scope.reviews.$add(review);
     }
-    $scope.reviews.$add(review)
   }
 
   $scope.longDescription = "The Apple Watch, with its inbuilt speaker and microphone, gives you the freedom to call your friends directly from your wrist. This splash-resistant smartwatch features an S1P dual-core processor for a fast and smooth performance. It has a digital crown, along with a heart rate sensor, gyroscope, ambient light sensor and an accelerometer. Its Rose Gold aluminium case and Midnight Blue strap further add to its appeal.";
@@ -49,7 +60,7 @@ export default function SingleProductCtrl(
   }
 
 
-  // Logged in client can reply to a review.
+  // The logged in client can reply to a review.
   $scope.reviewInFocus = null;
 
   $scope.toggleReply = reviewId => {
@@ -60,19 +71,47 @@ export default function SingleProductCtrl(
     }
   }
 
-  $scope.thisReviewIsInReplyMode = reviewId => {
-    return $scope.reviewInFocus == reviewId;
+
+  $scope.userCanReply = (reviewId) => {
+    // ensures that only the logged in user has the right to reply to it's own messages.
+    const creatorOfThisReview = $scope.reviews.$getRecord(reviewId).clientId;
+    const currentAuthenticatedUser = $scope.clientId;
+    if(!currentAuthenticatedUser){
+      return false;
+    }
+
+    return currentAuthenticatedUser == creatorOfThisReview;
   }
 
-  // TODO ensure that only the logged in user has the right to reply to it's own messages.
+  $scope.sendReply = (reviewId, message) => {
+    console.log("hmm: ", reviewId, message);
+    if($scope.clientId){
 
-  $scope.reply = (reviewId, message) => {
-    $scope.product.reviews[reviewId].replies.push({
-      who: "client",
-      text: message
-    });
+      const productId = $scope.product.$id;
 
-    $scope.product.$save();
+      const reply = {
+        who: "client",
+        text: message
+      };
+
+      // comnstruct a reference to the replies of this product.
+      const repliesRef = db.ref(`products/${productId}/reviews/${reviewId}/replies`);
+
+      // comnstruct a reference to the replies of this product.
+      const newReplyKey = repliesRef.push().key;
+      repliesRef.child(newReplyKey).set(reply);
+
+    }
+
+  }
+
+  $scope.replyIsActiveAndUserCanComment = (reviewId) => {
+
+    const thisReviewIsInReplyMode = $scope.reviewInFocus == reviewId;
+    const userCanReply = $scope.userCanReply(reviewId);
+
+    return thisReviewIsInReplyMode && userCanReply;
+
   }
 
 }

@@ -45,12 +45,26 @@ Read trough the firestore auth..
 Ok so today:
 
 
-Login
+Login DONE.
 - finish the form validation for Login page.
 
-Register
+Register DONE.
 - finish the form validation there..
 - show errors
   - add dom elements for errors.
   - add logic for displaing that errors individually for each input.
   - add a shared error that comes form firebase as a result of the  registration process.
+
+
+
+
+Product page:
+
+- Leave review if you are a logged in user functionality
+
+
+
+
+
+
+--
