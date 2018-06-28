@@ -4,21 +4,29 @@ export default function LoginCtrl($scope,$state, $stateParams, AuthService){
     $state.go("app.user-profile")
   }
 
-  $scope.emailError = "";
-  $scope.passwordError = "";
+  $scope.login = (email_, password_) => {
 
-  $scope.login = (email, password) => {
+    const email = email_ || "";
+    const password = password_ || "";
 
-    console.log(email, password);
+    $scope.emailError = "";
+    $scope.passwordError = "";
+    $scope.firebaseError = "";
 
-    if(!validEmail(email)){
-      $scope.emailError = "bad email"
+    const { emailIsValid, emailError } = validateEmail(email);
+    const { passwordIsValid, passwordError } = validatePassword(password);
+
+    const allValid =
+      emailIsValid
+      && passwordIsValid;
+
+    if(!emailIsValid){
+      $scope.emailError = emailError;
     }
 
-    if(!validPassword(password)){
-      $scope.passwordError = "bad password"
+    if(!passwordIsValid){
+      $scope.passwordError = passwordError;
     }
-
 
     AuthService.login(email, password)
       .then(() => {
@@ -30,19 +38,23 @@ export default function LoginCtrl($scope,$state, $stateParams, AuthService){
         });
       });
 
-    $scope.emailError = "";
-    $scope.passwordError = "";
-    $scope.firebaseError = "";
-
   };
 
 }
 
-
-function validEmail(){
-  return true;
+function validateEmail(email){
+  if(email == ""){
+    return { emailIsValid: false, emailError: "hey:) email is empty!!"};
+  }else{
+    return { emailIsValid: true, emailError: ""};
+  }
 }
 
-function validPassword(){
-  return true;
+
+function validatePassword(password){
+  if(password == ""){
+    return { passwordIsValid: false, passwordError: "hey you forgot the password."};
+  }else{
+    return { passwordIsValid: true, passwordError: ""};
+  }
 }

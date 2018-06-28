@@ -34,7 +34,7 @@ export default class AuthService {
         .then(() => resolve())
         .catch(error =>  {
 
-          const errorMessage = "";
+          let errorMessage = "";
 
           // TODO: look up the error codes in firebase and create the appropriate messages for each.
           if(error.code == "auth/argument-error"){
@@ -82,7 +82,7 @@ export default class AuthService {
 
       }).catch(function(error) {
 
-        const errorMessage = "";
+        let errorMessage = "";
         // TODO: look up the error codes in firebase and create the appropriate messages for each.
 
         if(error.code == "auth/argument-error"){

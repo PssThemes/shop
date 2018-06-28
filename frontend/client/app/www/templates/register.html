@@ -4,30 +4,49 @@
         <div style="background:url('img/lion.png')no-repeat center center; background-size:cover;height:170px;width:100%;"></div>
         <div class="p-50">
           <h4 class="text-center m-b-30">Create Account</h4>
+
+          <!-- Name -->
           <div class="relative border-b m-b-30">
-              <input type="text" class="inputText border-bottom3 no-focus" required ng-model="name"/>
-              <span class="floating-label text-gray">Your full name</span>
-            </div>
+            <input type="text" class="inputText border-bottom3 no-focus" required ng-model="name"/>
+            <span class="floating-label text-gray">Your full name</span>
+          </div>
+          <p>{{ nameError }}</p>
+
+
+          <!-- Email -->
           <div class="relative border-b m-b-30">
-              <input type="text" class="inputText border-bottom3 no-focus" required ng-model="email"/>
-              <span class="floating-label text-gray">Your email address</span>
-            </div>
-            <div class="relative border-b m-b-30">
-                <input type="password" class="inputText border-bottom3 no-focus" required ng-model="password1"/>
-                <span class="floating-label text-gray">Your password</span>
-            </div>
-            <div class="relative border-b m-b-30">
-                <input type="password" class="inputText border-bottom3 no-focus" required ng-model="password2"/>
-                <span class="floating-label text-gray">Confirm password</span>
-            </div>
+            <input type="text" class="inputText border-bottom3 no-focus" required ng-model="email"/>
+            <span class="floating-label text-gray">Your email address</span>
+          </div>
+          <p>{{ emailError }}</p>
+
+
+          <!-- Password 1-->
+          <div class="relative border-b m-b-30">
+            <input type="password" class="inputText border-bottom3 no-focus" required ng-model="password1"/>
+            <span class="floating-label text-gray">Your password</span>
+          </div>
+
+          <!-- Password 2 -->
+          <div class="relative border-b m-b-30">
+            <input type="password" class="inputText border-bottom3 no-focus" required ng-model="password2"/>
+            <span class="floating-label text-gray">Confirm password</span>
+          </div>
+          <p>{{ passwordError }}</p>
+
+          <!-- Backend messages about validation. -->
+          <p>{{ backendWarningMessage }}</p>
+          <p>{{ backendErrorMessage }}</p>
+
 
           <!-- Register Button -->
           <div class="text-center m-t-50">
-              <button
-                ng-click="register(name, email, password1, password2)"
-                class="text-blue border-blue round bg-tr p-l-20 p-r-20 p-t-5 p-b-5 cap fw-500 fs-14">register
-              </button>
+            <button
+              ng-click="register(name, email, password1, password2)"
+              class="text-blue border-blue round bg-tr p-l-20 p-r-20 p-t-5 p-b-5 cap fw-500 fs-14">register
+            </button>
           </div>
+
 
           <!-- Sign in button. -->
           <span class="ftext-gray op-5 block center p-t-50">Already have an account? <a ui-sref="app.login" class="cap">sign in</a></span>
