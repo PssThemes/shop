@@ -25,6 +25,7 @@ import scrollWatch from "./directives/scrollWatch.js"
 // import UserService from "./services/UserService.js"
 // import DataService from "./services/DataService.js"
 import AuthService from "./services/AuthService.js"
+import RecentlyViewedProductsService from "./services/RecentlyViewedProductsService.js"
 
 // // Importing directives
 import onEnter from "./directives/onEnter.js"
@@ -232,6 +233,7 @@ app.directive("scrollWatch", scrollWatch);
 // app.service("UserService", UserService);
 // app.service("DataService", DataService);
 app.service("AuthService", AuthService)
+app.service("RecentlyViewedProductsService", RecentlyViewedProductsService)
 
 // Directives
 app.service("onEnter", onEnter)

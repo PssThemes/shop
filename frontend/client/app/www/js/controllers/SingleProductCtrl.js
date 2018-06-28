@@ -4,11 +4,12 @@ export default function SingleProductCtrl(
   , $firebaseArray
   , $firebaseObject
   , AuthService
+  , RecentlyViewedProductsService
 ){
   console.log("SingleProductCtrl reinitialized..")
   const db = firebase.database();
-
   const productId = $stateParams.productId;
+
 
   $scope.clientId = null;
   AuthService.onAuthStateChanged(user => {
@@ -19,8 +20,14 @@ export default function SingleProductCtrl(
     });
   });
 
+  // Load the recently viewd products form a service where we store them.
+  $scope.recentlyViewedProducts = RecentlyViewedProductsService.getLastProducts();
+
+
   // PRODUCT
   $scope.product = $firebaseObject(db.ref("products/" + productId));
+
+  RecentlyViewedProductsService.addProduct($scope.product);
 
   // PRODUCT REVIEWS
   $scope.reviews = $firebaseArray(db.ref("products/" + productId + "/reviews"));

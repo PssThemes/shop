@@ -1,7 +1,4 @@
 <ion-content id="scrollContent" scroll-watch>
-
-            {{reviews | json}}
-            <br>
             <hr class="bg-gray op-2">
             <hr class="bg-gray op-2">
 
@@ -139,46 +136,23 @@
           <h4 class="p-20 m-b-0 p-b-10 text-gray fw-100">Recently Viewed Products <span class="right"><span class="lnr lnr-arrow-right"></span></span></h4>
 
           <ion-scroll direction="x" class="scroll-area products-scroll row">
-                  <div class="col col-90 inline relative text-center border p-b-20">
-                          <img src="https://demo2.chethemes.com/multimarket/wp-content/uploads/2017/07/1.1_720x660-300x300.jpg" width="50%">
-                          <h4 class="product-price">$220</h4>
-                          <p class="wrap">American Tourister Expandable Check-in Luggage <br> 21 inch (Purple)</p>
-                          <a href="#"><button class="button button-outline button-positive round-big">
-                                  Details
-                                </button></a>
-                      </div>
-                      <div class="col col-90 inline relative text-center border p-b-20">
-                              <img src="https://demo2.chethemes.com/multimarket/wp-content/uploads/2017/07/2_720x6601-300x300.jpg" width="50%">
-                              <h4 class="product-price">$220</h4>
-                          <p class="wrap">American Tourister Expandable Check-in Luggage <br> 21 inch (Purple)</p>
-                          <button class="button button-outline button-positive round-big">
-                                  Details
-                                </button>
-                          </div>
-                          <div class="col col-90 inline relative text-center border p-b-20">
-                                  <img src="https://demo2.chethemes.com/multimarket/wp-content/uploads/2017/07/3_720x660-300x300.jpg" width="50%">
-                                  <h4 class="product-price">$220</h4>
-                          <p class="wrap">American Tourister Expandable Check-in Luggage <br> 21 inch (Purple)</p>
-                          <button class="button button-outline button-positive round-big">
-                                  Details
-                                </button>
-                              </div>
-                              <div class="col col-90 inline relative text-center border p-b-20">
-                                      <img src="https://demo2.chethemes.com/multimarket/wp-content/uploads/2017/07/4_720x660-300x300.jpg" width="50%">
-                                      <h4 class="product-price">$220</h4>
-                          <p class="wrap">American Tourister Expandable Check-in Luggage <br> 21 inch (Purple)</p>
-                          <button class="button button-outline button-positive round-big">
-                                  Details
-                                </button>
-                                  </div>
-                                 <div class="col col-90 inline relative text-center border p-b-20">
-                                          <img src="https://demo2.chethemes.com/multimarket/wp-content/uploads/2017/07/5_720x6604-300x300.jpg" width="50%">
-                                          <h4 class="product-price">$220</h4>
-                          <p class="wrap">American Tourister Expandable Check-in Luggage <br> 21 inch (Purple)</p>
-                          <button class="button button-outline button-positive round-big">
-                                  Details
-                                </button>
-                          </div>
+
+
+                  <div
+                    ng-repeat="recentProduct in recentlyViewedProducts"
+                    class="col col-90 inline relative text-center border p-b-20">
+                      <img src="https://demo2.chethemes.com/multimarket/wp-content/uploads/2017/07/1.1_720x660-300x300.jpg" width="50%">
+                      <h4 class="product-price">{{recentProduct.price | currency }}</h4>
+                      <p class="wrap">{{recentProduct.name}}</p>
+                      <p class="wrap">{{recentProduct.short_description}}</p>
+                      <a href="#">
+                        <button class="button button-outline button-positive round-big">
+                              Details
+                        </button>
+                      </a>
+                  </div>
+
+
           </ion-scroll>
 
           <div class="bg-dark text-gray p-t-20 p-b-20 text-center cap fs-12">&copy; all rights reserved</div>
