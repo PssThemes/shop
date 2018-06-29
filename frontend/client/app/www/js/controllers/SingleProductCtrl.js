@@ -20,6 +20,10 @@ export default function SingleProductCtrl(
     });
   });
 
+  $scope.isFavorite = AuthService.isFavorite;
+  $scope.toggleFavorite = AuthService.toggleFavorite;
+
+
   // Load the recently viewd products form a service where we store them.
   $scope.recentlyViewedProducts = RecentlyViewedProductsService.getLastProducts();
 
@@ -113,12 +117,9 @@ export default function SingleProductCtrl(
   }
 
   $scope.replyIsActiveAndUserCanComment = (reviewId) => {
-
     const thisReviewIsInReplyMode = $scope.reviewInFocus == reviewId;
     const userCanReply = $scope.userCanReply(reviewId);
-
     return thisReviewIsInReplyMode && userCanReply;
-
   }
 
   $scope.addToFavorites = () => {

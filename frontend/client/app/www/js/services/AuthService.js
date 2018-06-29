@@ -1,10 +1,14 @@
 export default class AuthService {
 
-  constructor($firebaseAuth){
+  constructor($firebaseAuth, $firebaseObject){
 
     this.authObj = $firebaseAuth();
+    this.$firebaseObject = $firebaseObject;
+
     this.isLoggedIn = false;
     this.user = null;
+    this.userProfile = null;
+
 
     this.authObj.$onAuthStateChanged(user =>  {
       console.log("$onAuthStateChanged",user)
@@ -21,11 +25,56 @@ export default class AuthService {
   }
 
   // ---------------------
+  // Favorite functionaity..
+  // ---------------------
+
+  isFavorite(productId){
+    console.log('isFavorite');
+    if(this.user){
+      return productId in this.user;
+    }else{
+      return false;
+    }
+  }
+
+  addProductToFavorites(productId){
+    firebase.database
+      .ref("users")
+      .child(this.user.uid)
+      .child("favorites")
+      .child(productId)
+      .set(productId);
+  }
+
+  removeProductFromFavorites(productId){
+    firebase.database
+      .ref("users")
+      .child(this.user.uid)
+      .child("favorites")
+      .child(productId)
+      .set(null);
+  }
+
+  toggleFavorite(productId){
+    console.log('toggleFavorite');
+    console.log(this)
+    if(this.isFavorite(productId)) {
+      this.removeProductFromFavorites(productId).bind(this);
+    } else {
+      this.addProductToFavorites(productId).bind(this);
+    }
+  }
+
+  // ---------------------
   // Notify observers.
   // ---------------------
   onAuthStateChanged(observer){
     this.authObj.$onAuthStateChanged(user => {
       observer(user);
+
+      const userProfileRef = firebase.database().ref("users/" + user.uid);
+      this.userProfile = this.$firebaseObject(userProfileRef);
+
     });
   }
 
@@ -98,10 +147,8 @@ export default class AuthService {
 
         if(error.code == "auth/argument-error"){
           errorMessage = "development error: please contact your admin.";
-
         }else if(false){
           errorMessage = "another crappy error";
-
         }else{
           errorMessage = `problem with your registration: ${error.message}`;
         }

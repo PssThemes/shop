@@ -8,11 +8,7 @@ export default function UserProfileCtrl($scope, $stateParams, $state, AuthServic
     $state.go("app.login");
   }else{
     $scope.user = AuthService.user;
-
-    // sync the user profile
-    const userProfileRef = firebase.database().ref("users/" + $scope.user.uid);
-    $scope.userProfile = $firebaseObject(userProfileRef);
-
+    $scope.userProfile = AuthService.userProfile;
   }
 
 
@@ -20,15 +16,7 @@ export default function UserProfileCtrl($scope, $stateParams, $state, AuthServic
     AuthService.logOut();
     $state.go("app.home");
   }
-  // 
-  // $scope.getEmail = () => {
-  //   if($scope.userProfile && $scope.userProfile.email){
-  //     return $scope.userProfile.email;
-  //   }else{
-  //     return "";
-  //   }
-  // }
-
+  
   $scope.getPhone = () => {
     if($scope.userProfile){
       if($scope.userProfile.phone == ""){
