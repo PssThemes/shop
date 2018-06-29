@@ -63,8 +63,29 @@ Product page:
 - Leave review if you are a logged in user functionality
 
 
+Today 29 june.
+
+Finish the product page first.
+- add 2 more fake products in firebase.
+- check to see if recently viewd functionality is working.. and most importantly if is working in real time.. meaning if i can update something in firebase.. and then it changes in recently viewed products.
+
+
+Think about how to do the chart / orders thing.
+Implement the shopping cart.. and also send order functionality.
+
+Load all products for a category.
 
 
 
+Fix the user profiule page.
 
---
+//
+then link the links form user profile to onther places..
+
+///////////////
+setup the  address.
+setup email..
+setup the phone number.
+
+
+// create user profile upon registration.

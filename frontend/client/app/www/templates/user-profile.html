@@ -1,117 +1,123 @@
 <ion-content id="scrollContent" scroll-watch>
 
+  <div class="" ng-if="user">
+    <!-- profile -->
+    <div class="text-center">
 
-            <!-- profile -->
-            <div class="text-center">
-                <div class="p-t-20">
-                  <div style= "background:url(https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=65637aae99eae772b72846f6daf9d31c&auto=format&fit=crop&w=751&q=80)no-repeat; background-size:cover; background-position: center; width:100px; height:100px;" class="round inline relative">
-                    <span class="inline bg-positive round p-5 absolute bottom-0 border-white right-20"></span>
-                  </div>
-                </div>
+        <!-- User image -->
+        <div class="p-t-20">
+          <div style= "background:url({{ userProfile.profileImage }})no-repeat; background-size:cover; background-position: center; width:100px; height:100px;" class="round inline relative">
+            <span class="inline bg-positive round p-5 absolute bottom-0 border-white right-20"></span>
+          </div>
+        </div>
 
-                <h4 class="cap">alisa robertson</h4>
-                <div class="row row-center p-l-20 p-r-20 border-t p-t-10 m-t-20">
-                  <div class="col-60">
-                    <p class="cap op-5 v-center"><img src="img/icons/region-code.png"> &nbsp; san francisco, CA</p>
-                  </div>
-                  <div class="col-40 text-right">
-                    <img src="img/icons/settings.png" class="border-l p-10">
-                  </div>
-                </div>
-                <div class="row row-center p-l-20 p-r-20 border-t p-t-10 m-t-20">
-                  <div class="col-60">
-                    <p class="op-5 v-center"><img src="img/icons/secured-letter2.png"> &nbsp; alisa_robn@gmail.com</p>
-                  </div>
-                  <div class="col-40 text-right">
-                    <img src="img/icons/settings.png" class="border-l p-10">
-                  </div>
-                </div>
-                <div class="row row-center p-l-20 p-r-20 border-t p-t-10 m-t-20">
-                  <div class="col-60">
-                    <p class="op-5 v-center"><img src="img/icons/phone.png"> &nbsp; +24 737 373 828</p>
-                  </div>
-                  <div class="col-40 text-right">
-                    <img src="img/icons/settings.png" class="border-l p-10">
-                  </div>
-                </div>
+        <!-- User name -->
+        <h4 class="cap">{{ userProfile.name }}</h4>
 
-            </div>
 
-            <div class="bg-light p-t-5 p-b-5 m-b-10"></div>
+        <!-- User address -->
+        <div class="row row-center p-l-20 p-r-20 border-t p-t-10 m-t-20">
+          <div class="col-60">
+            <p class="op-5 v-center"><img src="img/icons/region-code.png"> &nbsp; {{ getAddress() }}</p>
+          </div>
+        </div>
 
-            <div class="p-b-20">
-            <div class="p-t-0">
-              <div class="row v-center border-b">
-                <div class="col-10">
-                  <img src="img/icons/like.png" class="p-l-10">
-                </div>
-                <div class="col-80">
-                  <p class="text-left text-gray up p-l-20 m-t-10">my favorites</p>
-                </div>
-                <div class="col-10">
-                  <img src="img/icons/chevron-right.png">
-                </div>
-              </div>
-            </div>
-            <div class="p-t-0">
-              <div class="row v-center bg-white border-b">
-                <div class="col-10">
-                  <img src="img/icons/shopping-cart.png" class="p-l-10">
-                </div>
-                <div class="col-80">
-                  <p class="text-left text-gray up p-l-20 m-t-10">my orders</p>
-                </div>
-                <div class="col-10">
-                  <img src="img/icons/chevron-right.png">
-                </div>
-              </div>
-            </div>
-            <div class="p-t-0">
-              <div class="row v-center bg-white border-b">
-                <div class="col-10">
-                  <img src="img/icons/secured-letter.png" class="p-l-10">
-                </div>
-                <div class="col-80">
-                  <p class="text-left text-gray up p-l-20 m-t-10">my messages</p>
-                </div>
-                <div class="col-10">
-                  <img src="img/icons/chevron-right.png">
-                </div>
-              </div>
-            </div>
+        <!-- User email -->
+        <div class="row row-center p-l-20 p-r-20 border-t p-t-10 m-t-20">
+          <div class="col-60">
+            <p class="op-5 v-center"><img src="img/icons/secured-letter2.png"> &nbsp; {{ userProfile.email }}</p>
+          </div>
+        </div>
 
-            <div class="p-t-0">
-              <div class="row v-center bg-white border-b">
-                <div class="col-10">
-                  <img src="img/icons/settings.png" class="p-l-10">
-                </div>
-                <div class="col-80">
-                  <p class="text-left text-gray up p-l-20 m-t-10">settings</p>
-                </div>
-                <div class="col-10">
-                  <img src="img/icons/chevron-right.png">
-                </div>
-              </div>
-            </div>
+        <!-- User phone -->
+        <div class="row row-center p-l-20 p-r-20 border-t p-t-10 m-t-20">
+          <div class="col-60">
+            <p class="op-5 v-center"><img src="img/icons/phone.png"> &nbsp; {{ getPhone() }}</p>
+          </div>
+        </div>
 
-            <div class="p-t-0" ng-click="logOut()">
-              <div class="row v-center bg-white border-b">
-                <div class="col-10">
-                  <!-- TODO: change this settings icon.. does not fit with logout stuff. -->
-                  <img src="img/icons/settings.png" class="p-l-10">
-                </div>
-                <div class="col-80">
-                  <p class="text-left text-gray up p-l-20 m-t-10">log out</p>
-                </div>
-                <div class="col-10">
-                  <img src="img/icons/chevron-right.png">
-                </div>
-              </div>
-            </div>
-          </div><!-- end list tabs -->
+    </div>
 
-          <!-- Log out -->
-          <!-- <button type="button" > </button> -->
-          <div class="p-b-50"></div>
+    <div class="bg-light p-t-5 p-b-5 m-b-10"></div>
+
+    <div class="p-b-20">
+
+
+    <!-- Favorites  -->
+    <a ui-sref="app.favorites">
+      <div class="p-t-0">
+        <div class="row v-center border-b">
+          <div class="col-10">
+            <img src="img/icons/like.png" class="p-l-10">
+          </div>
+          <div class="col-80">
+            <p class="text-left text-gray up p-l-20 m-t-10">my favorites</p>
+          </div>
+          <div class="col-10">
+            <img src="img/icons/chevron-right.png">
+          </div>
+        </div>
+      </div>
+    </a>
+
+
+    <!-- Orders  -->
+    <a ui-sref="app.orders">
+      <div class="p-t-0">
+        <div class="row v-center bg-white border-b">
+          <div class="col-10">
+            <img src="img/icons/shopping-cart.png" class="p-l-10">
+          </div>
+          <div class="col-80">
+            <p class="text-left text-gray up p-l-20 m-t-10">my orders</p>
+          </div>
+          <div class="col-10">
+            <img src="img/icons/chevron-right.png">
+          </div>
+        </div>
+      </div>
+    </a>
+
+
+    <!-- Settings  -->
+    <a ui-sref="app.settings">
+      <div class="p-t-0">
+        <div class="row v-center bg-white border-b">
+          <div class="col-10">
+            <img src="img/icons/settings.png" class="p-l-10">
+          </div>
+          <div class="col-80">
+            <p class="text-left text-gray up p-l-20 m-t-10">settings</p>
+          </div>
+          <div class="col-10">
+            <img src="img/icons/chevron-right.png">
+          </div>
+        </div>
+      </div>
+    </a>
+
+
+    <!-- Log out  -->
+    <div class="p-t-0" ng-click="logOut()">
+      <div class="row v-center bg-white border-b">
+        <div class="col-10">
+          <!-- TODO: change this settings icon.. does not fit with logout stuff. -->
+          <img src="img/icons/settings.png" class="p-l-10">
+        </div>
+        <div class="col-80">
+          <p class="text-left text-gray up p-l-20 m-t-10">log out</p>
+        </div>
+        <div class="col-10">
+          <img src="img/icons/chevron-right.png">
+        </div>
+      </div>
+    </div>
+  </div><!-- end list tabs -->
+
+  <!-- Log out -->
+  <!-- <button type="button" > </button> -->
+  <div class="p-b-50"></div>
+  </div>
+
 
 </ion-content>

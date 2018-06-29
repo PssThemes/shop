@@ -4,6 +4,12 @@ export default function LoginCtrl($scope,$state, $stateParams, AuthService){
     $state.go("app.user-profile")
   }
 
+  AuthService.onAuthStateChanged(user => {
+    if(user){
+      $state.go("app.user-profile")
+    }
+  });
+
   $scope.login = (email_, password_) => {
 
     const email = email_ || "";

@@ -69,6 +69,7 @@ export default class AuthService {
   // ---------------------
   // Register stuff.
   // ---------------------
+  // TODO: i need to create functionality for creating a user profile inside firebase database too.
 
   register(name, email, password){
     return new Promise ((resolve,reject) => {
@@ -87,19 +88,22 @@ export default class AuthService {
           resolve("we created your account but please reconfigure your display name form settings");
         })
 
+        // create user an profile, since firbase auth is a different thing.
+        createNewUserProfile(user);
+
       }).catch(function(error) {
 
         let errorMessage = "";
         // TODO: look up the error codes in firebase and create the appropriate messages for each.
 
         if(error.code == "auth/argument-error"){
-          errorMessage = "development error: please contact your admin."
+          errorMessage = "development error: please contact your admin.";
 
         }else if(false){
-          errorMessage = "another crappy error"
+          errorMessage = "another crappy error";
 
         }else{
-          errorMessage = `problem with your registration: ${error.message}`
+          errorMessage = `problem with your registration: ${error.message}`;
         }
 
         reject(errorMessage);
@@ -134,4 +138,38 @@ export default class AuthService {
     }
   }
 
+}
+
+function createNewUserProfile(user){
+  if(user){
+
+    const userProfile = {
+      name: user.displayName || "mr anonim",
+      email: user.email,
+      isBlocked: false,
+      phone: "",
+
+      // setup a dummy image if firbase does not supply one.
+      profileImage: user.photoURL || "./img/avatar.jpg",
+
+      uid: user.uid,
+      address: {
+        city: "",
+        country: "",
+        more: "",
+        postalCode: "",
+        state: "",
+        street: "",
+      }
+    };
+
+    const usersRef = firebase.database().ref("users");
+
+    usersRef.child(user.uid)
+      .set(userProfile)
+      .catch(err => {
+        console.log("could not create user profile: ", err);
+      });
+
+  }
 }

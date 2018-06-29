@@ -141,15 +141,18 @@
                   <div
                     ng-repeat="recentProduct in recentlyViewedProducts"
                     class="col col-90 inline relative text-center border p-b-20">
-                      <img src="https://demo2.chethemes.com/multimarket/wp-content/uploads/2017/07/1.1_720x660-300x300.jpg" width="50%">
+                      <img ng-src={{recentProduct.mainProductImage}} width="50%">
                       <h4 class="product-price">{{recentProduct.price | currency }}</h4>
                       <p class="wrap">{{recentProduct.name}}</p>
                       <p class="wrap">{{recentProduct.short_description}}</p>
-                      <a href="#">
+
+                      <!-- Go to details. -->
+                      <a ui-sref="app.single-product({ productId : recentProduct.$id })">
                         <button class="button button-outline button-positive round-big">
                               Details
                         </button>
                       </a>
+
                   </div>
 
 

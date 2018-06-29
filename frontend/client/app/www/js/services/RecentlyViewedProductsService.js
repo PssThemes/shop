@@ -1,10 +1,10 @@
 export default class RecentlyViewedProductsService {
   constructor(){
-    this.products = [];
+    this.products = {};
   }
 
   addProduct(product){
-    this.products.push(product);
+    this.products[product.$id] = product;
   }
 
   getLastProducts(){
