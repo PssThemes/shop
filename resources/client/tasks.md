@@ -89,3 +89,47 @@ setup the phone number.
 
 
 // create user profile upon registration.
+
+
+
+// Working on the favorites page.
+- decide what adding something to favirite means
+  - most problably we just going to add a product id(firebase push key) to a list of favorites on our profile.
+- when on favorites page.. check first if the user is logged in.
+- if he is logged in, then create a binding to the favorites object... we do that with firebase Array 3 way databinding.
+- after that.. for each product in favorites.. i need to load and create a call for getting that specific product out.
+
+- i need that to be real time also.. so i need an objects with productId's as keys .. aand also a connection for each of them to a firebnase object.
+
+{key: $firebaseObject(ofProduct.)}
+
+this way any product will be real time.
+but i need to do this with some diffing mechanism..
+
+or just build a service.. and if we already have a product..
+we can listen for an on value event..
+then grab that list of product ids..
+
+when it comes back.. then map over each one.. and load the product into a service called FavoriteProductsService.
+
+and this service.. is just keeping a real live reference to each product.. and we then in the favorites.. ups..not good.
+we need to do this in controller also .. no point for creating a service just for this.. i mean.. i just don't see the point since it will only be accessed on favorites page.
+
+but i need that value event.
+and do a diffing..
+on the object.
+
+i need a method .. key exists.
+if key exists.. then i don't create a new reference for that product..
+if it doesn't then we create one.
+
+
+
+// add functionalty to product such that we can add it to favoites.
+1. ensure a user is logged in before adding that add to favorites button.
+2. create a dom element for it.
+3. add an ng-click on is with function name: addToFavorites(productId)
+4. grab the uid form the AuthService.
+
+
+MOVE USER PROFGILE IN AUTH SERVICE.

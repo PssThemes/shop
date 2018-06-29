@@ -15,6 +15,7 @@
 
               <h4 class="m-t-0">{{product.name}}
                 <a class="v-center right fs-12 fw-500 up bg-positive text-white round p-t-5 p-b-5 p-l-15 p-r-15"> add to cart</a>
+                <a ng-click="addToFavorites(product.$id)" class="v-center right fs-12 fw-500 up bg-positive text-white round p-t-5 p-b-5 p-l-15 p-r-15"> add to favorites</a>
               </h4>
 
               <p class="right text-blue absolute right-20 fs-18 fw-500">{{product.price | currency}}</p>
