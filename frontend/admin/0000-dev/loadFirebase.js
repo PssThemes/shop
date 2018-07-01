@@ -29,7 +29,7 @@ const productRef = (id) => {
   return db.ref("/products/" + id);
 }
 
-// create3FakeProducts();
+create3FakeProducts();
 
 function create3FakeProducts(){
   const p1 = createDummyProduct("Monitor");
@@ -116,7 +116,7 @@ const usersProfilesRef = () => {
   return db.ref("/users");
 }
 
-create3DummyUserProfiles()
+// create3DummyUserProfiles()
 
 function create3DummyUserProfiles(){
   console.log("create3DummyUserProfiles..")

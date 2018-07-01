@@ -17,5 +17,5 @@ export default function CategoryCtrl($scope, $timeout, $stateParams, $firebaseAr
     .limitToFirst(30);
 
   $scope.productsForThisCategory = $firebaseArray(first30Products);
-
+  console.log("$scope.productsForThisCategory: ", $scope.productsForThisCategory);
 }

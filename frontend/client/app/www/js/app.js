@@ -21,9 +21,14 @@ import scrollWatch from "./directives/scrollWatch.js"
 
 
 // // Importing services
-import BackendService from "./services/BackendService.js"
-import UserService from "./services/UserService.js"
-import DataService from "./services/DataService.js"
+// import BackendService from "./services/BackendService.js"
+// import UserService from "./services/UserService.js"
+// import DataService from "./services/DataService.js"
+import AuthService from "./services/AuthService.js"
+import RecentlyViewedProductsService from "./services/RecentlyViewedProductsService.js"
+
+// // Importing directives
+import onEnter from "./directives/onEnter.js"
 
 
 
@@ -56,6 +61,11 @@ app.config(function($stateProvider, $urlRouterProvider) {
       controller: 'AppCtrl'
     })
 
+
+    // ---------------------------
+    // Home
+    // ---------------------------
+
     .state('app.home', {
       url: '/home',
       views: {
@@ -66,15 +76,9 @@ app.config(function($stateProvider, $urlRouterProvider) {
       }
     })
 
-    .state('app.single-product', {
-      url: '/single-product/:productId',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/single-product.html',
-          controller: 'SingleProductCtrl'
-        }
-      }
-    })
+    // ---------------------------
+    // user stuff
+    // ---------------------------
 
     .state('app.user-profile', {
       url: '/user-profile',
@@ -83,8 +87,38 @@ app.config(function($stateProvider, $urlRouterProvider) {
           templateUrl: 'templates/user-profile.html',
           controller: 'UserProfileCtrl'
         }
-      }
+      },
+      cache: false,
+
     })
+
+    .state('app.favorites', {
+      url: '/favorites',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/favorites.html',
+          controller: 'FavoritesCtrl'
+        }
+      },
+      cache: false,
+    })
+
+    .state('app.settings', {
+      url: '/settings',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/settings.html',
+          controller: 'SettingsCtrl'
+        }
+      },
+      cache: false,
+    })
+
+
+
+    // ---------------------------
+    // Category and products
+    // ---------------------------
 
     .state('app.category', {
       url: '/category/:categoryId',
@@ -96,6 +130,21 @@ app.config(function($stateProvider, $urlRouterProvider) {
       }
     })
 
+    .state('app.single-product', {
+      url: '/single-product/:productId',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/single-product.html',
+          controller: 'SingleProductCtrl'
+        }
+      },
+      cache: false,
+    })
+
+
+    // ---------------------------
+    // Auth
+    // ---------------------------
     .state('app.login', {
       url: '/login',
       views: {
@@ -103,7 +152,8 @@ app.config(function($stateProvider, $urlRouterProvider) {
           templateUrl: 'templates/login.html',
           controller: 'LoginCtrl'
         }
-      }
+      },
+      cache: false,
     })
 
     .state('app.register', {
@@ -113,28 +163,14 @@ app.config(function($stateProvider, $urlRouterProvider) {
           templateUrl: 'templates/register.html',
           controller: 'RegisterCtrl'
         }
-      }
+      },
+      cache: false,
     })
 
-    // .state('app.products', {
-    //   url: '/products',
-    //   views: {
-    //     'menuContent': {
-    //       templateUrl: 'templates/products.html',
-    //       controller: 'ProductsCtrl'
-    //     }
-    //   }
-    // })
 
-    .state('app.favorites', {
-      url: '/favorites',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/favorites.html',
-          controller: 'FavoritesCtrl'
-        }
-      }
-    })
+    // ---------------------------
+    // Orders and cart
+    // ---------------------------
 
     .state('app.orders', {
       url: '/orders',
@@ -143,27 +179,9 @@ app.config(function($stateProvider, $urlRouterProvider) {
           templateUrl: 'templates/orders.html',
           controller: 'OrdersCtrl'
         }
-      }
-    })
-
-    .state('app.messages', {
-      url: '/messages',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/messages.html',
-          controller: 'MessagesCtrl'
-        }
-      }
-    })
-
-    .state('app.settings', {
-      url: '/settings',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/settings.html',
-          controller: 'SettingsCtrl'
-        }
-      }
+      },
+      cache: false,
+      // resolve: { authenticate: authenticate }
     })
 
     .state('app.single-order', {
@@ -173,14 +191,15 @@ app.config(function($stateProvider, $urlRouterProvider) {
           templateUrl: 'templates/single-order.html',
           controller: 'SingleOrderCtrl'
         }
-      }
+      },
+      cache: false,
     })
 
 
-  // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/register');
-});
 
+  // if none of the above states are matched, use this as the fallback
+  $urlRouterProvider.otherwise('/app/home');
+});
 
 
 // Binding controllers..
@@ -202,11 +221,19 @@ app.controller("SingleOrderCtrl", SingleOrderCtrl);
 // Binding directives..
 app.directive("scrollWatch", scrollWatch);
 
-
+// factories
+// app.factory("Auth", ["$firebaseAuth",
+//   function($firebaseAuth) {
+//     return $firebaseAuth();
+//   }
+// ]);
 
 // Binding services..
-app.service("BackendService", BackendService);
-app.service("UserService", UserService);
-app.service("DataService", DataService);
+// app.service("BackendService", BackendService);
+// app.service("UserService", UserService);
+// app.service("DataService", DataService);
+app.service("AuthService", AuthService)
+app.service("RecentlyViewedProductsService", RecentlyViewedProductsService)
 
-// Importing factories
+// Directives
+app.service("onEnter", onEnter)

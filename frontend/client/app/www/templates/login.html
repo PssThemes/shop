@@ -1,24 +1,44 @@
 <ion-content id="scrollContent" scroll-watch>
-
       <div class="text-center">
         <div style="background:url('img/lion.png')no-repeat center center; background-size:cover;height:170px;width:100%;"></div>
         <div class="p-50">
+
           <h4 class="text-center m-b-30">Login</h4>
-          <div class="relative border-b m-b-30">
-              <input type="text" class="inputText border-bottom3 no-focus" required/>
+
+          <!-- Email adress -->
+          <div class="">
+            <div class="relative border-b m-b-30">
+              <input type="text" class="inputText border-bottom3 no-focus" required ng-model="email"/>
               <span class="floating-label text-gray">Your email address</span>
             </div>
+            <p>{{emailError}}</p>
+          </div>
+
+
+          <!-- Password  -->
+          <div class="">
             <div class="relative border-b m-b-30">
-                <input type="password" class="inputText border-bottom3 no-focus" required/>
-                <span class="floating-label text-gray">Your password</span>
-              </div>
-          <div class="text-center m-t-50"><button class="text-blue border-blue round bg-tr p-l-20 p-r-20 p-t-5 p-b-5 cap fw-500 fs-14">sign in</button></div>
+              <input type="password" class="inputText border-bottom3 no-focus" required ng-model="password"/>
+              <span class="floating-label text-gray">Your password</span>
+            </div>
+            <p>{{passwordError}}</p>
+          </div>
+
+
+          <!-- Sign in button -->
+          <div class="text-center m-t-50">
+            <button
+            ng-click="login(email, password)"
+            class="text-blue border-blue round bg-tr p-l-20 p-r-20 p-t-5 p-b-5 cap fw-500 fs-14">sign in</button>
+          </div>
+          <p>{{firebaseError}}</p>
+
 
           <p class="p-t-50 center">Don't have an account yet?</p>
-          <a href="register.html" class="op-5 block center">Register</a>
-          <a href="#" class="op-5 block center">Forgot password?</a>
-        </div>
-      </div>
+          <a ui-sref="app.register" class="op-5 block center">Register</a>
+          <a ui-sref="app.recoverPassword" class="op-5 block center">Forgot password?</a>
+        </div> -->
+      <!-- </div>
 
 
       <div class="p-b-50"></div>
