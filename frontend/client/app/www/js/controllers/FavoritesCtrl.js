@@ -10,7 +10,7 @@ export default function FavoritesCtrl($scope,$timeout, $stateParams,$state, Auth
 
     favoritesRef.on("value", snap => {
       const favs = snap.val();
-
+ 
       if(favs){
         console.log("favs: ", favs);
         $scope.favoriteProducts = Object.keys(favs).reduce((acc, productId) => {
