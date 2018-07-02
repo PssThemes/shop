@@ -122,11 +122,11 @@ export default function SingleProductCtrl(
     return thisReviewIsInReplyMode && userCanReply;
   }
 
-  $scope.addToFavorites = () => {
-    const productId = $scope.product.$id;
-
-    db.ref("users").child(AuthService.user.uid).child("favorites").child(productId).set(productId)
-      .catch(err => console.log("could not add product to favorites: ", err))
-  }
+  // $scope.addToFavorites = () => {
+  //   const productId = $scope.product.$id;
+  //
+  //   db.ref("users").child(AuthService.user.uid).child("favorites").child(productId).set(productId)
+  //     .catch(err => console.log("could not add product to favorites: ", err))
+  // }
 
 }

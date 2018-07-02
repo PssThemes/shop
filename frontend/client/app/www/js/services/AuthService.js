@@ -1,89 +1,105 @@
-export default class AuthService {
+export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseArray){
 
-  constructor($firebaseAuth, $firebaseObject){
+  this.authObj = $firebaseAuth();
+  this.isLoggedIn = false;
 
-    this.authObj = $firebaseAuth();
-    this.$firebaseObject = $firebaseObject;
+  // firebase auth part of the user. THisis controlled by firebase.
+  this.user = null;
 
-    this.isLoggedIn = false;
-    this.user = null;
-    this.userProfile = null;
+  // user profile - the stuff we keep as metadata for each user.
+  this.userProfile = null;
+  this.cart = null;
+
+  // favorites.
+  this.favorites = null;
+  this.favoriteObservers = [];
 
 
-    this.authObj.$onAuthStateChanged(user =>  {
-      console.log("$onAuthStateChanged",user)
-      if(user){
-        this.isLoggedIn = true;
-        this.user = user;
-      }else{
-        this.isLoggedIn = false;
-        // this.isLoggedIn = false;
-        this.user = null;
-      }
+  this.authObj.$onAuthStateChanged(user =>  {
+
+    if(user){
+      // Here the user just logged in or registered.
+
+      // mark the user as logged in.
+      this.isLoggedIn = true;
+      this.user = user;
+
+
+      // now what we have the user, load the user profile.
+      const userProfileRef = firebase.database().ref("users/" + user.uid);
+      this.userProfile = $firebaseObject(userProfileRef);
+
+
+      // load favorites of this user.
+      this.favorites = $firebaseArray(userProfileRef.child("favorites"));
+      this.favorites.$watch(newValue => {
+        const howMany = this.favorites.reduce((acc, val ) => {
+          acc = acc + 1;
+          return acc;
+        }, 0);
+
+        this.favoriteObservers.forEach(observer => {
+          observer(howMany);
+        });
+
+      })
+
+
+      // load the shopping cart of this user.
+      this.cart = $firebaseObject(userProfileRef.child("cart"));
+
+
+    }else{
+      // User just logged out.
+      this.isLoggedIn = false;
+      this.user = null;
+    }
+
+  });
+
+
+  // #region Notify observers.
+
+  this.onAuthStateChanged = (observer) => {
+    this.authObj.$onAuthStateChanged(user => {
+      observer(user);
     });
-
   }
+
+  // #endregion Notify observers.
+
 
   // ---------------------
   // Favorite functionaity..
   // ---------------------
+  this.onFavoritesChanged = (observer) =>  {
+    this.favoriteObservers.push(observer);
+  }
 
-  isFavorite(productId){
-    console.log('isFavorite');
-    if(this.user){
-      return productId in this.user;
-    }else{
+  this.isFavorite = productId => {
+    if(this.favorites){
+      // Note favorites is an object indexed by productId push keys.
+      return this.favorites.$getRecord(productId) != null;
+    } else {
       return false;
     }
   }
 
-  addProductToFavorites(productId){
-    firebase.database
-      .ref("users")
-      .child(this.user.uid)
-      .child("favorites")
-      .child(productId)
-      .set(productId);
-  }
 
-  removeProductFromFavorites(productId){
-    firebase.database
-      .ref("users")
-      .child(this.user.uid)
-      .child("favorites")
-      .child(productId)
-      .set(null);
-  }
-
-  toggleFavorite(productId){
-    console.log('toggleFavorite');
-    console.log(this)
+  this.toggleFavorite = productId => {
     if(this.isFavorite(productId)) {
-      this.removeProductFromFavorites(productId).bind(this);
+      removeProductFromFavorites(productId, this.user.uid);
     } else {
-      this.addProductToFavorites(productId).bind(this);
+      addProductToFavorites(productId, this.user.uid);
     }
   }
 
-  // ---------------------
-  // Notify observers.
-  // ---------------------
-  onAuthStateChanged(observer){
-    this.authObj.$onAuthStateChanged(user => {
-      observer(user);
-
-      const userProfileRef = firebase.database().ref("users/" + user.uid);
-      this.userProfile = this.$firebaseObject(userProfileRef);
-
-    });
-  }
 
 
-  // ---------------------
-  // Login stuff
-  // ---------------------
 
-  login(email, password) {
+
+  // #region  Login stuff
+  this.login = (email, password)  => {
     return new Promise((resolve,reject) => {
 
       this.authObj.$signInWithEmailAndPassword(email, password)
@@ -106,21 +122,22 @@ export default class AuthService {
 
     });
   }
+  // #endregion  Login stuff
 
-  logOut(){
+
+  // #region LogOut
+
+  this.logOut = () => {
     this.authObj.$signOut();
   }
 
+  // #endregion LogOut
 
 
-
-
-  // ---------------------
-  // Register stuff.
-  // ---------------------
+  // #region Register Stuff
   // TODO: i need to create functionality for creating a user profile inside firebase database too.
 
-  register(name, email, password){
+  this.register = (name, email, password) => {
     return new Promise ((resolve,reject) => {
       this.authObj.$createUserWithEmailAndPassword(email, password)
       .then( firebaseUser =>  {
@@ -157,16 +174,13 @@ export default class AuthService {
 
       });
     })
-  }
+  };
+  // #endregion Register Stuff
 
 
+  // #region User stuff
 
-
-
-  // ---------------------
-  // User stuff
-  // ---------------------
-  getNumberOfFavorites(){
+  this.getNumberOfFavorites = () => {
     if(this.user){
       const favs = this.user.favorites;
       if(favs){
@@ -183,8 +197,33 @@ export default class AuthService {
       // user is NOT logged in.. return false.. deal with it in controller.
       return false;
     }
-  }
+  };
 
+  // #endregion User stuff
+
+
+  // Shopping Cart functionaity .
+
+
+}
+
+
+function addProductToFavorites(productId, uid){
+  firebase.database()
+    .ref("users")
+    .child(uid)
+    .child("favorites")
+    .child(productId)
+    .set(productId);
+}
+
+function removeProductFromFavorites(productId, uid){
+  firebase.database()
+    .ref("users")
+    .child(uid)
+    .child("favorites")
+    .child(productId)
+    .set(null);
 }
 
 function createNewUserProfile(user){
