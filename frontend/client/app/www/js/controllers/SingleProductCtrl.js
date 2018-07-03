@@ -6,7 +6,6 @@ export default function SingleProductCtrl(
   , AuthService
   , RecentlyViewedProductsService
 ){
-  console.log("SingleProductCtrl reinitialized..")
   const db = firebase.database();
   const productId = $stateParams.productId;
 
@@ -19,6 +18,7 @@ export default function SingleProductCtrl(
       }
     });
   });
+
 
   $scope.isFavorite = AuthService.isFavorite;
   $scope.toggleFavorite = AuthService.toggleFavorite;
@@ -121,6 +121,9 @@ export default function SingleProductCtrl(
     const userCanReply = $scope.userCanReply(reviewId);
     return thisReviewIsInReplyMode && userCanReply;
   }
+
+  $scope.productIsAlreadyInCart = AuthService.productIsAlreadyInCart;
+  $scope.toggleAddToCart = AuthService.toggleAddToCart;
 
   // $scope.addToFavorites = () => {
   //   const productId = $scope.product.$id;

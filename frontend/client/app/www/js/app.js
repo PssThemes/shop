@@ -12,6 +12,7 @@ import OrdersCtrl from "./controllers/OrdersCtrl.js"
 import MessagesCtrl from "./controllers/MessagesCtrl.js"
 import SettingsCtrl from "./controllers/SettingsCtrl.js"
 import SingleOrderCtrl from "./controllers/SingleOrderCtrl.js"
+import CartCtrl from "./controllers/CartCtrl.js"
 
 
 
@@ -172,6 +173,17 @@ app.config(function($stateProvider, $urlRouterProvider) {
     // Orders and cart
     // ---------------------------
 
+    .state('app.cart', {
+        url: "/cart",
+        views: {
+          'menuContent': {
+            templateUrl: 'templates/cart.html',
+            controller: 'CartCtrl'
+          }
+        },
+        cache: false,
+    })
+
     .state('app.orders', {
       url: '/orders',
       views: {
@@ -215,6 +227,7 @@ app.controller("OrdersCtrl", OrdersCtrl);
 app.controller("MessagesCtrl", MessagesCtrl);
 app.controller("SettingsCtrl", SettingsCtrl);
 app.controller("SingleOrderCtrl", SingleOrderCtrl);
+app.controller("CartCtrl", CartCtrl);
 
 
 

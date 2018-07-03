@@ -14,7 +14,11 @@
             <div class="p-20">
 
               <h4 class="m-t-0">{{product.name}}
-                <a class="v-center right fs-12 fw-500 up bg-positive text-white round p-t-5 p-b-5 p-l-15 p-r-15"> add to cart</a>
+                <a ng-click="toggleAddToCart(product.$id)"
+                  class="v-center right fs-12 fw-500 up bg-positive text-white round p-t-5 p-b-5 p-l-15 p-r-15">
+
+                    {{productIsAlreadyInCart(product.$id) ?  "remove form cart" : "add to cart" }}
+                </a>
 
 
                 <a

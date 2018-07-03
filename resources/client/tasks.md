@@ -133,3 +133,16 @@ if it doesn't then we create one.
 
 
 MOVE USER PROFGILE IN AUTH SERVICE.
+
+Add cart functionality
+
+needs a reference to product id..
+needs some metadata like how many products.
+and this happens for each proiduct.
+
+
+so first let's make a function to react a  new product when the add to cart buytton is presdsded
+console.log something when is pressed.
+then create the purchase object there.
+
+--------

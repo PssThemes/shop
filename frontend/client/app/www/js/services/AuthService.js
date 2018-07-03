@@ -29,7 +29,6 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
       const userProfileRef = firebase.database().ref("users/" + user.uid);
       this.userProfile = $firebaseObject(userProfileRef);
 
-
       // load favorites of this user.
       this.favorites = $firebaseArray(userProfileRef.child("favorites"));
       this.favorites.$watch(newValue => {
@@ -41,13 +40,10 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
         this.favoriteObservers.forEach(observer => {
           observer(howMany);
         });
-
-      })
-
+      });
 
       // load the shopping cart of this user.
-      this.cart = $firebaseObject(userProfileRef.child("cart"));
-
+      this.cart = $firebaseArray(userProfileRef.child("cart"));
 
     }else{
       // User just logged out.
@@ -69,9 +65,7 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
   // #endregion Notify observers.
 
 
-  // ---------------------
-  // Favorite functionaity..
-  // ---------------------
+  // #region Favorite functionaity
   this.onFavoritesChanged = (observer) =>  {
     this.favoriteObservers.push(observer);
   }
@@ -93,9 +87,7 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
       addProductToFavorites(productId, this.user.uid);
     }
   }
-
-
-
+  // #endregion Favorite functionaity
 
 
   // #region  Login stuff
@@ -202,7 +194,54 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
   // #endregion User stuff
 
 
-  // Shopping Cart functionaity .
+  // #region Shopping Cart functionaity .
+
+  this.productIsAlreadyInCart = productId => {
+    if(this.cart){
+      const purchase = this.cart.$getRecord(productId);
+      return purchase != null;
+    }else{
+      return false;
+    }
+  }
+
+
+  this.removeFromCart = productId => {
+    if(this.cart){
+      this.cart.$ref().child(productId).set(null);
+    }
+
+  }
+
+
+  this.addToCart = productId => {
+    if(this.cart){
+      this.cart.$ref().child(productId).set({
+        productId: productId,
+        howMany: 1
+      });
+    }
+  }
+
+  this.toggleAddToCart = productId => {
+    if(this.productIsAlreadyInCart(productId)){
+      this.removeFromCart(productId);
+    }
+    else{
+      this.addToCart(productId);
+    }
+  }
+
+  this.updateHowMany = ( productId, howMany_ ) => {
+    if(this.cart){
+      const howManyRef = this.cart.$ref().child(productId).child("howMany");
+      const howMany = $firebaseObject(howManyRef);
+      howMany.$value = howMany_;
+      howMany.$save();
+    }
+  }
+
+  // #endregion Shopping Cart functionaity .
 
 
 }

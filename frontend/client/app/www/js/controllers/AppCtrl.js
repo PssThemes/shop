@@ -1,4 +1,3 @@
-console.log("AppCtrl loaded..");
 
 export default function AppCtrl($scope, $timeout, AuthService, $state) {
 
@@ -39,24 +38,13 @@ export default function AppCtrl($scope, $timeout, AuthService, $state) {
 
 
   AuthService.onFavoritesChanged( howMany => {
-    console.log(" AuthService.favorites.$watch : ", AuthService.favorites);
-
     $timeout(() => {
       $scope.$apply(() => {
         $scope.favorites = howMany;
       });
     }, 30);
-
   });
 
-
-  //   console.log(AuthService.favorites);
-  //   const nrOfFavs = AuthService.favorites.$value;
-  //   if(nrOfFavs){
-  //     return nrOfFavs;
-  //   }
-  //   return 0;
-  // };
 
 
 }
