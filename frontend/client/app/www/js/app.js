@@ -115,8 +115,6 @@ app.config(function($stateProvider, $urlRouterProvider) {
       cache: false,
     })
 
-
-
     // ---------------------------
     // Category and products
     // ---------------------------

@@ -5,17 +5,23 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
 
   // firebase auth part of the user. THisis controlled by firebase.
   this.user = null;
+  this.onAuthStateChangedObservers = [];
 
   // user profile - the stuff we keep as metadata for each user.
   this.userProfile = null;
   this.cart = null;
+  this.onProfileLoadedObservers = [];
 
   // favorites.
   this.favorites = null;
   this.favoriteObservers = [];
 
+  // cart
+  this.onCartChangedObservers = [];
 
   this.authObj.$onAuthStateChanged(user =>  {
+    console.log("$onAuthStateChanged: ", this.onAuthStateChangedObservers)
+    this.onAuthStateChangedObservers.map(observer => observer(user));
 
     if(user){
       // Here the user just logged in or registered.
@@ -28,6 +34,14 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
       // now what we have the user, load the user profile.
       const userProfileRef = firebase.database().ref("users/" + user.uid);
       this.userProfile = $firebaseObject(userProfileRef);
+      this.userProfile
+        .$loaded()
+        .then(() => {
+          console.log("onProfileLoadedObservers", this.onProfileLoadedObservers)
+          this.onProfileLoadedObservers.map(obs => obs())
+        })
+        .catch(err => console.log("error: ", err));
+
 
       // load favorites of this user.
       this.favorites = $firebaseArray(userProfileRef.child("favorites"));
@@ -36,14 +50,14 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
           acc = acc + 1;
           return acc;
         }, 0);
-
-        this.favoriteObservers.forEach(observer => {
-          observer(howMany);
-        });
+        this.favoriteObservers.map(observer => observer(howMany));
       });
 
       // load the shopping cart of this user.
       this.cart = $firebaseArray(userProfileRef.child("cart"));
+      this.cart.$watch(() => {
+        this.onCartChangedObservers.map(observer => observer());
+      });
 
     }else{
       // User just logged out.
@@ -57,9 +71,15 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
   // #region Notify observers.
 
   this.onAuthStateChanged = (observer) => {
-    this.authObj.$onAuthStateChanged(user => {
-      observer(user);
-    });
+    this.onAuthStateChangedObservers.push(observer);
+  }
+
+  this.onProfileLoaded = (observer) => {
+    this.onProfileLoadedObservers.push(observer);
+  }
+
+  this.onCartChanged = (observer) => {
+    this.onCartChangedObservers.push(observer);
   }
 
   // #endregion Notify observers.
@@ -78,7 +98,6 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
       return false;
     }
   }
-
 
   this.toggleFavorite = productId => {
     if(this.isFavorite(productId)) {
@@ -234,10 +253,22 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
 
   this.updateHowMany = ( productId, howMany_ ) => {
     if(this.cart){
+
       const howManyRef = this.cart.$ref().child(productId).child("howMany");
-      const howMany = $firebaseObject(howManyRef);
-      howMany.$value = howMany_;
-      howMany.$save();
+      const howMany = $firebaseObject(howManyRef)
+      howMany.$loaded()
+        .then(() => {
+          const newValue = (howMany.$value || 0) + howMany_;
+          console.log("newValue ", newValue );s
+          if(newValue > 0){
+            howMany.$value = newValue;
+            // console.log("newValue ", newValue );
+            howMany.$save();
+          }
+
+        })
+        .catch(err => console.log("error: ", err));
+
     }
   }
 

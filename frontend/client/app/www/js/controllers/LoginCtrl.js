@@ -1,5 +1,5 @@
 export default function LoginCtrl($scope,$state, $stateParams, AuthService){
-
+  // console.log("inside login: AuthService.isLoggedIn", AuthService.isLoggedIn);
   if(AuthService.isLoggedIn){
     $state.go("app.user-profile")
   }

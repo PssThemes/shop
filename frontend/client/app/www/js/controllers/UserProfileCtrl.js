@@ -1,5 +1,5 @@
 export default function UserProfileCtrl($scope, $stateParams, $state, AuthService, $firebaseObject,$firebaseArray){
-  console.log("AuthService.isLoggedIn", AuthService.isLoggedIn);
+  // console.log("AuthService.isLoggedIn", AuthService.isLoggedIn);
 
   $scope.user = null;
   $scope.userProfile = null;
@@ -16,7 +16,7 @@ export default function UserProfileCtrl($scope, $stateParams, $state, AuthServic
     AuthService.logOut();
     $state.go("app.home");
   }
-  
+
   $scope.getPhone = () => {
     if($scope.userProfile){
       if($scope.userProfile.phone == ""){
