@@ -19,6 +19,14 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
   // cart
   this.onCartChangedObservers = [];
 
+  this.clearCart = () => {
+    if(this.user){
+      const userCartRef = firebase.database().ref("users").child(this.user.uid).child("cart");
+      userCartRef.set(null);
+      this.cart = null;
+    }
+  };
+
   this.authObj.$onAuthStateChanged(user =>  {
     console.log("$onAuthStateChanged: ", this.onAuthStateChangedObservers)
     this.onAuthStateChangedObservers.map(observer => observer(user));
@@ -52,6 +60,7 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
         }, 0);
         this.favoriteObservers.map(observer => observer(howMany));
       });
+
 
       // load the shopping cart of this user.
       this.cart = $firebaseArray(userProfileRef.child("cart"));
@@ -259,7 +268,7 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
       howMany.$loaded()
         .then(() => {
           const newValue = (howMany.$value || 0) + howMany_;
-          console.log("newValue ", newValue );s
+          console.log("newValue ", newValue );
           if(newValue > 0){
             howMany.$value = newValue;
             // console.log("newValue ", newValue );

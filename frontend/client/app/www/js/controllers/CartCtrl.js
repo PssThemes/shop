@@ -1,30 +1,22 @@
-export default function CartCtrl($scope, $timeout, AuthService, $firebaseObject, $state) {
-  if(!AuthService.isLoggedIn){
-    console.log("AuthService.isLoggedIn", AuthService.isLoggedIn)
-    $state.go("app.login");
-  }
+export default function CartCtrl($scope, $timeout, AuthService, $firebaseObject, $firebaseArray, $state) {
+  // if(!AuthService.isLoggedIn){
+  //   console.log("AuthService.isLoggedIn", AuthService.isLoggedIn)
+  //   $state.go("app.login");
+  // }
 
   $scope.purchases = {};
   $scope.products = {};
 
-  function loadProducts(purchases){
-      const productIds = purchases.map(purchase => purchase.$id);
-
-      return productIds.reduce((acc, productId) => {
-
-        const productRef = firebase.database().ref().child("products").child(productId);
-        acc[productId] = $firebaseObject(productRef);
-
-        return acc;
-      }, {});
-  }
+  $scope.purchases = AuthService.cart;
+  $scope.products = loadProducts($scope.purchases);
 
   AuthService.onProfileLoaded(() => {
     $scope.purchases = AuthService.cart;
-    console.log("onProfileLoaded: ",$scope.purchases  );
+    console.log("onProfileLoaded: ", $scope.purchases);
     $scope.products = loadProducts($scope.purchases);
     console.log("onProfileLoaded: ",$scope.products );
   });
+
 
   AuthService.onCartChanged(() => {
     console.log("onCartChanged: ");
@@ -42,74 +34,54 @@ export default function CartCtrl($scope, $timeout, AuthService, $firebaseObject,
     AuthService.removeFromCart(purchaseId);
   }
 
-  // $timeout(() => {
-  //   AuthService.onCartLoaded
-  //
-  //   if(AuthService.cart){
-  //
-  //     AuthService.cart
-  //       .$loaded()
-  //       .then(purchases => {
-  //
-  //         $timeout(() => {
-  //
-  //           $scope.$apply(() => {
-  //
-  //             console.log("$scope.products: ", $scope.products);
-  //           });
-  //
-  //         }, 10);
-  //
-  //       })
-  //       .catch(err => console.log(err));
-  //
-  //   }
+  $scope.sendOrder = () => {
+    if(AuthService.cart){
 
-  // }, 2000);
+      const ordersRef = firebase.database().ref().child("orders");
+      const orderKey = ordersRef.push().key;
+
+      const purchases = AuthService.cart.reduce((acc, purchase) => {
+        const order = {
+          howMany: purchase.howMany,
+          mainProductImage: $scope.products[purchase.$id].mainProductImage || "no image",
+          price: $scope.products[purchase.$id].price || "",
+          productId: purchase.$id,
+          productName: $scope.products[purchase.$id].productName || "",
+        };
+
+        acc[purchase.$id] = order;
+        return acc;
+      }, {});
+
+      const order = {
+        date: Date.now(),
+        orderStatus: "RECEIVED",
+        purchases: purchases || [],
+        userProfileId: AuthService.user.uid
+      };
+
+      ordersRef.child(orderKey).set(order)
+        .then(() => {
+          AuthService.clearCart()
+        })
+
+    }
+  }
 
 
+  function loadProducts(purchases){
+    if(purchases){
+
+      const productIds = purchases.map(purchase => purchase.$id);
+
+      return productIds.reduce((acc, productId) => {
+
+        const productRef = firebase.database().ref().child("products").child(productId);
+        acc[productId] = $firebaseObject(productRef);
+
+        return acc;
+      }, {});
+
+    }
+  }
 }
-
-
-
-//
-// const products = $scope.purchases.reduce(purchase => {
-//
-//   loadProduct(purchase.productId);
-//
-// }, {});
-// $scope.products = products;
-
-
-
-
-      //
-      // AuthService.cart.$watch(productId => {
-      //
-      //   // mapOver the list
-      //   // extract the productId.
-      //   // then for each product id build a firebase object reference.
-      //   // trender the products in the view.
-      //   // add counters for each purcahse.
-      //
-      //   const productIds = Object.keys(newCart);
-      //
-      //   productIds.map(key => {
-      //     const productRef = firebase.database().ref("products").child(key);
-      //     $scope.products[key] = $firebaseObject(productRef);
-      //   });
-      //
-      //   console.log("$scope.products: ", $scope.products);
-      //   console.log("productIds: ",  productIds);
-      //
-      // });
-
-
-
-
-//
-// const productIds = Object.keys(AuthService.cart);
-// productIds.map(key => {
-//   console.log("key: ", key);
-//   const productRef = firebase.database().ref().child("products").child(key);
-// });

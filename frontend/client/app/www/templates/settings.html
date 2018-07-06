@@ -1,28 +1,40 @@
 <ion-content id="scrollContent" scroll-watch>
+    {{profile | json}}
 
-            <!-- profile -->
-            <div class="text-center">
-                <div class="p-t-20">
-                  <div class="relative p-l-r-15">
-                    <input type="file" name="pic" accept="image/*" class="p-t-20 p-b-20 absolute top-0 elem-big op-0">
-                    <img src="img/avatar.jpg" class="bg-white" width="100">
-                  </div>
-                </div>
-                <p class="text-gray">Change your avatar</p>
-                <div class="m-20">
-                  <input type="text" placeholder="Full Name" class="border full-width m-b-20 p-20">
-                  <input type="text" placeholder="Location" class="border full-width p-20 m-b-20">
-                  <input type="text" placeholder="Email address" class="border full-width p-20 m-b-20">
-                  <input type="text" placeholder="Phone number" class="border full-width p-20 m-b-20">
-                </div>
+    <!-- profile -->
+    <div class="text-center">
+        <div class="p-t-20">
+          <div class="relative p-l-r-15">
+            <input type="file" name="pic" accept="image/*" class="p-t-20 p-b-20 absolute top-0 elem-big op-0">
+            <img src="img/avatar.jpg" class="bg-white" width="100">
+          </div>
+        </div>
+        <p class="text-gray">Change your avatar</p>
+        <div class="m-20">
 
-                <a href="#">
-                  <button class="button button-outline button-positive round-big">
-                    Save changes
-                  </button>
-                </a>
-            </div>
+          <input type="text" ng-model="profile.name" placeholder="Full Name" class="border full-width m-b-20 p-20">
+          <input type="text" ng-model="profile.email" placeholder="Email address" class="border full-width p-20 m-b-20">
+          <input type="text" ng-model="profile.phone" placeholder="Phone number" class="border full-width p-20 m-b-20">
 
-          <div class="p-b-50"></div>
+          <input type="text" ng-model="profile.address.primaryAddress" placeholder="Primary Address" class="border full-width p-20 m-b-20">
+          <input type="text" ng-model="profile.address.extraAddress" placeholder="Secondary Address" class="border full-width p-20 m-b-20">
+
+          <input type="text" ng-model="profile.address.city" placeholder="Your City" class="border full-width p-20 m-b-20">
+          <input type="text" ng-model="profile.address.state" placeholder="State" class="border full-width p-20 m-b-20">
+          <input type="text" ng-model="profile.address.country" placeholder="Country" class="border full-width p-20 m-b-20">
+
+          <input type="text" ng-model="profile.address.postalCode" placeholder="Zip" class="border full-width p-20 m-b-20">
+
+        </div>
+
+        <p>{{ emailError }}</p>
+
+        <button ng-click="saveSettings(profile)" class="button button-outline button-positive round-big">
+          Save changes
+        </button>
+
+    </div>
+
+    <div class="p-b-50"></div>
 
 </ion-content>
