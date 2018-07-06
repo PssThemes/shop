@@ -4,7 +4,19 @@
           <h4 class="cap p-t-10 p-b-10 fs-14 text-gray">my orders</h4>
 
           <!-- Orders -->
-          <a href="single-order.html" class="no-decoration">
+
+          <!-- <a ui-sref="single-order({ orderId: order.$id })" class="no-decoration" ng-repeat="(index, order) in orders"> -->
+
+          <a ui-sref="app.single-order({ productId : product.$id })" class="no-decoration" ng-repeat="(index, order) in orders">
+            <div class="row border-t border-b p-t-10 p-b-10">
+              <div class="col-10 text-gray">#{{index + 1}}</div>
+              <div class="col-50 text-gray">Order date: {{order.date | date:'shortDate' }}</div>
+              <!-- <div class="col-30 text-gray">12.09.2018</div> -->
+              <div class="col-20 text-right"><img src="img/icons/chevron-right.png"></div>
+            </div>
+          </a>
+
+          <!-- <a href="single-order.html" class="no-decoration">
           <div class="row border-t border-b p-t-10 p-b-10">
             <div class="col-10 text-gray">#1</div>
             <div class="col-50 text-gray">Order date: </div>
@@ -27,7 +39,7 @@
             <div class="col-30 text-gray">10.11.2018</div>
             <div class="col-20 text-right"><img src="img/icons/chevron-right.png"></div>
           </div>
-          </a>
+          </a> -->
 
     </div><!-- end list tabs -->
 

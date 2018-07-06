@@ -23,6 +23,7 @@ export default function SettingsCtrl($scope, $stateParams,$state,AuthService){
       country: "",
     }
   };
+
   function constructProfile (){
     $scope.profile = {
       name: AuthService.userProfile.name || "",
