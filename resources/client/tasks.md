@@ -146,3 +146,21 @@ console.log something when is pressed.
 then create the purchase object there.
 
 --------
+
+
+
+
+
+
+
+
+
+
+
+
+Bugs.
+Pagina de favorite arata empooty can d are producse.
+Afisez statusul orderului,.
+Email validation in settings.
+reverse list of recently viewed products.
+La comentaiii in pagina de produs.. userul apare nelogat.
