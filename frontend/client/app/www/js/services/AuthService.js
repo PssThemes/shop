@@ -16,6 +16,7 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
   this.favorites = null;
   this.favoriteObservers = [];
 
+
   // cart
   this.onCartChangedObservers = [];
 
@@ -25,10 +26,10 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
       userCartRef.set(null);
       this.cart = null;
     }
+    console.log("clearCart: ", this.cart);
   };
 
   this.authObj.$onAuthStateChanged(user =>  {
-    console.log("$onAuthStateChanged: ", this.onAuthStateChangedObservers)
     this.onAuthStateChangedObservers.map(observer => observer(user));
 
     if(user){
@@ -45,7 +46,6 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
       this.userProfile
         .$loaded()
         .then(() => {
-          console.log("onProfileLoadedObservers", this.onProfileLoadedObservers)
           this.onProfileLoadedObservers.map(obs => obs())
         })
         .catch(err => console.log("error: ", err));

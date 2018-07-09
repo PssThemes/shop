@@ -29,7 +29,7 @@ const productRef = (id) => {
   return db.ref("/products/" + id);
 }
 
-create3FakeProducts();
+// create3FakeProducts();
 
 function create3FakeProducts(){
   const p1 = createDummyProduct("Monitor");

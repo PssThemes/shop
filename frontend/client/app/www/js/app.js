@@ -196,7 +196,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
 
     .state('app.single-order', {
       url: '/single-order/:orderId',
-      views: {
+      views: { 
         'menuContent': {
           templateUrl: 'templates/single-order.html',
           controller: 'SingleOrderCtrl'

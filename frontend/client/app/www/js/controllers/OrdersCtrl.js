@@ -13,8 +13,11 @@ export default function OrdersCtrl($scope, $state, $timeout, $stateParams,AuthSe
 
   $timeout(() => {
     console.log("$scope.orders: ", $scope.orders);
-  }, 2000)
+  }, 2000);
 
+  $scope.noOrders = () => {
+    return $scope.orders.length <= 0;
+  };
 
 
 }
