@@ -11,7 +11,10 @@
         <div class="m-20">
 
           <input type="text" ng-model="profile.name" placeholder="Full Name" class="border full-width m-b-20 p-20">
+
           <input type="text" ng-model="profile.email" placeholder="Email address" class="border full-width p-20 m-b-20">
+          <p>{{ emailError }}</p>
+
           <input type="text" ng-model="profile.phone" placeholder="Phone number" class="border full-width p-20 m-b-20">
 
           <input type="text" ng-model="profile.address.primaryAddress" placeholder="Primary Address" class="border full-width p-20 m-b-20">
@@ -25,7 +28,6 @@
 
         </div>
 
-        <p>{{ emailError }}</p>
 
         <button ng-click="saveSettings(profile)" class="button button-outline button-positive round-big">
           Save changes

@@ -1,10 +1,10 @@
 <ion-content id="scrollContent" scroll-watch>
 
-    <div ng-if="!noFavorites()">
+    <div ng-if="noFavorites()">
       Your favorites list is empty.
     </div>
 
-    <div ng-if="noFavorites()">
+    <div ng-if="!noFavorites()">
       <h4 class="cap p-l-20 p-r-20 p-t-10 p-b-10 fs-14 text-gray">your favorites</h4>
 
       <!-- Favorites list -->

@@ -25,13 +25,28 @@ export default function SingleProductCtrl(
 
 
   // Load the recently viewd products form a service where we store them.
-  $scope.recentlyViewedProducts = RecentlyViewedProductsService.getLastProducts();
+  $scope.recentlyViewedProducts = RecentlyViewedProductsService.products;
+  $scope.recentlyViewedProductsIds = RecentlyViewedProductsService.productIds;
 
+  $scope.getRecentProductIds = () => {
+
+    const productIds = $scope.recentlyViewedProductsIds;
+
+    if($scope.product){
+
+      const productId = $scope.product.$id;
+      const ids = productIds.filter(x => x != productId);
+      return ids.reverse();
+
+    }else{
+      return productIds.reverse();
+    }
+  }
 
   // PRODUCT
   $scope.product = $firebaseObject(db.ref("products/" + productId));
 
-  RecentlyViewedProductsService.addProduct($scope.product);
+  RecentlyViewedProductsService.addProduct($scope.product.$id);
 
   // PRODUCT REVIEWS
   $scope.reviews = $firebaseArray(db.ref("products/" + productId + "/reviews"));
@@ -60,6 +75,16 @@ export default function SingleProductCtrl(
     $scope.showReviews = !$scope.showReviews;
   }
 
+  $scope.getProfileImage = (reviewClientId) => {
+
+    const defaultImage = "img/avatar.jpg"
+    const image = clients[review.clientId].profileImage;
+    const result = image ? image : defaultImage;
+
+    console.log("result ", result);
+
+    return result;
+  }
 
   $scope.adminImage = $firebaseObject(db.ref("adminImage"));
 
@@ -124,12 +149,5 @@ export default function SingleProductCtrl(
 
   $scope.productIsAlreadyInCart = AuthService.productIsAlreadyInCart;
   $scope.toggleAddToCart = AuthService.toggleAddToCart;
-
-  // $scope.addToFavorites = () => {
-  //   const productId = $scope.product.$id;
-  //
-  //   db.ref("users").child(AuthService.user.uid).child("favorites").child(productId).set(productId)
-  //     .catch(err => console.log("could not add product to favorites: ", err))
-  // }
 
 }

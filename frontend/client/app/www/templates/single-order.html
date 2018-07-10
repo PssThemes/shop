@@ -16,6 +16,7 @@
          <div class="col-20 v-center">
            <span class="text-blue fw-100 fs-12 p-r-10">{{ product.price | currency }}</span>
            <span>x {{ order.purchases[product.$id].howMany }}</span>
+           <span>x {{ order.orderStatus }}</span>
          </div>
 
        </div>

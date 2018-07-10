@@ -13,11 +13,11 @@
             <!-- Product description -->
             <div class="p-20">
 
-              <h4 class="m-t-0">{{product.name}}
+              <h4 class="m-t-0">{{ product.name }}
                 <a ng-click="toggleAddToCart(product.$id)"
                   class="v-center right fs-12 fw-500 up bg-positive text-white round p-t-5 p-b-5 p-l-15 p-r-15">
 
-                    {{productIsAlreadyInCart(product.$id) ?  "remove form cart" : "add to cart" }}
+                    {{ productIsAlreadyInCart(product.$id) ?  "remove form cart" : "add to cart" }}
                 </a>
 
 
@@ -29,14 +29,14 @@
 
               </h4>
 
-              <p class="right text-blue absolute right-20 fs-18 fw-500">{{product.price | currency}}</p>
+              <p class="right text-blue absolute right-20 fs-18 fw-500">{{ product.price | currency }}</p>
             </div>
 
 
 
             <hr class="bg-gray op-2">
 
-            <p class="text-gray lh-25">{{longDescription}}</p>
+            <p class="text-gray lh-25">{{ longDescription }}</p>
 
 
             <!-- Share product functionality. -->
@@ -150,16 +150,17 @@
           <ion-scroll direction="x" class="scroll-area products-scroll row">
 
 
+            <!-- TODO Make this work.-->
                   <div
-                    ng-repeat="recentProduct in recentlyViewedProducts"
+                    ng-repeat="recentProductId in getRecentProductIds()"
                     class="col col-90 inline relative text-center border p-b-20">
-                      <img ng-src={{recentProduct.mainProductImage}} width="50%">
-                      <h4 class="product-price">{{recentProduct.price | currency }}</h4>
-                      <p class="wrap">{{recentProduct.name}}</p>
-                      <p class="wrap">{{recentProduct.short_description}}</p>
+                      <img ng-src="{{ recentlyViewedProducts[recentProductId].mainProductImage }}" width="50%">
+                      <h4 class="product-price">{{ recentlyViewedProducts[recentProductId].price | currency }}</h4>
+                      <p class="wrap">{{ recentlyViewedProducts[recentProductId].name }}</p>
+                      <p class="wrap">{{ recentlyViewedProducts[recentProductId].short_description }}</p>
 
                       <!-- Go to details. -->
-                      <a ui-sref="app.single-product({ productId : recentProduct.$id })">
+                      <a ui-sref="app.single-product({ productId : recentProductId })">
                         <button class="button button-outline button-positive round-big">
                               Details
                         </button>

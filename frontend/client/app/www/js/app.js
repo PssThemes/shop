@@ -196,7 +196,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
 
     .state('app.single-order', {
       url: '/single-order/:orderId',
-      views: { 
+      views: {
         'menuContent': {
           templateUrl: 'templates/single-order.html',
           controller: 'SingleOrderCtrl'
@@ -211,7 +211,11 @@ app.config(function($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/app/home');
 });
 
-
+app.filter('reverse', function() {
+  return function(items) {
+    return items.slice().reverse();
+  };
+});
 // Binding controllers..
 app.controller("AppCtrl", AppCtrl);
 app.controller("HomeCtrl", HomeCtrl);
