@@ -1,8 +1,8 @@
 export default function CartCtrl($scope, $timeout, AuthService, $firebaseObject, $firebaseArray, $state) {
-  // if(!AuthService.isLoggedIn){
-  //   console.log("AuthService.isLoggedIn", AuthService.isLoggedIn)
-  //   $state.go("app.login");
-  // }
+  if(!AuthService.isLoggedIn){
+    console.log("AuthService.isLoggedIn", AuthService.isLoggedIn)
+    $state.go("app.login");
+  }
 
   $scope.purchases = {};
   $scope.products = {};

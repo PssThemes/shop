@@ -74,7 +74,7 @@
 
                 <div class="v-center p-t-20 p-b-10">
 
-                  <img ng-src="{{ clients[review.clientId].profileImage }}" alt="1" width="35" height="35" class="round">
+                  <img ng-src="{{ getClientProfileImage(clientId) }}" alt="1" width="35" height="35" class="round">
 
                   <p class="text-dark m-b-0 p-l-10">{{ clients[review.clientId].name }} <span class="fs-12 text-gray block">{{ review.date | date }}</span></p>
 
@@ -102,7 +102,7 @@
 
                           <div class="v-center p-t-20 p-b-10">
                             <img ng-src="{{ adminImage.$value }}" alt="1" width="35" height="35" class="round">
-                            <p class="text-dark m-b-0 p-l-10">{{ clients[review.clientId].name }} <span class="fs-12 text-gray block"></span></p>
+                            <p class="text-dark m-b-0 p-l-10">{{ "admin" }} <span class="fs-12 text-gray block"></span></p>
                             <p class="text-gray">{{ reply.text }}</p>
                           </div>
 
@@ -112,7 +112,7 @@
                         <!-- this is a user reply  -->
                         <div ng-if="reply.who == 'client'">
                           <div class="v-center p-t-20 p-b-10">
-                            <img ng-src="{{ clients[review.clientId].profileImage }}" alt="1" width="35" height="35" class="round">
+                            <img ng-src="{{ getClientProfileImage(review.clientId) }}" alt="1" width="35" height="35" class="round">
                             <p class="text-dark m-b-0 p-l-10">{{ clients[review.clientId].name }} <span class="fs-12 text-gray block"></span></p>
                             <p class="text-gray">{{ reply.text }}</p>
                           </div>

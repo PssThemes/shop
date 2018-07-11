@@ -9,28 +9,35 @@
 
       <!-- Favorites list -->
       <div ng-repeat="product in favoriteProducts">
-        <div class="m-10">
 
-          <div class="row p-t-10 p-b-10 border-b border-t v-center">
+          <div class="m-10">
 
-            <div class="col-20">
-              <img ng-src="{{ product.mainProductImage }}" width="40" height="40" class="round cover">
-            </div>
+            <div class="row p-t-10 p-b-10 border-b border-t v-center">
 
-            <div class="col-30">
-              <p class="fw-600 m-b-0">{{ product.name }}</p>
-              <p class="text-gray  m-b-0">{{ product.short_description }}</p>
-            </div>
+              <div class="col-20">
+                <img ng-src="{{ product.mainProductImage }}" width="40" height="40" class="round cover">
+              </div>
 
-            <div class="col-20 v-center">
-              <span class="text-blue fw-100 fs-20 p-r-10">{{ product.price | currency }}</span>
-              <img ng-click="removeFromFavorites(product.$id)" src="https://png.icons8.com/dotty/20/8389af/dislike.png">
+              <a ui-sref="app.single-product({ productId: product.$id })">
+                <div class="col-30">
+                  <p class="fw-600 m-b-0">{{ product.name }}</p>
+                  <p class="text-gray  m-b-0">{{ product.short_description }}</p>
+                </div>
+              </a>
+
+              <div class="col-20 v-center">
+                <span class="text-blue fw-100 fs-20 p-r-10">{{ product.price | currency }}</span>
+                <img ng-click="removeFromFavorites(product.$id)" src="https://png.icons8.com/dotty/20/8389af/dislike.png">
+              </div>
+
             </div>
 
           </div>
 
-        </div>
       </div>
+
+
+
     </div>
 
 

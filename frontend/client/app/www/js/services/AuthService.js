@@ -1,4 +1,4 @@
-export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseArray){
+export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseArray, $state){
 
   this.authObj = $firebaseAuth();
   this.isLoggedIn = false;
@@ -109,6 +109,10 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
   }
 
   this.toggleFavorite = productId => {
+    if(!this.user){
+      $state.go("app.login");
+      return;
+    }
     if(this.isFavorite(productId)) {
       removeProductFromFavorites(productId, this.user.uid);
     } else {
@@ -252,6 +256,10 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
   }
 
   this.toggleAddToCart = productId => {
+    if(!this.user){
+      $state.go("app.login");
+      return;
+    }
     if(this.productIsAlreadyInCart(productId)){
       this.removeFromCart(productId);
     }

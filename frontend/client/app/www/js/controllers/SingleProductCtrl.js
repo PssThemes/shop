@@ -9,7 +9,7 @@ export default function SingleProductCtrl(
   const db = firebase.database();
   const productId = $stateParams.productId;
 
-
+  $scope.clients = {};
   $scope.clientId = null;
   AuthService.onAuthStateChanged(user => {
     $scope.$apply(() => {
@@ -50,7 +50,32 @@ export default function SingleProductCtrl(
 
   // PRODUCT REVIEWS
   $scope.reviews = $firebaseArray(db.ref("products/" + productId + "/reviews"));
+  $scope.reviews.$watch(() => {
 
+      console.log("watch.. ");
+
+      const clientsIds = $scope.reviews
+        .map(review => review.clientId);
+
+      console.log("clientsIds: ", clientsIds);
+
+      clientsIds.map(clientId => {
+          console.log("hey: ", clientId);
+          const userRef = firebase.database().ref("users").child(clientId);
+          $scope.clients[clientId] = $firebaseObject(userRef);
+        });
+
+      console.log("$scope.clients: ", $scope.clients);
+
+  });
+
+  $scope.getClientProfileImage = (clientId) => {
+    const img = ($scope.clients[clientId] || {}).profileImage;
+    const defaultImage =  "img/avatar.jpg";
+    const result = (img == "" || img == undefined ) ?  defaultImage : img;
+    console.log(" getClientProfileImage: ", result);
+    return result;
+  };
 
   $scope.saveReview = (message, nrOfStars) => {
     if($scope.clientId){
@@ -88,12 +113,6 @@ export default function SingleProductCtrl(
 
   $scope.adminImage = $firebaseObject(db.ref("adminImage"));
 
-
-  $scope.clients = {
-    "-LFvnFfrOYynaicGdxAH" : {
-      profileImage : "https://randomuser.me/api/portraits/men/2.jpg"
-    }
-  }
 
 
   // The logged in client can reply to a review.
