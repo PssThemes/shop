@@ -1,17 +1,20 @@
-const proxyUrl = 'https://cors-anywhere.herokuapp.com/'
-const targetUrl = 'https://ecom.pssthemes.com/prestashop/api/products'
-// console.log("it works");
-fetch( proxyUrl + targetUrl,
-    { headers: {
-      "Content-Type": "application/json",
-      "Authorization" : "R21PLEPZI2H4KAXQ4RPG1FELYEI17GYI"
-      // "Content-Type": "application/x-www-form-urlencoded",
-      }
-    })
-    // .then(blob => blob.json())
+// PRESTASHOP STUFF
+const request = require("request-promise-native");
+const apiPrestashopKey = "R21PLEPZI2H4KAXQ4RPG1FELYEI17GYI";
+
+function getProduct(id){
+  const targetUrl = 'https://ecom.pssthemes.com/prestashop/api/products/1?output_format=JSON';
+  return request.get(targetUrl, {}).auth(apiPrestashopKey)
+}
+function getProducts(){
+  const targetUrl = 'https://ecom.pssthemes.com/prestashop/api/products/?output_format=JSON';
+  return request.get(targetUrl, {}).auth(apiPrestashopKey);
+}
+
+getProducts()
     .then(result => {
-      console.log("result: ", result)
+      console.log("result: ", result);
     })
-    .catch(err => {
-       console.log("err: ", err);
-    });
+    .catch(error => {
+      console.log("error: ", error);
+    })
