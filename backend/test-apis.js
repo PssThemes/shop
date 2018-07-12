@@ -1,3 +1,8 @@
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 // PRESTASHOP STUFF
 const request = require("request-promise-native");
 const apiPrestashopKey = "R21PLEPZI2H4KAXQ4RPG1FELYEI17GYI";
@@ -152,32 +157,33 @@ const apiPrestashopKey = "R21PLEPZI2H4KAXQ4RPG1FELYEI17GYI";
 //   });
 // });
 
+// NOTE: we have no way so far in woocommerce to get all the products from 1 category.
 
-// -----------------------------------------
-// -----------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-// WooCommerce.get('products?filter[category]="decor"', function(err, data, res) {
-//   console.log(res);
-// });
-//
-// "categories":[
-//          {
-//             "id":16,
-//             "name":"Clothing",
-//             "slug":"clothing"
-//          }
-//       ],
-//
-//
-//       "categories":[
-//                {
-//                   "id":21,
-//                   "name":"Decor",
-//                   "slug":"decor"
-//                }
-//             ],
 
-// function Prestashop_getProducts(){
-//   const targetUrl = 'https://ecom.pssthemes.com/woocommerce/wp-json/wc/v2/products';
-//   return request.get(targetUrl, {}).auth(apiPrestashopKey);
-// }
+// SHOPPIFY
+
+const Shopify = require('shopify-api-node');
+
+const shopify = new Shopify({
+  shopName: 'shop-dop.myshopify.com',
+  apiKey: '5a0e2ee78ef4cf8195d8b09ab4008b09',
+  password: '1d5b877b681052373a8b375c0ff6ccc2'
+});
+
+shopify email is:
+prettysmartsoft@gmail.com
+password is in meail.
+
+
+
+
+
+
+
+
+// --
