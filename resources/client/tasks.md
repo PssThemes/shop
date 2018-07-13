@@ -5,11 +5,11 @@
 13 iulie 2018
 
 - get the products from the shopify app.
-- get the categories form shopify.
+- get the categories from shopify.
 
 Build a new file just for prestashop.
 Make it a full blown firebase included functionality module.
-Put everytthing in a cloud function.
+Put everything in a cloud function.
 
 Build the woocommerce module.
 Put it into a firebase function.
@@ -19,20 +19,17 @@ Put into a firebase function.
 
 Deploy the functions.
 
-Build another function that acts as a skeduler.
+Build another function that acts as an intermediary skeduler.
 This will read form realtime database..  how fast needs to invoke the other 3 cloud functions.
 
+Skedule this 4th function with firebase built in skedulers.
 
 
 
 
 
-
-
-
-
-
-
+HANDLE SECURITY!!!
+Or tell people this is not secure.
 
 ## where i am:
 

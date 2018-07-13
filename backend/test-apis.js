@@ -175,9 +175,145 @@ const shopify = new Shopify({
   password: '1d5b877b681052373a8b375c0ff6ccc2'
 });
 
-shopify email is:
-prettysmartsoft@gmail.com
-password is in meail.
+
+
+
+// -----------------------------------
+// Getting External categoreis form shopify
+// -----------------------------------
+// function Shopily_getExternalCats(){
+//   return new Promise((res, rej) => {
+//
+//     shopify.customCollection.list()
+//     // shopify.collect.get(62468784195)
+//     .then(collections => {
+//
+//       const externalCategories = collections.map(collection => {
+//         return {
+//           name: collection.title,
+//           externalCatId: collection.id
+//         }
+//       });
+//
+//       console.log("shopify externalCategories", externalCategories);
+//       res(externalCategories);
+//
+//     })
+//     .catch(error => {
+//       console.log("error: ", error);
+//     });
+//
+//   });
+// }
+// Shopily_getExternalCats().then(() => {});
+
+// -----------------------------------
+// Getting all products from shopify.
+// -----------------------------------
+
+// function Shopify_getAllProducts(){
+//   shopify.product.list().then(products => {
+//     console.log("products: ", products);
+//   })
+//   .catch(error => {
+//     console.log("error: ", error);
+//   });
+// }
+// Shopify_getAllProducts()
+
+// -----------------------------------
+// Getting products from a specific category in shopify.
+// -----------------------------------
+
+function getProductsIdsForCategory(categorId){
+  return new Promise((res, rej) => {
+    // NOTE: based on this: https://stackoverflow.com/questions/24228734/how-to-retrieve-all-products-from-a-smart-collection-through-shopify-api
+    // is required to get the product using the collect.. and not directly from the category.
+    shopify.collect.list({ collection_id : categorId })
+      .then(collects => {
+        const productIds = collects.map(collect  => {
+          return collect.product_id;
+        })
+        res(productIds);
+      })
+      .catch(error => {
+        rej(error);
+      });
+
+  });
+}
+
+function getProducts(productsIds){
+  const allProductsAsPromised = productsIds.map(productId => {
+    return shopify.product.get(productId);
+  });
+  return Promise.all(allProductsAsPromised);
+}
+
+function getProductsForCategory(categoryId){
+  return getProductsIdsForCategory(categoryId)
+    .then((productIds) => {
+      return getProducts(productIds);
+    });
+}
+
+
+getProductsForCategory(62656053315)
+  .then(products => {
+
+    const preparedProducts = products.map(product => {
+      console.log("product price>? : ", product);
+      return {
+        mainProductImage:  (product.image || {}).src || "",
+        media: product.images.map(img => {
+          return img.src
+        }),
+        name: product.title,
+        price: product.variants[0].price || 0,
+        description: product.body_html
+      }
+    });
+
+    console.log("preparedProducts: ", preparedProducts);
+
+  })
+  .catch(error => {
+    console.log("error: ", error);
+  })
+
+
+
+// --------------------------------------------------------------------
+// return new Promise((res, rej) => {
+//
+//     .then(products => {
+//       // TODO: handle the conversion to here.
+//       res(products);
+//     })
+//     .catch(error => {
+//       rej(error);
+//     })
+// });
+
+
+
+
+// shopify.product.list()
+// shopify.collect.list({ collection_id : 62468784195 })
+// shopify.collect.get(9339937226819)
+// shopify.customCollection.get(9339937226819)
+// shopify.customCollection.list()
+// // shopify.collect.get(62468784195)
+  // .then(result => {
+  //   console.log("result: ", result);
+  // })
+  // .catch(error => {
+  //   console.log("error: ", error);
+  // });
+
+// shopify email is:
+// prettysmartsoft@gmail.com
+// password is in meail.
 
 
 
