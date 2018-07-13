@@ -1,3 +1,39 @@
+
+
+
+
+13 iulie 2018
+
+- get the products from the shopify app.
+- get the categories form shopify.
+
+Build a new file just for prestashop.
+Make it a full blown firebase included functionality module.
+Put everytthing in a cloud function.
+
+Build the woocommerce module.
+Put it into a firebase function.
+
+Build the shopify module.
+Put into a firebase function.
+
+Deploy the functions.
+
+Build another function that acts as a skeduler.
+This will read form realtime database..  how fast needs to invoke the other 3 cloud functions.
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## where i am:
 
 - i have the appCtrl which is the one controlling the menu.. being abstract in ui router.
