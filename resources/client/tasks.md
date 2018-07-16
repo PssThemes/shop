@@ -1,6 +1,9 @@
 
-
-
+16 iulie 2018
+- bind event listeners to the products that are in cart.  
+    - bind event for each product added.
+    - bind events for each product when the app loads.
+  Remove the item from cart if is removed from firebase.
 
 13 iulie 2018
 

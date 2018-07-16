@@ -1,3 +1,15 @@
+
+
+const SHOPNAME = "shopify";
+
+
+
+
+
+
+
+
+
 // 1.
 // Load the api key and secret from the firebase database.
 // I need shop name. apikey  and password.
