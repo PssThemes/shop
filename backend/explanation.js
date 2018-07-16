@@ -8,7 +8,7 @@ loadExternalCategoriesIds: ShopName -> List (CustomCategoryId, ExternalCategoryI
 
 
   loadExternalProducts: ShopName -> List ExternalProduct
-    loadProductsFromShopify: ExternalCategoryId ->  List ExternalProduct
+    loadExternalProductsFromShopifyByCategory: ExternalCategoryId ->  List ExternalProduct
     loadProductsFromWoocomerce: ExternalCategoryId -> List ExternalProduct
     loadProductsFromPrestaShop: ExternalCategoryId -> List ExternalProduct
 

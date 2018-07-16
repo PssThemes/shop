@@ -167,14 +167,7 @@
 
 // SHOPPIFY
 //
-// const Shopify = require('shopify-api-node');
-//
-// const shopify = new Shopify({
-//   shopName: 'shop-dop.myshopify.com',
-//   apiKey: '5a0e2ee78ef4cf8195d8b09ab4008b09',
-//   password: '1d5b877b681052373a8b375c0ff6ccc2'
-// });
-//
+
 
 
 
