@@ -53,16 +53,17 @@ function SettingsCtrl($scope, BackendService) {
   // ---------------------------------------------------
   // Shopify
   // ---------------------------------------------------
+  $scope.shopifyShopName = "";
   $scope.shopifyKey = "";
   $scope.shopifySecret = "";
   $scope.saveShopifySettings = () => {
 
-    if($scope.settings.configureShopify($scope.shopifyKey, $scope.shopifySecret)){
+    if($scope.settings.configureShopify($scope.shopifyKey, $scope.shopifySecret, $scope.shopifyShopName)){
 
       BackendService.updateSettings($scope.settings)
         .catch(err => {
           console.log("could not update the settings because: ", err );
-        })
+        });
     }
   };
 

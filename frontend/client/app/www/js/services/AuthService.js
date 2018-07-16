@@ -1,4 +1,4 @@
-export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseArray){
+export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseArray, $state){
 
   this.authObj = $firebaseAuth();
   this.isLoggedIn = false;
@@ -16,6 +16,7 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
   this.favorites = null;
   this.favoriteObservers = [];
 
+
   // cart
   this.onCartChangedObservers = [];
 
@@ -25,10 +26,10 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
       userCartRef.set(null);
       this.cart = null;
     }
+    console.log("clearCart: ", this.cart);
   };
 
   this.authObj.$onAuthStateChanged(user =>  {
-    console.log("$onAuthStateChanged: ", this.onAuthStateChangedObservers)
     this.onAuthStateChangedObservers.map(observer => observer(user));
 
     if(user){
@@ -45,7 +46,6 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
       this.userProfile
         .$loaded()
         .then(() => {
-          console.log("onProfileLoadedObservers", this.onProfileLoadedObservers)
           this.onProfileLoadedObservers.map(obs => obs())
         })
         .catch(err => console.log("error: ", err));
@@ -109,6 +109,10 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
   }
 
   this.toggleFavorite = productId => {
+    if(!this.user){
+      $state.go("app.login");
+      return;
+    }
     if(this.isFavorite(productId)) {
       removeProductFromFavorites(productId, this.user.uid);
     } else {
@@ -252,6 +256,10 @@ export default function AuthService ($firebaseAuth, $firebaseObject, $firebaseAr
   }
 
   this.toggleAddToCart = productId => {
+    if(!this.user){
+      $state.go("app.login");
+      return;
+    }
     if(this.productIsAlreadyInCart(productId)){
       this.removeFromCart(productId);
     }

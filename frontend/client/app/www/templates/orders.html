@@ -1,22 +1,31 @@
 <ion-content id="scrollContent" scroll-watch>
 
-    <div class="p-20">
-          <h4 class="cap p-t-10 p-b-10 fs-14 text-gray">my orders</h4>
+    <!-- No orders here. -->
+    <div ng-if="noOrders()">
+      You dont have any order..
+    </div>
 
-          <!-- Orders -->
+    <!-- There are some orders. -->
+    <div ng-if="!noOrders()">
+      <div class="p-20">
+        <h4 class="cap p-t-10 p-b-10 fs-14 text-gray">my orders</h4>
 
-          <!-- <a ui-sref="single-order({ orderId: order.$id })" class="no-decoration" ng-repeat="(index, order) in orders"> -->
+        <!-- Orders -->
 
-          <a ui-sref="app.single-order({ productId : product.$id })" class="no-decoration" ng-repeat="(index, order) in orders">
-            <div class="row border-t border-b p-t-10 p-b-10">
-              <div class="col-10 text-gray">#{{index + 1}}</div>
-              <div class="col-50 text-gray">Order date: {{order.date | date:'shortDate' }}</div>
-              <!-- <div class="col-30 text-gray">12.09.2018</div> -->
-              <div class="col-20 text-right"><img src="img/icons/chevron-right.png"></div>
-            </div>
-          </a>
+        <!-- <a ui-sref="single-order({ orderId: order.$id })" class="no-decoration" ng-repeat="(index, order) in orders"> -->
 
-    </div><!-- end list tabs -->
+        <a ui-sref="app.single-order({ orderId : order.$id })" class="no-decoration" ng-repeat="(index, order) in orders">
+          <div class="row border-t border-b p-t-10 p-b-10">
+            <div class="col-10 text-gray">#{{ index + 1 }}</div>
+            <div class="col-50 text-gray">Order date: {{ order.date | date:'shortDate' }}</div>
+            <!-- <div class="col-30 text-gray">12.09.2018</div> -->
+            <div class="col-20 text-right"><img src="img/icons/chevron-right.png"></div>
+          </div>
+        </a>
+
+      </div><!-- end list tabs -->
+    </div>
+
 
 
     <div class="p-b-50"></div>

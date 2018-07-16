@@ -10,6 +10,11 @@
   </div>
 
   <div class="">
+    Your Shop Name: <br>
+    <input type="text" ng-model="shopifyShopName">
+  </div>
+
+  <div class="">
     Api Key: <br>
     <input type="text" ng-model="shopifyKey">
   </div>
@@ -22,7 +27,7 @@
   <button type="button" ng-click="saveShopifySettings()">Save</button>
   <br>
 
-  <!-- TODO: ask vlad what to do here .. he sais is 1 liner.. i don't see how.--> 
+  <!-- TODO: ask vlad what to do here .. he sais is 1 liner.. i don't see how.-->
   <!-- <select ng-model="shopifySyncRate"
     ng-change="saveSyncRate('shopify', shopifySyncRate)"
     >

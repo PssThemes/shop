@@ -211,7 +211,11 @@ app.config(function($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/app/home');
 });
 
-
+app.filter('reverse', function() {
+  return function(items) {
+    return items.slice().reverse();
+  };
+});
 // Binding controllers..
 app.controller("AppCtrl", AppCtrl);
 app.controller("HomeCtrl", HomeCtrl);

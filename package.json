@@ -12,6 +12,12 @@
   "dependencies": {
     "cors": "^2.8.4",
     "express": "^4.16.3",
-    "typy": "^2.0.1"
+    "firebase": "^5.2.0",
+    "prestan": "^1.1.0",
+    "request": "^2.87.0",
+    "request-promise-native": "^1.0.5",
+    "shopify-api-node": "^2.14.1",
+    "typy": "^2.0.1",
+    "woocommerce-api": "^1.4.2"
   }
 }

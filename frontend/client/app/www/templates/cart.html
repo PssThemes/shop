@@ -1,6 +1,12 @@
-Your cart.
-<div class="">
 
+<!-- when Cart is empty -->
+<div ng-if="!cartIsEmpty()">
+  Your cart is empty
+</div>
+
+<!-- when Cart contains stuff -->
+<div ng-if="cartIsEmpty()">
+  Your cart.
   <div ng-repeat="product in products">
 
     <button type="button" ng-click="updateHowManyBy( product.$id, 1)">+</button>

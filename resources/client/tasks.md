@@ -1,3 +1,36 @@
+
+
+
+
+13 iulie 2018
+
+- get the products from the shopify app.
+- get the categories from shopify.
+
+Build a new file just for prestashop.
+Make it a full blown firebase included functionality module.
+Put everything in a cloud function.
+
+Build the woocommerce module.
+Put it into a firebase function.
+
+Build the shopify module.
+Put into a firebase function.
+
+Deploy the functions.
+
+Build another function that acts as an intermediary skeduler.
+This will read form realtime database..  how fast needs to invoke the other 3 cloud functions.
+
+Skedule this 4th function with firebase built in skedulers.
+
+
+
+
+
+HANDLE SECURITY!!!
+Or tell people this is not secure.
+
 ## where i am:
 
 - i have the appCtrl which is the one controlling the menu.. being abstract in ui router.
@@ -146,3 +179,20 @@ console.log something when is pressed.
 then create the purchase object there.
 
 --------
+
+
+
+
+
+
+Bugs.
+<!-- Pagina de favorite arata empooty can d are producse. DONE. -->
+<!-- Afisez statusul orderului .. DONE. -->
+<!-- Email validation in settings. -->
+<!-- reverse list of recently viewed products. -->
+La comentaiii in pagina de produs.. userul apare nelogat.
+
+
+
+
+--

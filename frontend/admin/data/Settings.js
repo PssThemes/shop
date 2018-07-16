@@ -9,6 +9,7 @@ export default class Settings {
       configured: settingsData.shopify.configured || false,
       apiKey: settingsData.shopify.apiKey || "",
       apiSecret: settingsData.shopify.apiSecret || "",
+      shopifyShopName: settingsData.shopify.shopifyShopName || "",
       sync: settingsData.shopify.sync || true,
       syncRate: settingsData.shopify.syncRate || 5000,
     };
@@ -77,7 +78,7 @@ export default class Settings {
 
   // NOTE: this is super duplication .. but this is temporaryt since each shop is configured
   // diferently .. so in reality this functions will be so different, then code will not look like duplication at all.
-  configureShopify(key, secret){
+  configureShopify(key, secret, nameOfShop){
     if(!key || !secret){
       throw new Error(`Bad key or secret for Shopify. key is: "${key}" and secret is: "${secret}"`);
     }
@@ -89,7 +90,8 @@ export default class Settings {
     this.shopify = {
       configured: true,
       apiKey: key.trim(),
-      apiSecret: secret.trim()
+      apiSecret: secret.trim(),
+      shopifyShopName: nameOfShop
     }
     return true;
   }

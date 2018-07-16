@@ -10,7 +10,7 @@ export default function FavoritesCtrl($scope,$timeout, $stateParams,$state, Auth
 
     favoritesRef.on("value", snap => {
       const favs = snap.val();
- 
+
       if(favs){
         console.log("favs: ", favs);
         $scope.favoriteProducts = Object.keys(favs).reduce((acc, productId) => {
@@ -40,6 +40,10 @@ export default function FavoritesCtrl($scope,$timeout, $stateParams,$state, Auth
       // NOTE: without this the last product does not get deleted since the firebase event does not fire for non existent collections.
       delete $scope.favoriteProducts[productId];
       favoritesRef.child(productId).set(null);
+    }
+
+    $scope.noFavorites = () => {
+      return Object.keys($scope.favoriteProducts) == [];
     }
 
   }

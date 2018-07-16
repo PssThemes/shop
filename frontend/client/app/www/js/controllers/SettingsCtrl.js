@@ -62,10 +62,15 @@ export default function SettingsCtrl($scope, $stateParams,$state,AuthService){
     const allAreValid = emailIsValid;
 
     if(allAreValid){
+
       const userProfileRef = firebase.database().ref("users").child(AuthService.user.uid);
       userProfileRef.update(profile);
+      $scope.emailError = "";
+
     }else{
+
       $scope.emailError = emailError;
+
     }
 
   }

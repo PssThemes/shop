@@ -9,7 +9,7 @@ export default function SingleProductCtrl(
   const db = firebase.database();
   const productId = $stateParams.productId;
 
-
+  $scope.clients = {};
   $scope.clientId = null;
   AuthService.onAuthStateChanged(user => {
     $scope.$apply(() => {
@@ -25,17 +25,57 @@ export default function SingleProductCtrl(
 
 
   // Load the recently viewd products form a service where we store them.
-  $scope.recentlyViewedProducts = RecentlyViewedProductsService.getLastProducts();
+  $scope.recentlyViewedProducts = RecentlyViewedProductsService.products;
+  $scope.recentlyViewedProductsIds = RecentlyViewedProductsService.productIds;
 
+  $scope.getRecentProductIds = () => {
+
+    const productIds = $scope.recentlyViewedProductsIds;
+
+    if($scope.product){
+
+      const productId = $scope.product.$id;
+      const ids = productIds.filter(x => x != productId);
+      return ids.reverse();
+
+    }else{
+      return productIds.reverse();
+    }
+  }
 
   // PRODUCT
   $scope.product = $firebaseObject(db.ref("products/" + productId));
 
-  RecentlyViewedProductsService.addProduct($scope.product);
+  RecentlyViewedProductsService.addProduct($scope.product.$id);
 
   // PRODUCT REVIEWS
   $scope.reviews = $firebaseArray(db.ref("products/" + productId + "/reviews"));
+  $scope.reviews.$watch(() => {
 
+      console.log("watch.. ");
+
+      const clientsIds = $scope.reviews
+        .map(review => review.clientId);
+
+      console.log("clientsIds: ", clientsIds);
+
+      clientsIds.map(clientId => {
+          console.log("hey: ", clientId);
+          const userRef = firebase.database().ref("users").child(clientId);
+          $scope.clients[clientId] = $firebaseObject(userRef);
+        });
+
+      console.log("$scope.clients: ", $scope.clients);
+
+  });
+
+  $scope.getClientProfileImage = (clientId) => {
+    const img = ($scope.clients[clientId] || {}).profileImage;
+    const defaultImage =  "img/avatar.jpg";
+    const result = (img == "" || img == undefined ) ?  defaultImage : img;
+    console.log(" getClientProfileImage: ", result);
+    return result;
+  };
 
   $scope.saveReview = (message, nrOfStars) => {
     if($scope.clientId){
@@ -60,15 +100,19 @@ export default function SingleProductCtrl(
     $scope.showReviews = !$scope.showReviews;
   }
 
+  $scope.getProfileImage = (reviewClientId) => {
+
+    const defaultImage = "img/avatar.jpg"
+    const image = clients[review.clientId].profileImage;
+    const result = image ? image : defaultImage;
+
+    console.log("result ", result);
+
+    return result;
+  }
 
   $scope.adminImage = $firebaseObject(db.ref("adminImage"));
 
-
-  $scope.clients = {
-    "-LFvnFfrOYynaicGdxAH" : {
-      profileImage : "https://randomuser.me/api/portraits/men/2.jpg"
-    }
-  }
 
 
   // The logged in client can reply to a review.
@@ -124,12 +168,5 @@ export default function SingleProductCtrl(
 
   $scope.productIsAlreadyInCart = AuthService.productIsAlreadyInCart;
   $scope.toggleAddToCart = AuthService.toggleAddToCart;
-
-  // $scope.addToFavorites = () => {
-  //   const productId = $scope.product.$id;
-  //
-  //   db.ref("users").child(AuthService.user.uid).child("favorites").child(productId).set(productId)
-  //     .catch(err => console.log("could not add product to favorites: ", err))
-  // }
 
 }
