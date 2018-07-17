@@ -1,6 +1,6 @@
 
 loadSettings: Settings
-loadExternalCategoriesIds: ShopName -> List (CustomCategoryId, ExternalCategoryId)
+loadPairsOfCategories: ShopName -> List (CustomCategoryId, ExternalCategoryId)
 
   // for each external category:
   // notice because we load all products at once.. we dont need that reference dict anymore.
@@ -13,7 +13,7 @@ loadExternalCategoriesIds: ShopName -> List (CustomCategoryId, ExternalCategoryI
     loadProductsFromPrestaShop: ExternalCategoryId -> List ExternalProduct
 
     // for each product:
-    convertFromExternalProductToCustomProduct: ExtenralProduct -> CustomProduct
+    convertFromExternalProductToCustomProductData: ExtenralProduct -> CustomProductData
     // using:
       convertShopifyProductToCustomProductData: ExtenralProduct -> CustomProductData
       convertWoocomerceProductToCustomProductData: ExtenralProduct -> CustomProductData

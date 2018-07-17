@@ -170,35 +170,42 @@
 
 
 
+const Shopify = require('shopify-api-node');
+const shopify = new Shopify({
+  shopName: "shop-dop.myshopify.com",
+  apiKey: "5a0e2ee78ef4cf8195d8b09ab4008b09",
+  password: "1d5b877b681052373a8b375c0ff6ccc2",
+});
+
 
 // -----------------------------------
 // Getting External categoreis form shopify
 // -----------------------------------
-// function Shopily_getExternalCats(){
-//   return new Promise((res, rej) => {
-//
-//     shopify.customCollection.list()
-//     // shopify.collect.get(62468784195)
-//     .then(collections => {
-//
-//       const externalCategories = collections.map(collection => {
-//         return {
-//           name: collection.title,
-//           externalCatId: collection.id
-//         }
-//       });
-//
-//       console.log("shopify externalCategories", externalCategories);
-//       res(externalCategories);
-//
-//     })
-//     .catch(error => {
-//       console.log("error: ", error);
-//     });
-//
-//   });
-// }
-// Shopily_getExternalCats().then(() => {});
+function Shopily_getExternalCats(){
+  return new Promise((res, rej) => {
+
+    shopify.customCollection.list()
+    // shopify.collect.get(62468784195)
+    .then(collections => {
+
+      const externalCategories = collections.map(collection => {
+        return {
+          name: collection.title,
+          externalCatId: collection.id
+        }
+      });
+
+      console.log("shopify externalCategories", externalCategories);
+      res(externalCategories);
+
+    })
+    .catch(error => {
+      console.log("error: ", error);
+    });
+
+  });
+}
+Shopily_getExternalCats().then(() => {});
 
 // -----------------------------------
 // Getting all products from shopify.
