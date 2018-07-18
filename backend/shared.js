@@ -288,33 +288,31 @@ exports.detectWhatActionNeedsToBeTaken = (
   createdExternalProductsIds
 ) => {
 
-  1315172319299 in [ 1315172319299, 1316463509571 ]
-
   if(!customProductData){
-    console.log("customProductData is falsy: ", customProductData);
+    console.log(new Error(`customProductData is falsy:  ${customProductData}`));
     return;
   }
 
   if(!removedExternalProducsIds){
-    console.log("removedExternalProducsIds is falsy: ", removedExternalProducsIds);
+    console.log(new Error(`removedExternalProducsIds is falsy: ${removedExternalProducsIds}`));
     return;
   }
 
   if(!createdExternalProductsIds){
-    console.log("createdExternalProductsIds is falsy: ", createdExternalProductsIds);
+    console.log(new Error(`createdExternalProductsIds is falsy: ${createdExternalProductsIds}`, ));
     return;
   }
 
   const externalProductIdInShop = customProductData.externalProductId;
-
-  console.log("createdExternalProductsIds: ", createdExternalProductsIds);
-  console.log("externalProductIdInShop: ", externalProductIdInShop );
-  console.log("one in another..: ", createdExternalProductsIds.includes(externalProductIdInShop));
+  //
+  // console.log("createdExternalProductsIds: ", createdExternalProductsIds);
+  // console.log("externalProductIdInShop: ", externalProductIdInShop );
+  //
   if(removedExternalProducsIds.includes(externalProductIdInShop)){
     // product has been removed
     if(maybe_corespondingCustomProduct){
       // TODO: make sure you adde the id property on each product using the push method upfront.
-      return { actionName: "delete", customProductId: maybe_corespondingCustomProduct.id }
+      return { actionName: "delete", selfId: maybe_corespondingCustomProduct.selfId }
     }else{
       // this is supposed to be an imposible state ?!!
       return { actionName: "do-nothing" }
@@ -339,15 +337,15 @@ exports.detectWhatActionNeedsToBeTaken = (
 };
 
 function compareProducts(){
-  return false;
+  return true;
 }
 
 exports.createProduct = (customProductData, customCategoryId, shopName) => {
-  const productsRef = db.ref("products");
-  const key = productsRef.push().key;
+  const key = db.ref().child("products").push().key;
+  const productRef = db.ref().child("products").child(key);
 
   const product = {
-    productId: key,
+    selfId: key,
     categorId: customCategoryId,
     externalProductId : customProductData.externalProductId,
     isHidden: false,
@@ -358,12 +356,15 @@ exports.createProduct = (customProductData, customCategoryId, shopName) => {
     short_description: customProductData.description.substring(0,200),
     shopName: shopName,
     howManyTimesWasOrdered : 0,
-  } 
+  }
 
-  console.log("product: ", product );
-
-  productsRef.child(key).set(product);
+  productRef.set(product);
 }
+
+exports.deleteProduct = (productId) => {
+  db.ref("products").child(productId).set(null);
+}
+
 // exports.detectWhatActionNeedsToBeTaken = (customProductData, customProducts) => {
 //   if(!customProductData){
 //     console.log("customProductData is not the right value: ", customProductData );

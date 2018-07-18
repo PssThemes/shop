@@ -1,10 +1,13 @@
+
 const Shared = require("./shared.js");
 
-///////////////////////////////////////////////
-// Shared.loadPairsOfCategories("shopify")
-// // .then(x => console.log(x))
-// .catch(err => console.log("err: ", err));
-///////////////////////////////////////////////
+/////////////////////////////////////////////
+Shared.loadPairsOfCategories("shopify")
+// .then(x => console.log(x))
+.catch(err => console.log("err: ", err));
+/////////////////////////////////////////////
+
+
 
 const SHOPNAME = "shopify"
 Promise.all([
@@ -17,10 +20,13 @@ Shared.loadCustomProductsFromFirebase(SHOPNAME)
   const settings = result[0];
   const pairsOfCategories = result[1];
   const customProducts = result[2] || {};
-  console.log("customProducts: ", customProducts);
   const externalProductsIdsFromFirebase = Object.keys(customProducts).map(key =>  customProducts[key].externalProductId);
 
+  console.log("externalProductsIdsFromFirebase: ", externalProductsIdsFromFirebase);
+
+
   pairsOfCategories.map(bothCats => {
+
     const externalCategoryId = bothCats.externalCategoryId;
     const customCategoryId = bothCats.customCategoryId;
     const promisedProducts = Shared.loadExternalProducts(SHOPNAME, settings, externalCategoryId)
@@ -29,15 +35,21 @@ Shared.loadCustomProductsFromFirebase(SHOPNAME)
       .then(externalProducts => {
 
         const externalProductsIdsFromShop = externalProducts.map(p => p.id);
+        console.log("externalProductsIdsFromShop: ", externalProductsIdsFromShop );
+
 
         const removedExternalProducsIds = getRemovedProductsIds(externalProductsIdsFromFirebase, externalProductsIdsFromShop);
-        console.log("removedExternalProducsIds: ", removedExternalProducsIds );
 
         const createdExternalProductsIds = getCreatedProductsIds(externalProductsIdsFromFirebase, externalProductsIdsFromShop);
+
+        console.log("removedExternalProducsIds: ", removedExternalProducsIds );
         console.log("createdExternalProductsIds: ", createdExternalProductsIds );
 
         externalProducts.map(externalProduct => {
           const customProductData = Shared.convertFromExternalProductToCustomProductData(SHOPNAME, externalProduct);
+
+
+          // TODO figure out if this beeing false is the right value here.
 
           const maybe_corespondingCustomProduct = Object.keys(customProducts).reduce((acc, key) => {
             const externalProductIdInFirebase = customProducts[key].externalProductId;
@@ -53,6 +65,8 @@ Shared.loadCustomProductsFromFirebase(SHOPNAME)
             }
           }, false);
 
+          // console.log("maybe_corespondingCustomProduct: ", maybe_corespondingCustomProduct);
+
           const actionToBeTaken = Shared.detectWhatActionNeedsToBeTaken(
                       customProductData,
                       maybe_corespondingCustomProduct,
@@ -66,7 +80,7 @@ Shared.loadCustomProductsFromFirebase(SHOPNAME)
           }
 
           if(actionToBeTaken.actionName == "delete"){
-
+            Shared.deleteProduct(actionToBeTaken.selfId);
           }
 
           if(actionToBeTaken.actionName == "update"){
@@ -81,6 +95,9 @@ Shared.loadCustomProductsFromFirebase(SHOPNAME)
           // the sidefect is writing the right products in firebase
           return;
         })
+
+        // return void since there are async sidefects here.
+        return;
       })
       .catch(err => console.log("error: ", err));
   })
@@ -92,7 +109,7 @@ function getRemovedProductsIds(externalProductsIdsFromFirebase, externalProducts
   // if we map over firebnase .. and ask if the [p[roduct exists in shop.. if it doesnt..
   // then we add it to a special list.. the list of removed items.
   return externalProductsIdsFromFirebase.reduce((acc, firebaseId) => {
-    if(firebaseId in externalProductsIdsFromShop){
+    if(externalProductsIdsFromShop.includes(firebaseId)){
       // has not been removed.
       return acc;
     }else{
@@ -106,7 +123,7 @@ function getCreatedProductsIds(externalProductsIdsFromFirebase, externalProducts
   // if means that if an id is inside the shop .. .but not in firebase.. then this product has been created now.
   // is a new product.
   return externalProductsIdsFromShop.reduce((acc, shopProductId) => {
-    if(shopProductId in externalProductsIdsFromFirebase){
+    if(externalProductsIdsFromFirebase.includes(shopProductId)){
       // has not been removed.
       return acc;
     }else{
