@@ -39,65 +39,101 @@ Shared.loadCustomProductsFromFirebase(SHOPNAME)
 
 
         const removedExternalProducsIds = getRemovedProductsIds(externalProductsIdsFromFirebase, externalProductsIdsFromShop);
-
         const createdExternalProductsIds = getCreatedProductsIds(externalProductsIdsFromFirebase, externalProductsIdsFromShop);
+        const possiblyUpdatedExternalProductsIds = getUpdatedProductsIds(externalProductsIdsFromFirebase, removedExternalProducsIds, createdExternalProductsIds);
+
+
 
         console.log("removedExternalProducsIds: ", removedExternalProducsIds );
         console.log("createdExternalProductsIds: ", createdExternalProductsIds );
-
-        externalProducts.map(externalProduct => {
-          const customProductData = Shared.convertFromExternalProductToCustomProductData(SHOPNAME, externalProduct);
+        console.log("possiblyUpdatedExternalProductsIds: ", possiblyUpdatedExternalProductsIds );
 
 
-          // TODO figure out if this beeing false is the right value here.
 
-          const maybe_corespondingCustomProduct = Object.keys(customProducts).reduce((acc, key) => {
-            const externalProductIdInFirebase = customProducts[key].externalProductId;
-            if(acc){
-              // product was already found in a previous pass.
-              return acc;
-            }else if(externalProductIdInFirebase == customProductData.externalProductId){
-              // product is found now, for the first time
-              return customProducts[key];
-            }else{
-              // product was not found yet.
-              return false;
-            }
-          }, false);
+        // 1. remove the deleted products form firenbase.
+        removedExternalProducsIds.map(removedExternalProductId => {
 
-          // console.log("maybe_corespondingCustomProduct: ", maybe_corespondingCustomProduct);
-
-          const actionToBeTaken = Shared.detectWhatActionNeedsToBeTaken(
-                      customProductData,
-                      maybe_corespondingCustomProduct,
-                      removedExternalProducsIds,
-                      createdExternalProductsIds,
-                    );
-
-          console.log("actionToBeTaken: ", actionToBeTaken);
-          if(actionToBeTaken.actionName == "create"){
-            Shared.createProduct(customProductData, customCategoryId, SHOPNAME);
+          const maybe_IdOfCustomProductToBeRemoved = Object.keys(customProducts).filter(key => customProducts[key].externalProductId == removedExternalProductId)[0];
+          console.log("maybe_IdOfCustomProductToBeRemoved: ", maybe_IdOfCustomProductToBeRemoved);
+          if(maybe_IdOfCustomProductToBeRemoved){
+            Shared.deleteProduct(maybe_IdOfCustomProductToBeRemoved);
           }
-
-          if(actionToBeTaken.actionName == "delete"){
-            Shared.deleteProduct(actionToBeTaken.selfId);
-          }
-
-          if(actionToBeTaken.actionName == "update"){
-
-          }
-
-          if(actionToBeTaken.actionName == "do-nothing"){
-
-          }
-
-          // return void, this function is sideeefectrulf we are not intresteed in any data transformation here.
-          // the sidefect is writing the right products in firebase
+          // return void since this is a sideefectful function.
           return;
-        })
+        });
 
-        // return void since there are async sidefects here.
-        return;
+
+
+
+        // 2. create new products for the created ones.
+        createdExternalProductsIds.map(createdExternalProductId => {
+          const externalProduct = externalProducts.filter(product => product.id == createdExternalProductId)[0];
+          console.log("externalProduct: ", externalProduct);
+          const customProductData = Shared.convertFromExternalProductToCustomProductData(SHOPNAME, externalProduct);
+          Shared.createProduct(customProductData, customCategoryId, SHOPNAME);
+
+          // return void since this is a sideefectful function.
+          return;
+        });
+
+ 
+        // 3. update the ones that need updating.
+        // check the difference between shop and firebase for a paricular product using a specialized equality function.
+
+
+        // externalProducts.map(externalProduct => {
+        //
+        //
+        //
+        //   // TODO figure out if this beeing false is the right value here.
+        //
+        //   const maybe_corespondingCustomProduct = Object.keys(customProducts).reduce((acc, key) => {
+        //     const externalProductIdInFirebase = customProducts[key].externalProductId;
+        //     if(acc){
+        //       // product was already found in a previous pass.
+        //       return acc;
+        //     }else if(externalProductIdInFirebase == customProductData.externalProductId){
+        //       // product is found now, for the first time
+        //       return customProducts[key];
+        //     }else{
+        //       // product was not found yet.
+        //       return false;
+        //     }
+        //   }, false);
+        //
+        //   // console.log("maybe_corespondingCustomProduct: ", maybe_corespondingCustomProduct);
+        //
+        //   const actionToBeTaken = Shared.detectWhatActionNeedsToBeTaken(
+        //               customProductData,
+        //               maybe_corespondingCustomProduct,
+        //               removedExternalProducsIds,
+        //               createdExternalProductsIds,
+        //             );
+        //
+        //   console.log("actionToBeTaken: ", actionToBeTaken);
+        //   if(actionToBeTaken.actionName == "create"){
+        //
+        //   }
+        //
+        //   if(actionToBeTaken.actionName == "delete"){
+        //     Shared.deleteProduct(actionToBeTaken.selfId);
+        //   }
+        //
+        //   if(actionToBeTaken.actionName == "update"){
+        //
+        //   }
+        //
+        //   if(actionToBeTaken.actionName == "do-nothing"){
+        //
+        //   }
+        //
+        //   // return void, this function is sideeefectrulf we are not intresteed in any data transformation here.
+        //   // the sidefect is writing the right products in firebase
+        //   return;
+        // })
+        //
+        // // return void since there are async sidefects here.
+        // return;
       })
       .catch(err => console.log("error: ", err));
   })
@@ -119,6 +155,22 @@ function getRemovedProductsIds(externalProductsIdsFromFirebase, externalProducts
   }, [])
 }
 
+function getUpdatedProductsIds(allIds, removedIds, createdIds){
+  // NOTE: this idea here is that if an id present in allIds is not removed or created.. it means is updated.
+  return allIds.filter(id => {
+    if(removedIds.includes(id)){
+      // means that this id was removed. is clearly not updated then.. so return false .. meaning trow it out.
+      return false;
+    }else if (createdIds.includes(id)){
+      // means that this id was created just now.
+      return false;
+    }else {
+      return true;
+    }
+  });
+}
+
+
 function getCreatedProductsIds(externalProductsIdsFromFirebase, externalProductsIdsFromShop){
   // if means that if an id is inside the shop .. .but not in firebase.. then this product has been created now.
   // is a new product.
@@ -135,13 +187,6 @@ function getCreatedProductsIds(externalProductsIdsFromFirebase, externalProducts
 
 
 
-function deleteProduct(){
-
-}
-
-function updateProduct(){
-
-}
 
 // return {
 //   externalProductId: externalProduct.id,
