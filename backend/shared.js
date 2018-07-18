@@ -336,7 +336,8 @@ exports.detectWhatActionNeedsToBeTaken = (
   }
 };
 
-function compareProducts(){
+
+exports.requiresUpdating = (customProductDataFromShop, customProductFromFirebase ) => {
   return true;
 }
 
@@ -363,6 +364,16 @@ exports.createProduct = (customProductData, customCategoryId, shopName) => {
 
 exports.deleteProduct = (productId) => {
   db.ref("products").child(productId).set(null);
+}
+
+exports.updateProduct = (productId, customProductData) => {
+  console.log("customProductData.name: ", customProductData.name);
+  const fieldsToUpdate = {
+    name: customProductData.name,
+    // short_description : customProductData.short_description,
+  }
+
+  db.ref("products").child(productId).update(fieldsToUpdate);
 }
 
 // exports.detectWhatActionNeedsToBeTaken = (customProductData, customProducts) => {

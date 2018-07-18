@@ -76,9 +76,26 @@ Shared.loadCustomProductsFromFirebase(SHOPNAME)
           return;
         });
 
- 
+
+
         // 3. update the ones that need updating.
         // check the difference between shop and firebase for a paricular product using a specialized equality function.
+        possiblyUpdatedExternalProductsIds.map(updatedExternalProductId => {
+          const externalProduct = externalProducts.filter(product => product.id == updatedExternalProductId)[0];
+          const customProductData = Shared.convertFromExternalProductToCustomProductData(SHOPNAME, externalProduct);
+          const maybeCustomProductFromFirebase = Object.keys(customProducts).filter(productId => customProducts[productId].externalProductId == updatedExternalProductId)[0];
+          console.log("customProductData: ", customProductData);
+          if(maybeCustomProductFromFirebase){
+            if(Shared.requiresUpdating(customProductData, maybeCustomProductFromFirebase)){
+              // TODO: fix this error here.. is an error with firebase not
+              // beeing able to save # and other special chars...
+              // where is it comming from?>??
+              Shared.updateProduct(maybeCustomProductFromFirebase.selfId, customProductData);
+            }
+          }
+
+        })
+
 
 
         // externalProducts.map(externalProduct => {
