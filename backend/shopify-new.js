@@ -29,7 +29,7 @@ Shared.loadCustomProductsFromFirebase(SHOPNAME)
 
     const externalCategoryId = bothCats.externalCategoryId;
     const customCategoryId = bothCats.customCategoryId;
-    const promisedProducts = Shared.loadExternalProducts(SHOPNAME, settings, externalCategoryId)
+    const promisedProducts = loadExternalProductsFromShopifyByCategory(settings, externalCategoryId)
 
     promisedProducts
       .then(externalProducts => {
@@ -106,6 +106,73 @@ Shared.loadCustomProductsFromFirebase(SHOPNAME)
 })
 .catch(err => console.log("error: ", err));
 
+function loadExternalProductsFromShopifyByCategory(shopifySettings, categoryId){
+  let shopify = null;
+  return new Promise((resolve, reject) => {
+    if(!categoryId){
+      reject(`you forgot to include the categoryId: ${categoryId}`, );
+      return ;
+    }
+
+    if(!shopifySettings){
+      reject(`you forgot to include the shopifySettings: ${shopifySettings}`, );
+      return;
+    }
+
+    const Shopify = require('shopify-api-node');
+    shopify = new Shopify({
+      shopName: shopifySettings.shopName ,
+      apiKey: shopifySettings.apiKey,
+
+      // TODO: rename it to password as in shopify docs to not create confusions.
+      password: shopifySettings.apiSecret,
+    });
+
+    getProductsIdsForCategory()
+      .then(productsIds => getProducts(productsIds))
+      .then(products => {
+        resolve(products);
+      })
+      .catch(errors => {
+        reject({ message: `errors when loading the products.`, errors: errors });
+      });
+
+  });
+
+  // functions below are hoisted so no closure problem here.
+  // first get the product ids
+  function getProductsIdsForCategory(){
+    return new Promise((resolve, reject) => {
+      // NOTE: based on this: https://stackoverflow.com/questions/24228734/how-to-retrieve-all-products-from-a-smart-collection-through-shopify-api
+      // is required to get the product using the collect.. and not directly from the category.
+      shopify.collect.list({ collection_id : categoryId })
+        .then(collects => {
+          const productIds = collects.map(collect  => {
+            return collect.product_id;
+          })
+          resolve(productIds);
+        })
+        .catch(error => {
+          reject(error);
+        });
+
+    });
+  }
+
+  // then using the products ids get the products themselfs..
+  // shopify does not havea  way to load many products at once..
+  // we use promise.all to load each one individually.
+  // TODO: think of a better way here since if 1 product gives an error everything fails.
+  // and thats quite dumb.
+  function getProducts(productsIds){
+    const allProductsAsPromised = productsIds.map(productId => {
+      return shopify.product.get(productId);
+    });
+    return Promise.all(allProductsAsPromised);
+  }
+
+}
+
 function getRemovedProductsIds(externalProductsIdsFromFirebase, externalProductsIdsFromShop){
   // it means if a product in firebase but not in shop.. then that means is has been deleted.
   // if we map over firebnase .. and ask if the [p[roduct exists in shop.. if it doesnt..
@@ -150,82 +217,6 @@ function getCreatedProductsIds(externalProductsIdsFromFirebase, externalProducts
     }
   }, [])
 }
-
-
-
-
-
-        // externalProducts.map(externalProduct => {
-        //
-        //
-        //
-        //   // TODO figure out if this beeing false is the right value here.
-        //
-        //   const maybe_corespondingCustomProduct = Object.keys(customProducts).reduce((acc, key) => {
-        //     const externalProductIdInFirebase = customProducts[key].externalProductId;
-        //     if(acc){
-        //       // product was already found in a previous pass.
-        //       return acc;
-        //     }else if(externalProductIdInFirebase == customProductData.externalProductId){
-        //       // product is found now, for the first time
-        //       return customProducts[key];
-        //     }else{
-        //       // product was not found yet.
-        //       return false;
-        //     }
-        //   }, false);
-        //
-        //   // console.log("maybe_corespondingCustomProduct: ", maybe_corespondingCustomProduct);
-        //
-        //   const actionToBeTaken = Shared.detectWhatActionNeedsToBeTaken(
-        //               customProductData,
-        //               maybe_corespondingCustomProduct,
-        //               removedExternalProducsIds,
-        //               createdExternalProductsIds,
-        //             );
-        //
-        //   console.log("actionToBeTaken: ", actionToBeTaken);
-        //   if(actionToBeTaken.actionName == "create"){
-        //
-        //   }
-        //
-        //   if(actionToBeTaken.actionName == "delete"){
-        //     Shared.deleteProduct(actionToBeTaken.selfId);
-        //   }
-        //
-        //   if(actionToBeTaken.actionName == "update"){
-        //
-        //   }
-        //
-        //   if(actionToBeTaken.actionName == "do-nothing"){
-        //
-        //   }
-        //
-        //   // return void, this function is sideeefectrulf we are not intresteed in any data transformation here.
-        //   // the sidefect is writing the right products in firebase
-        //   return;
-        // })
-        //
-        // // return void since there are async sidefects here.
-        // return;
-
-// return {
-//   externalProductId: externalProduct.id,
-//   mainProductImage:  (externalProduct.image || {}).src || "",
-//   media: externalProduct.images.map(img => {
-//     return img.src
-//   }),
-//   name: externalProduct.title,
-//   price: externalProduct.variants[0].price || 0,
-//   description: externalProduct.body_html
-// }
-
-// // function loadExternalProducts(){
-// // }
-// //
-// //
-
-
 
 
 

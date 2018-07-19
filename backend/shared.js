@@ -147,77 +147,11 @@ exports.loadCustomProductsFromFirebase = (shopName) => {
   });
 }
 
-function loadExternalProductsFromShopifyByCategory(shopifySettings, categoryId){
-  let shopify = null;
-  return new Promise((resolve, reject) => {
-    if(!categoryId){
-      reject(`you forgot to include the categoryId: ${categoryId}`, );
-      return ;
-    }
 
-    if(!shopifySettings){
-      reject(`you forgot to include the shopifySettings: ${shopifySettings}`, );
-      return;
-    }
-
-    const Shopify = require('shopify-api-node');
-    shopify = new Shopify({
-      shopName: shopifySettings.shopName ,
-      apiKey: shopifySettings.apiKey,
-
-      // TODO: rename it to password as in shopify docs to not create confusions.
-      password: shopifySettings.apiSecret,
-    });
-
-    getProductsIdsForCategory()
-      .then(productsIds => getProducts(productsIds))
-      .then(products => {
-        resolve(products);
-      })
-      .catch(errors => {
-        reject({ message: `errors when loading the products.`, errors: errors });
-      });
-
-  });
-
-  // functions below are hoisted so no closure problem here.
-  // first get the product ids
-  function getProductsIdsForCategory(){
-    return new Promise((resolve, reject) => {
-      // NOTE: based on this: https://stackoverflow.com/questions/24228734/how-to-retrieve-all-products-from-a-smart-collection-through-shopify-api
-      // is required to get the product using the collect.. and not directly from the category.
-      shopify.collect.list({ collection_id : categoryId })
-        .then(collects => {
-          const productIds = collects.map(collect  => {
-            return collect.product_id;
-          })
-          resolve(productIds);
-        })
-        .catch(error => {
-          reject(error);
-        });
-
-    });
-  }
-
-  // then using the products ids get the products themselfs..
-  // shopify does not havea  way to load many products at once..
-  // we use promise.all to load each one individually.
-  // TODO: think of a better way here since if 1 product gives an error everything fails.
-  // and thats quite dumb.
-  function getProducts(productsIds){
-    const allProductsAsPromised = productsIds.map(productId => {
-      return shopify.product.get(productId);
-    });
-    return Promise.all(allProductsAsPromised);
-  }
-
-}
-
-exports.loadExternalProducts = (shopName, settings, categorId) => {
+exports.loadExternalProducts = (shopName, settings, categoryId) => {
 
     if(shopName == "shopify"){
-      return loadExternalProductsFromShopifyByCategory(settings.shopify, categorId);
+      return loadExternalProductsFromShopifyByCategory(settings.shopify, categoryId);
     }
 
     if(shopName == "woocomerce"){
@@ -230,8 +164,19 @@ exports.loadExternalProducts = (shopName, settings, categorId) => {
       // TODO: build the prestashop function here
       // return Shared.loadExternalProductsFromShopifyByCategory(settings.shopify);
       return Promise.resolve("not implemented")
+      // loadExternalProductsFromPrestashop(, categoryId);
     }
 }
+
+
+function loadExternalProductsFromPrestashop(){
+  return new Promise((resolve, reject) => {
+
+    resolve();
+
+  });
+}
+
 
 exports.convertFromExternalProductToCustomProductData = (shopName, externalProduct) => {
   if(shopName == "shopify"){
@@ -359,22 +304,41 @@ exports.createProduct = (customProductData, customCategoryId, shopName) => {
     howManyTimesWasOrdered : 0,
   }
 
+  // TODO: create the long description too .
   productRef.set(product);
 }
 
 exports.deleteProduct = (productId) => {
   db.ref("products").child(productId).set(null);
+
+  // TODO: delete the product description too.
 }
 
 exports.updateProduct = (productId, customProductData) => {
-  console.log("customProductData.name: ", customProductData.name);
+  console.log("customProductData.name: ", productId, customProductData.name);
   const fieldsToUpdate = {
     name: customProductData.name,
-    // short_description : customProductData.short_description,
+    short_description : customProductData.short_description || "",
+    mainProductImage: customProductData.mainProductImage,
+    media: customProductData.media || [],
+    price: customProductData.price,
   }
+
+  // TODO: update the long description too if something changed.
 
   db.ref("products").child(productId).update(fieldsToUpdate);
 }
+// return {
+//   externalProductId: externalProduct.id,
+//   mainProductImage:  (externalProduct.image || {}).src || "",
+//   media: externalProduct.images.map(img => {
+//     return img.src
+//   }),
+//   name: externalProduct.title,
+//   price: externalProduct.variants[0].price || 0,
+//   description: externalProduct.body_html
+// }
+
 
 // exports.detectWhatActionNeedsToBeTaken = (customProductData, customProducts) => {
 //   if(!customProductData){
