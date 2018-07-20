@@ -304,6 +304,7 @@ exports.createProduct = (customProductData, customCategoryId, shopName) => {
     howManyTimesWasOrdered : 0,
   }
 
+
   // TODO: create the long description too .
   productRef.set(product);
 }
@@ -315,7 +316,6 @@ exports.deleteProduct = (productId) => {
 }
 
 exports.updateProduct = (productId, customProductData) => {
-  console.log("customProductData.name: ", productId, customProductData.name);
   const fieldsToUpdate = {
     name: customProductData.name,
     short_description : customProductData.short_description || "",

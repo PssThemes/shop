@@ -11,9 +11,9 @@ Shared.loadPairsOfCategories("shopify")
 
 const SHOPNAME = "prestashop"
 Promise.all([
-Shared.loadSettings(),
-Shared.loadPairsOfCategories(SHOPNAME),
-Shared.loadCustomProductsFromFirebase(SHOPNAME)
+  Shared.loadSettings(),
+  Shared.loadPairsOfCategories(SHOPNAME),
+  Shared.loadCustomProductsFromFirebase(SHOPNAME)
 ])
 .then(result => {
 
@@ -22,102 +22,204 @@ Shared.loadCustomProductsFromFirebase(SHOPNAME)
   const customProducts = result[2] || {};
   const externalProductsIdsFromFirebase = Object.keys(customProducts).map(key =>  customProducts[key].externalProductId);
 
-
+  console.log("pairsOfCategories: ", pairsOfCategories);
 
   const promisedProducts = loadPrestashopProducts(settings.prestashop);
 
   promisedProducts
     .then(shopProducts => {
 
-      console.log("shopProducts: ", shopProducts);
+      const relevantProducts = shopProducts.filter(normalizedShopProduct => {
+        const externalCatIds = normalizedShopProduct.categories.map(cat => cat.id);
+        const asociatedCustomCatsIds = getAsociatedCatsIds(externalCatIds, pairsOfCategories);
+        return asociatedCustomCatsIds != [];
+      });
+
+      const externalIdsOfRelevantProducts =  relevantProducts.map(x => x.externalProductId);
+
+      // deletedProducts .. is customProducts - relevantProducts.
+
+      const removedExternalProductsIds = getRemovedProductsIds(externalProductsIdsFromFirebase, externalIdsOfRelevantProducts);
+      const createdExternalProductsIds = getCreatedProductsIds(externalProductsIdsFromFirebase, externalIdsOfRelevantProducts);
+      const possiblyUpdatedExternalProductsIds = getUpdatedProductsIds(externalProductsIdsFromFirebase, removedExternalProductsIds, createdExternalProductsIds);
+
+      console.log("removedExternalProductsIds: ", removedExternalProductsIds)
+      console.log("createdExternalProductsIds: ", createdExternalProductsIds)
+      console.log("possiblyUpdatedExternalProductsIds: ", possiblyUpdatedExternalProductsIds)
+
+
+
+      // 1. was this product removed?
+      removedExternalProductsIds.map(removedExternalProductId => {
+
+        const maybe_IdOfCustomProductToBeRemoved = Object.keys(customProducts).filter(key => customProducts[key].externalProductId == removedExternalProductId)[0];
+        console.log("maybe_IdOfCustomProductToBeRemoved: ", maybe_IdOfCustomProductToBeRemoved);
+
+        if(maybe_IdOfCustomProductToBeRemoved){
+          Shared.deleteProduct(maybe_IdOfCustomProductToBeRemoved);
+        }
+
+        // return void since this is a sideefectful function.
+        return;
+      });
+
+
+
+
+
+      // 2. create new products for the created ones.
+      createdExternalProductsIds.map(createdExternalProductId => {
+
+        const normalizedProduct = relevantProducts.filter(normalizedProduct => normalizedProduct.externalProductId == createdExternalProductId)[0];
+
+        console.log("normalizedProduct: ", normalizedProduct);
+        const externalCatIds = normalizedProduct.categories.map(cat => cat.id);
+        const customCategoriesIds = getAsociatedCatsIds(externalCatIds, pairsOfCategories);
+
+        Shared.createProduct(normalizedProduct, customCategoriesIds, SHOPNAME);
+        // const customProductData = Shared.convertFromExternalProductToCustomProductData(SHOPNAME, externalProduct);
+
+        // return void since this is a sidefectful function.
+        return;
+
+      });
+
+
+      // 3. was this product updated?
+
+      // 3. update the ones that need updating.
+      // check the difference between shop and firebase for a paricular product using a specialized equality function.
+      possiblyUpdatedExternalProductsIds.map(updatedExternalProductId => {
+        const normalizedProduct = relevantProducts.filter(normalizedProduct => normalizedProduct.externalProductId == updatedExternalProductId)[0];
+        // const customProductData = Shared.convertFromExternalProductToCustomProductData(SHOPNAME, externalProduct);
+        const maybe_firebaseProductId = Object.keys(customProducts).filter(productId => customProducts[productId].externalProductId == updatedExternalProductId)[0];
+
+        // console.log("customProductData: ", customProductData);
+
+        if(maybe_firebaseProductId){
+          if(Shared.requiresUpdating(normalizedProduct, customProducts[maybe_firebaseProductId])){
+            // TODO: fix this error here.. is an error with firebase not
+            // beeing able to save # and other special chars...
+            // where is it comming from?>??
+            Shared.updateProduct(maybe_firebaseProductId, normalizedProduct);
+          }
+        }
+
+      });
 
     })
     .catch(err => {
       console.log("error: ", err);
-    })
+    });
+
+})
+.catch(err => console.log("error: ", err));
+
+function getAsociatedCatsIds(externalCatIds, pairsOfCategories){
+  return externalCatIds.reduce((acc, shop_externalCatId) => {
+
+    const customCatsIdsAsociatedWithThisExternalCatId = pairsOfCategories.reduce((acc, pair) => {
+
+      const firebase_externalCatId = both.externalCategoryId;
+      const customCategoryId = both.customCategoryId;
+
+      if(shop_externalCatId == firebase_externalCatId){
+
+        acc.push(customCategoryId);
+        return acc;
+
+      }else{
+        return acc;
+      }
+
+    }, []);
+
+    acc = acc.concat(customCatsIdsAsociatedWithThisExternalCatId);
+
+    return acc;
+
+  }, []);
+}
 
 
-  //
   // pairsOfCategories.map(bothCats => {
   //   const apiPrestashopKey = "R21PLEPZI2H4KAXQ4RPG1FELYEI17GYI";
   //
   //
   //   const externalCategoryId = bothCats.externalCategoryId;
   //   const customCategoryId = bothCats.customCategoryId;
-    // promisedProducts
-    //   .then(externalProducts => {
-    //
-    //     const externalProductsIdsFromShop = externalProducts.map(p => p.id);
-    //     console.log("externalProductsIdsFromShop: ", externalProductsIdsFromShop );
-    //
-    //
-    //     const removedExternalProducsIds = getRemovedProductsIds(externalProductsIdsFromFirebase, externalProductsIdsFromShop);
-    //     const createdExternalProductsIds = getCreatedProductsIds(externalProductsIdsFromFirebase, externalProductsIdsFromShop);
-    //     const possiblyUpdatedExternalProductsIds = getUpdatedProductsIds(externalProductsIdsFromFirebase, removedExternalProducsIds, createdExternalProductsIds);
-    //
-    //
-    //
-    //     console.log("removedExternalProducsIds: ", removedExternalProducsIds );
-    //     console.log("createdExternalProductsIds: ", createdExternalProductsIds );
-    //     console.log("possiblyUpdatedExternalProductsIds: ", possiblyUpdatedExternalProductsIds );
-    //
-    //
-    //
-    //     // 1. remove the deleted products form firenbase.
-    //     removedExternalProducsIds.map(removedExternalProductId => {
-    //
-    //       const maybe_IdOfCustomProductToBeRemoved = Object.keys(customProducts).filter(key => customProducts[key].externalProductId == removedExternalProductId)[0];
-    //       console.log("maybe_IdOfCustomProductToBeRemoved: ", maybe_IdOfCustomProductToBeRemoved);
-    //
-    //       if(maybe_IdOfCustomProductToBeRemoved){
-    //         Shared.deleteProduct(maybe_IdOfCustomProductToBeRemoved);
-    //       }
-    //
-    //       // return void since this is a sideefectful function.
-    //       return;
-    //     });
-    //
-    //
-    //
-    //     // 2. create new products for the created ones.
-    //     createdExternalProductsIds.map(createdExternalProductId => {
-    //       const externalProduct = externalProducts.filter(product => product.id == createdExternalProductId)[0];
-    //       console.log("externalProduct: ", externalProduct);
-    //       const customProductData = Shared.convertFromExternalProductToCustomProductData(SHOPNAME, externalProduct);
-    //       Shared.createProduct(customProductData, customCategoryId, SHOPNAME);
-    //
-    //       // return void since this is a sideefectful function.
-    //       return;
-    //     });
-    //
-    //
-    //
-    //
-    //     // 3. update the ones that need updating.
-    //     // check the difference between shop and firebase for a paricular product using a specialized equality function.
-    //     possiblyUpdatedExternalProductsIds.map(updatedExternalProductId => {
-    //       const externalProduct = externalProducts.filter(product => product.id == updatedExternalProductId)[0];
-    //       const customProductData = Shared.convertFromExternalProductToCustomProductData(SHOPNAME, externalProduct);
-    //       const maybe_firebaseProductId = Object.keys(customProducts).filter(productId => customProducts[productId].externalProductId == updatedExternalProductId)[0];
-    //
-    //       // console.log("customProductData: ", customProductData);
-    //
-    //       if(maybe_firebaseProductId){
-    //         if(Shared.requiresUpdating(customProductData, customProducts[maybe_firebaseProductId])){
-    //           // TODO: fix this error here.. is an error with firebase not
-    //           // beeing able to save # and other special chars...
-    //           // where is it comming from?>??
-    //           Shared.updateProduct(maybe_firebaseProductId, customProductData);
-    //         }
-    //       }
-    //
-    //     });
-    //
-    //   })
-    //   .catch(err => console.log("error: ", err));
-  })
-})
-.catch(err => console.log("error: ", err));
+  // promisedProducts
+  //   .then(externalProducts => {
+  //
+  //     const externalProductsIdsFromShop = externalProducts.map(p => p.id);
+  //     console.log("externalProductsIdsFromShop: ", externalProductsIdsFromShop );
+  //
+  //
+  //     const removedExternalProducsIds = getRemovedProductsIds(externalProductsIdsFromFirebase, externalProductsIdsFromShop);
+  //     const createdExternalProductsIds = getCreatedProductsIds(externalProductsIdsFromFirebase, externalProductsIdsFromShop);
+  //     const possiblyUpdatedExternalProductsIds = getUpdatedProductsIds(externalProductsIdsFromFirebase, removedExternalProducsIds, createdExternalProductsIds);
+  //
+  //
+  //
+  //     console.log("removedExternalProducsIds: ", removedExternalProducsIds );
+  //     console.log("createdExternalProductsIds: ", createdExternalProductsIds );
+  //     console.log("possiblyUpdatedExternalProductsIds: ", possiblyUpdatedExternalProductsIds );
+  //
+  //
+  //
+  //     // 1. remove the deleted products form firenbase.
+  //     removedExternalProducsIds.map(removedExternalProductId => {
+  //
+  //       const maybe_IdOfCustomProductToBeRemoved = Object.keys(customProducts).filter(key => customProducts[key].externalProductId == removedExternalProductId)[0];
+  //       console.log("maybe_IdOfCustomProductToBeRemoved: ", maybe_IdOfCustomProductToBeRemoved);
+  //
+  //       if(maybe_IdOfCustomProductToBeRemoved){
+  //         Shared.deleteProduct(maybe_IdOfCustomProductToBeRemoved);
+  //       }
+  //
+  //       // return void since this is a sideefectful function.
+  //       return;
+  //     });
+  //
+  //
+  //
+  //     // 2. create new products for the created ones.
+  //     createdExternalProductsIds.map(createdExternalProductId => {
+  //       const externalProduct = externalProducts.filter(product => product.id == createdExternalProductId)[0];
+  //       console.log("externalProduct: ", externalProduct);
+  //       const customProductData = Shared.convertFromExternalProductToCustomProductData(SHOPNAME, externalProduct);
+  //       Shared.createProduct(customProductData, customCategoryId, SHOPNAME);
+  //
+  //       // return void since this is a sideefectful function.
+  //       return;
+  //     });
+  //
+  //
+  //
+  //
+  //     // 3. update the ones that need updating.
+  //     // check the difference between shop and firebase for a paricular product using a specialized equality function.
+  //     possiblyUpdatedExternalProductsIds.map(updatedExternalProductId => {
+  //       const externalProduct = externalProducts.filter(product => product.id == updatedExternalProductId)[0];
+  //       const customProductData = Shared.convertFromExternalProductToCustomProductData(SHOPNAME, externalProduct);
+  //       const maybe_firebaseProductId = Object.keys(customProducts).filter(productId => customProducts[productId].externalProductId == updatedExternalProductId)[0];
+  //
+  //       // console.log("customProductData: ", customProductData);
+  //
+  //       if(maybe_firebaseProductId){
+  //         if(Shared.requiresUpdating(customProductData, customProducts[maybe_firebaseProductId])){
+  //           // TODO: fix this error here.. is an error with firebase not
+  //           // beeing able to save # and other special chars...
+  //           // where is it comming from?>??
+  //           Shared.updateProduct(maybe_firebaseProductId, customProductData);
+  //         }
+  //       }
+  //
+  //     });
+  //
+  //   })
+  //   .catch(err => console.log("error: ", err));
+  // })
 
 function loadExternalProductsFromPrestashop(prestashopSettings){
 
@@ -140,15 +242,16 @@ function Prestashop_getProducts(){
 
 function loadPrestashopProducts(prestashopSettings){
 
-  const targetUrl = 'https://ecom.pssthemes.com/prestashop/api/products/?output_format=JSON';
-
   function getProduct(id){
     const targetUrl = `https://ecom.pssthemes.com/prestashop/api/products/${id}?output_format=JSON`;
     return request.get(targetUrl, {}).auth(prestashopSettings.apiKey)
   }
 
   return new Promise((resolve, reject) => {
-    request.get(targetUrl, {}).auth(apiPrestashopKey)
+
+    const targetUrl = 'https://ecom.pssthemes.com/prestashop/api/products/?output_format=JSON';
+
+    request.get(targetUrl, {}).auth(prestashopSettings.apiKey)
       .then(result => {
 
         const products = JSON.parse(result).products;
@@ -160,12 +263,15 @@ function loadPrestashopProducts(prestashopSettings){
 
       })
       .then(rawProducts => {
-          const customProductsData = rawProducts.map(productStuff => {
-            // const productWrapper = JSON.parse(productStuff).product;
-            const rawProduct = JSON.parse(productStuff).product;
-            return convertFromRawProductToCustomProductData(rawProduct);
-          });
-          resolve(customProductsData);
+
+        const customProductsData = rawProducts.map(productStuff => {
+          // const productWrapper = JSON.parse(productStuff).product;
+          const rawProduct = JSON.parse(productStuff).product;
+          return convertFromRawProductToNormalizedProduct(rawProduct);
+        });
+
+        resolve(customProductsData);
+
       })
       .catch(err => {
         reject(err);
@@ -175,21 +281,26 @@ function loadPrestashopProducts(prestashopSettings){
 }
 
 
-function convertFromRawProductToCustomProductData(rawProduct){
+function convertFromRawProductToNormalizedProduct(rawProduct){
   const categoriesOfThisProduct = rawProduct.associations.categories;
   const images = rawProduct.associations.images;
 
-  const customProductData = {
+  const normalizedProductData = {
+
     externalProductId: rawProduct.id,
-    productName: rawProduct.name,
-    price: rawProduct.price,
-    short_description: rawProduct.description_short,
-    media: images,
+    name: rawProduct.name,
+
     categories: categoriesOfThisProduct,
+    price: rawProduct.price,
+
+    short_description: rawProduct.description_short,
+    description: rawProduct.description || "",
+
+    mainProductImage: rawProduct.mainProductImage || "",
+    media: images,
   };
 
-  return customProductData;
-  // console.log("customProductData: ", customProductData);
+  return normalizedProductData;
 
 }
 

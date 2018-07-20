@@ -1,10 +1,129 @@
 
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+
+20 iulie 2018
+- detect what is needed for performing the update/delete/create check.
+  - get all ids from the shop.
+- decide how to deal with the fact that a product is in multiple categories in prestashop.
+- so far we have 1 product in 1 category.
+- again the category is what we have intenrally, but is different since 1 cateogy is linked to other categoires.. and not to products.
+
+our category is a pointer to many other categories.
+which means many products to 1 category.
+which is ok..
+problem is when same product is included in 2 different categories.. by us maping 1 custom category
+to 2 external categories.
+
+2 custom categories mapping to the same external category.
+now the product.. has no ability to belong in 2 custom categories by the current implementation.
+
+is quite hard to change it since it requires a one to many mapping.
+Filtering products by category is affected.
+
+For theis to be solved for certain i need a listo of categoies ids on the product .. and not only one.
+Maybe is not that serious of a change.
+Everywere im loading products by category will be affected.
+Saving product will be affected.
+
+Or i can just create the product with the the custom categories included.
+But how to know that..
+Like how to detect if the product is in what custom category.
+
+Making your own mapping was included in the requirement.. and current model of the project does not meet that.
+
+When creating a product.. which is mapped to many custom categoires.. we gonna have this problem that we wanna know this categories ids.
+This requires.. taking any external category this product belongs into..
+and then finding all the asociated custom categories..
+then grabing all the ids of this custom categories in an array.. and put them on the product beeing created.
+
+When updating the product .. same idea.
+We need to detect if the external categories asociated with this product.. have also been changed.
+we need to incluse external categoires asociated with this product to create the check.
+if external categories changed.. maybe the internal ones changed too.
+but we will no perform selective update just for category.. we perform a flull blown update on all records trhat matter plus the categoryes.
+
+So for that when the update needs to happen..
+we need to extract the custom categories associated with this external categories that the product has on it.
+So extracting the custom categories.. is done based on what external categories we have in the new product..
+Need to grab all custom categories recorsds that contain the external category id.
+Best way to do it is to load up all the categories from this particular shop.
+THen filter them locally.. extract / accumulate  only the ones  that have the appropriate external categories on them.
+Then once extracted.. put them in the product by update or create.
+
+Extract all custom categories asociated with 1 external category is a simpler problem to solve.
+Once the entire list of categories is locally in memory .. this check can be performed for each extenral category individually.
+then .. the accumulated list of all customCategories ids.. can be deduplicated.
+
+This function of extracting custom categories ids.. based on a list of external categories ids..
+is very good separation of concerns.
+
+getCustomCategoriesIds : List ExternalCategoryId -> List Categories -> List CustomCategoriesIds
+
+  <!-- reduce over ExternalCategoryId, buy accumulating in a list..  -->
+  getAsociatedCustomCategories: ExternalCategoryId -> List Categories -> List CustomCategoriesIds
+
+  <!-- deduplicate. ids. -->
+
+given this.. i need to alter the product data structure to include multiple custom categories.
+also will include multiple external categories ids since we need to perform the update or no update check.
+then the rest of the fields also.
+externalProductId is also a field that we are itneresteed in later maybe.
+shopName also.
+so far the product needs to have:
+
+shopName
+externalProductId
+externalCategoriesIds
+customCategoriesIds
+
+
+what i detected that the product .. we load all products from prestashop.. but we only save in firebase only certain of them.
+
+The way we know who to save and who not.. it has to do with finding the custom category based on the external categories associate with a particular product.
+
+So given that we load all products from prestashop.
+And given that for each product we have external categories ids.
+Then we extract the associated custom categories with this external categories... by reverse mapping.. by filtering and accumulating and de-duplicating over the list of categories.
+
+If we have custom categories.. then we create this product in firebase .. and we dont then we dont do anything with this product.. since is not supposed to be included based on the custom categories that have been created.. and based on the associations between categories that we find.
+
+
+How to detect if a product is removed in prestashoop?
+First we detect if we are interesteed in it. Like we check if we have custom cats asociated with the shop product if we do then detect what action needs to be taken.
+for remove, it needs to be in firebase but not inside the shop.
+For this we need all productsIds in shop
+and all products ids in firebase..
+and by subtracting firebase  from the shop .. we can detect which ones have been deleted. Since firebase contains more.
+Now this removed ones.. are better if we detect them as a collection not make this check for each individual product.. is more performant since later we can just use a transaction to accoiutn for this.
+
+but what we wanna do first..
+is filter out the allProductsFromPreshashop vs the productsFromPrestashop that we are interesteed into.
+Call them important / related / relevantProducts .
+yes.
+relevantProducts vs allProducts
+having the relevantProducts .. we can then compare with the customProducts .. and detect who is deleted, created or updated.
+
+
+
+
+
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
 16 iulie 2018
 - bind event listeners to the products that are in cart.  
     - bind event for each product added.
     - bind events for each product when the app loads.
   Remove the item from cart if is removed from firebase.
 
+  ===============================================================================================================================
+  ===============================================================================================================================
+  ===============================================================================================================================
+  ===============================================================================================================================
 13 iulie 2018
 
 - get the products from the shopify app.
@@ -98,6 +217,10 @@ Product page:
 
 - Leave review if you are a logged in user functionality
 
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
 
 Today 29 june.
 
