@@ -37,7 +37,7 @@ Shared.loadCustomProductsFromFirebase(SHOPNAME)
         const externalProductsIdsFromShop = externalProducts.map(p => p.id);
         console.log("externalProductsIdsFromShop: ", externalProductsIdsFromShop );
 
-
+// 
         const removedExternalProducsIds = getRemovedProductsIds(externalProductsIdsFromFirebase, externalProductsIdsFromShop);
         const createdExternalProductsIds = getCreatedProductsIds(externalProductsIdsFromFirebase, externalProductsIdsFromShop);
         const possiblyUpdatedExternalProductsIds = getUpdatedProductsIds(externalProductsIdsFromFirebase, removedExternalProducsIds, createdExternalProductsIds);
