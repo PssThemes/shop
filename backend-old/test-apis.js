@@ -50,61 +50,61 @@
 // })
 
 
-function Prestashop_getProducts(){
-  const targetUrl = 'https://ecom.pssthemes.com/prestashop/api/products/?output_format=JSON';
-  return request.get(targetUrl, {}).auth(apiPrestashopKey);
-}
-
-
-function PRESTASHOP(){
-  const request = require("request-promise-native");
-  const apiPrestashopKey = "R21PLEPZI2H4KAXQ4RPG1FELYEI17GYI";
-
-  const targetUrl = 'https://ecom.pssthemes.com/prestashop/api/products/?output_format=JSON';
-
-  function Prestashop_getProduct(id){
-    const targetUrl = `https://ecom.pssthemes.com/prestashop/api/products/${id}?output_format=JSON`;
-    return request.get(targetUrl, {}).auth(apiPrestashopKey)
-  }
-
-  request.get(targetUrl, {}).auth(apiPrestashopKey)
-    .then(result => {
-
-      const products = JSON.parse(result).products;
-      const allProductsAsPromises = products.map( productRef => {
-        return Prestashop_getProduct(productRef.id);
-      });
-
-      return Promise.all(allProductsAsPromises);
-    })
-    .then(rawProducts => {
-
-        rawProducts.map(productStuff => {
-          // const productWrapper = JSON.parse(productStuff).product;
-          const product = JSON.parse(productStuff).product.associations.categories;
-
-          console.log("raw prestashop product: ", product);
-
-          // console.log(
-          // ` Products
-          //   productId: ${ product.id }
-          //   productName: ${ product.name }
-          //   price: ${ product.price }
-          //   shortDescription: ${ product.description_short }
-          //   images :  ${ product.associations.images }
-          //   ------------------------------------------------
-          //   `
-            // description: ${ product.description }
-          // );
-        });
-
-    })
-    .catch(err => {
-      console.log("err: ", err);
-    })
-}
-
-PRESTASHOP();
+// function Prestashop_getProducts(){
+//   const targetUrl = 'https://ecom.pssthemes.com/prestashop/api/products/?output_format=JSON';
+//   return request.get(targetUrl, {}).auth(apiPrestashopKey);
+// }
+//
+//
+// function PRESTASHOP(){
+//   const request = require("request-promise-native");
+//   const apiPrestashopKey = "R21PLEPZI2H4KAXQ4RPG1FELYEI17GYI";
+//
+//   const targetUrl = 'https://ecom.pssthemes.com/prestashop/api/products/?output_format=JSON';
+//
+//   function Prestashop_getProduct(id){
+//     const targetUrl = `https://ecom.pssthemes.com/prestashop/api/products/${id}?output_format=JSON`;
+//     return request.get(targetUrl, {}).auth(apiPrestashopKey)
+//   }
+//
+//   request.get(targetUrl, {}).auth(apiPrestashopKey)
+//     .then(result => {
+//
+//       const products = JSON.parse(result).products;
+//       const allProductsAsPromises = products.map( productRef => {
+//         return Prestashop_getProduct(productRef.id);
+//       });
+//
+//       return Promise.all(allProductsAsPromises);
+//     })
+//     .then(rawProducts => {
+//
+//         rawProducts.map(productStuff => {
+//           // const productWrapper = JSON.parse(productStuff).product;
+//           const product = JSON.parse(productStuff).product.associations.categories;
+//
+//           console.log("raw prestashop product: ", product);
+//
+//           // console.log(
+//           // ` Products
+//           //   productId: ${ product.id }
+//           //   productName: ${ product.name }
+//           //   price: ${ product.price }
+//           //   shortDescription: ${ product.description_short }
+//           //   images :  ${ product.associations.images }
+//           //   ------------------------------------------------
+//           //   `
+//             // description: ${ product.description }
+//           // );
+//         });
+//
+//     })
+//     .catch(err => {
+//       console.log("err: ", err);
+//     })
+// }
+//
+// PRESTASHOP();
 
 // Prestashop_getProducts()
 //     .then(result => {
@@ -218,14 +218,44 @@ PRESTASHOP();
 
 
 
-// const Shopify = require('shopify-api-node');
-// const shopify = new Shopify({
-//   shopName: "shop-dop.myshopify.com",
-//   apiKey: "5a0e2ee78ef4cf8195d8b09ab4008b09",
-//   password: "1d5b877b681052373a8b375c0ff6ccc2",
-// });
+const Shopify = require('shopify-api-node');
+const shopify = new Shopify({
+  shopName: "shop-dop.myshopify.com",
+  apiKey: "5a0e2ee78ef4cf8195d8b09ab4008b09",
+  password: "1d5b877b681052373a8b375c0ff6ccc2",
+});
 //
 //
+// // -----------------------------------
+// // Testing out async calls on shopify..
+// // -----------------------------------
+
+// async function getAllExternalCategoriesIndexedByProductId(){
+//
+//     // TODO: implement error handling with catch try..
+//
+//     const allCollects = await shopify.collect.list();
+//     const externalCollectionsIds = allCollects.reduce((acc, collect) => {
+//       // check if this product id already exists as a key.
+//       // if it does, then just push the
+//       if(acc[collect.product_id]){
+//         acc[collect.product_id].push(collect.collection_id);
+//       }else{
+//         acc[collect.product_id] = [];
+//         acc[collect.product_id].push(collect.collection_id);
+//       }
+//
+//       return acc;
+//     }, {});
+//
+//     return externalCollectionsIds;
+//
+// }
+//
+// const stuff = getAllExternalCategoriesIndexedByProductId().then();
+// console.log("stuff: ", stuff);
+
+
 // // -----------------------------------
 // // Getting External categoreis form shopify
 // // -----------------------------------
@@ -268,6 +298,7 @@ PRESTASHOP();
 //   });
 // }
 // Shopify_getAllProducts()
+
 
 // -----------------------------------
 // Getting products from a specific category in shopify.

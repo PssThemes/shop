@@ -1,3 +1,85 @@
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+23 june 2018
+
+
+
+
+- get all categories for 1 product in shopify, i need them to detect if a product is relevant or not, since we make the backward asociation to detect relevance there. Need to do this first since in case is not possible then i need to change hole architecture approach for shopify.
+
+For shopify
+Ok just realized. One collect is logically a pair of 2 things, amongs others: 1 category id. and 1 product id.
+So one product.. will have as many collects.. as categories it belongs into.
+And collects are only for custom categories.
+And a collect points to only 1 category and only 1.
+Also the collects are not on the product itself.. no thgey are on thgeir own . and are accessed with a special call.. by providing the product id.
+Which i think makese things very modular and composable in terms of architecture.
+What is the actual reason on which the product does not contain collects on itself?>
+Why? Not very clear about it but notheless seems important. Im gonna research later.
+Getting all categories for a product .. is done by looking up all collects for a product.. using this url:
+
+Retrieve only collects for a certain product
+GET /admin/collects.json?product_id=632910392
+RelevantExternalCategories
+
+
+Hmm ok.. clarifying how to get the relevant products.
+Given we have relevant external categories.. which are firebase driven..
+
+We now need a list of all products indexed by extenral category id.
+This will be like a dict with
+Dict ExternalCatId (List ExternalProductId)
+
+Using this and the relevantCategoryIds i can drop records form this dict.
+Meaning we drop the irelevant categories that existend in thse shop/
+Then accumulating over all proeducts in the remaining dict..
+And deduplicating thouse..
+Like im gonna acumulate with a set.. and im gonna use set.add() fu8nction to ensure no duplication happens.
+This last set of externalProductIds will be the relelevant pducts.
+Now given allExtenralProducts
+And given the relevantProductids
+We can get the relevantProducts.
+
+
+The above works.
+Now another way to do it is to start wiht the collects..
+and instead of indexing by external category id.. i index based on external product id..
+and i keep a list of categories around.
+(this also could be done at the same time with 2 acumulators.. given that we can map over the collects only once, and accumulating stuff in 2 different acumulators.)
+We need good names.
+
+externalCategoriesIndexedByExternalProductId
+productsIndexedByCategoryId
+
+name byintention not by what it is.
+
+productsGroupedByCategory
+categoriesGroupedByProduct
+
+For fgiltering out the relevant products.. we need a grouping by external category id + the deduplication.
+But for making the products workable in firebase.. before the actual conversion.. im gonna map over them and attach to each one the
+list of external categories.
+This will be used when deciding if the update will be done or not.
+
+Now given internalProductsIds, external ids..
+and given we can extract externalProductsIds for real..
+
+We can detect which products have been aded..removed or deleted.
+
+
+From there.. we take the aproporiate action but we do it in bulk.
+
+For delete.. we delete everythign in 1 go.
+For create.. we need the internalCategoryId asociated with a product new created.
+But given that we have many such custom categories for 1 product now..
+What we gonna do is to make the custom categories ids.. or internal Categories.. an actual list.
+
+
+
+
+
 
 ===============================================================================================================================
 ===============================================================================================================================
