@@ -22,7 +22,7 @@ app.use(express.static(devPath));
 app.get("/admin", (req, res) => {
   res.sendFile(adminPath + "/index.html");
 });
- 
-app.listen(port, ()=>{
+
+app.listen(port, () => {
   console.log("listening on localhost:" + port);
 });

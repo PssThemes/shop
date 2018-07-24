@@ -15,21 +15,25 @@ async function shopify(){
   const allExternalProducts = await loadAllShopifyProducts();
 
   const group = await groupExternalCategoriesAndExternalProducts();
+
   const externalProductsGroupedByCategory = group.externalProductsGroupedByCategory;
   const externalCategoriesGroupedByProduct = group.externalCategoriesGroupedByProduct;
 
-  const relevantProductIds = Object.keys(externalCategoriesGroupedByProduct).reduce((acc, externalCat) => {
-    if(relevantExternalCatsIds.includes(externalCat)){
-      const products = externalCategoriesGroupedByProduct[externalCat];
-      products.map(x => acc.add(x));
-      acc = acc.concat(products);
-      return acc;
-    }else {
-      return acc;
-    }
-  }, new Set([]));
+  const relevantProductIds = getRelevantProductIds(relevantExternalCatsIds, externalCategoriesGroupedByProduct);
 
-  //
+  const relevantProducts = Object.keys(allExternalProducts).reduce((acc, key) => {
+
+    const product = allExternalProducts[key];
+    if()
+
+
+  }, {});
+
+  // .filter(product => relevantProductIds.includes(product.selfId));
+
+  console.log("relevantProductIds: ", relevantProductIds);
+
+
   // externalProductIdsIndexedByCategoryId =
   //
   // const relevantExternalProducts =
@@ -51,9 +55,26 @@ async function shopify(){
 
 }
 
+function getRelevantProductIds(relevantExternalCatsIds, externalCategoriesGroupedByProduct){
+  const relevantProductIds = Object.keys(externalCategoriesGroupedByProduct).reduce((acc, externalCat) => {
+
+    if(relevantExternalCatsIds.includes(externalCat)){
+      const products = externalCategoriesGroupedByProduct[externalCat];
+      products.map(x => acc.add(x));
+      acc = acc.concat(products);
+      return acc;
+    }else {
+      return acc;
+    }
+
+  }, new Set([]));
+
+  return relevantProductIds;
+}
+
 async function groupExternalCategoriesAndExternalProducts() {
   const allCollects = await loadAllShopifyCollects();
-  allCollects.reduce((acc, collect) => {
+  const group = allCollects.reduce((acc, collect) => {
 
     const productId = collect.product_id;
     const categoryId = collect.collection_id;
@@ -75,7 +96,28 @@ async function groupExternalCategoriesAndExternalProducts() {
     return acc;
   }, { externalProductsGroupedByCategory : {}, externalCategoriesGroupedByProduct : {} });
 
+  return group;
 }
+
+async function loadAllShopifyCollects(){
+  const shopify = makeShopifyInstance();
+  const collects = await shopify.collect.list();
+  return collects;
+}
+
+function makeShopifyInstance(){
+  const Shopify = require('shopify-api-node');
+  const shopify = new Shopify({
+    shopName: "shop-dop.myshopify.com",
+    apiKey: "5a0e2ee78ef4cf8195d8b09ab4008b09",
+    password: "1d5b877b681052373a8b375c0ff6ccc2",
+  });
+  return shopify;
+}
+
+
+
+
   // the entire settings object that holds api keys secrets and other stuff to access all shops.
 
 

@@ -49,6 +49,7 @@ async function getRelevantExternalCategoriesIds(shopName){
   const categories = await loadCategories();
 
   const externalCatsIds = Object.keys(categories).reduce((acc, pushKey) => {
+
     const externalCats = ((categories[pushKey] || {}).linkedTo[shopName] || {}).categories;
 
     if(externalCats){
