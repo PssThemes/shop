@@ -2,6 +2,8 @@
 // all different cloud functions use this module.
 const Shared = require("./shared.js");
 const SHOPNAME = "shopify"
+const uitls = require("./utils.js");
+
 
 shopify().then();
 async function shopify(){
@@ -10,63 +12,73 @@ async function shopify(){
   const settings = await Shared.loadSettings();
   const relevantExternalCatsIds = await Shared.getRelevantExternalCategoriesIds(SHOPNAME);
 
-
-  const internalProducts = await Shared.loadInternalProducts(SHOPNAME);
-  const allExternalProducts = await loadAllShopifyProducts();
-
+  // // prepare external products and asociated pieces we need for them.
   const group = await groupExternalCategoriesAndExternalProducts();
-
   const externalProductsGroupedByCategory = group.externalProductsGroupedByCategory;
   const externalCategoriesGroupedByProduct = group.externalCategoriesGroupedByProduct;
 
-  const relevantProductIds = getRelevantProductIds(relevantExternalCatsIds, externalCategoriesGroupedByProduct);
+  const allExternalProducts = await loadAllShopifyProducts();
+
+  const relevantProductIdsSet = getRelevantProductIds(relevantExternalCatsIds, externalProductsGroupedByCategory);
 
   const relevantProducts = Object.keys(allExternalProducts).reduce((acc, key) => {
 
     const product = allExternalProducts[key];
-    if()
+    const productId = product.externalProductId;
 
-
-  }, {});
-
-  // .filter(product => relevantProductIds.includes(product.selfId));
-
-  console.log("relevantProductIds: ", relevantProductIds);
-
-
-  // externalProductIdsIndexedByCategoryId =
-  //
-  // const relevantExternalProducts =
-  // console.log("internalProducts: ", internalProducts);
-
-
-  // if i get all collects.
-  // i can get all extenral categories and their products.
-  // so i can index.. all productids .. based on category id.
-  // then .. i decide who is relevant.. by keeping only the category ids included in our reelevant list of category ids.
-
-  // const pairsOfIntenralAndExternalCateories =  await Shared.loadPairsOfCategories(SHOPNAME);
-  //
-  // const internalProducts = await Shared.loadCustomProductsFromFirebase(SHOPNAME);
-  // const allExternalProducts = await loadAllShopifyProducts(settings);
-
-
-
-
-}
-
-function getRelevantProductIds(relevantExternalCatsIds, externalCategoriesGroupedByProduct){
-  const relevantProductIds = Object.keys(externalCategoriesGroupedByProduct).reduce((acc, externalCat) => {
-
-    if(relevantExternalCatsIds.includes(externalCat)){
-      const products = externalCategoriesGroupedByProduct[externalCat];
-      products.map(x => acc.add(x));
-      acc = acc.concat(products);
+    if(relevantProductIdsSet.has(productId)){
+      acc[productId] = product;
       return acc;
-    }else {
+    } else {
       return acc;
     }
 
+  }, {});
+
+
+  // get internal products and asociated functionality.
+  const internalProducts = await Shared.loadInternalProducts(SHOPNAME);
+
+  // Compare between firebase and shop.
+  // 2 lists of externalproductsids.
+  const externalProductsIdsFromFirebaseSet = new Set(Object.keys(internalProducts).map(key => internalProducts[key].externalProductId));
+  const externalProductsIdsFromShopSet = relevantProductIdsSet;
+
+
+  // Deleted products.
+  // removed products are the ones we have in firebase .. but we dont have in shop.
+  // from a cs perspective this is a disgioint between 2 sets... FirebaseSet - ShopSet
+  const deletedSet = uitls.setDifference(externalProductsIdsFromFirebaseSet, externalProductsIdsFromShopSet);
+
+  // Created Products products.
+  // created products are the ones we have in shop .. but we dont have them in firebase yet .
+  // meaning is a disgioint between ShopSet - FirebaseSet;
+  const createdSet = uitls.setDifference(externalProductsIdsFromShopSet, externalProductsIdsFromFirebaseSet);
+
+  const createdOrDeletedSet = utils.setUnion(removedProductsSet, createdProductsSet);
+
+  const updatedProductsSet = uitls.setDifference(externalProductsIdsFromShopSet, createdOrDeletedSet);
+
+  console.log("deletedSet: ", deletedSet );
+  console.log("createdSet: ", createdSet );
+  console.log("createdOrDeletedSet: ", createdOrDeletedSet );
+  console.log("updatedProductsSet: ", updatedProductsSet );
+
+}
+
+function getRelevantProductIds(relevantExternalCatsIds, externalProductsGroupedByCategory){
+
+  const relevantProductIds = relevantExternalCatsIds.reduce((accSet, catId) => {
+    const productsIds = externalProductsGroupedByCategory[catId];
+
+    if(productsIds){
+      productsIds.map(id => accSet.add(id));
+      return accSet;
+    }else{
+      return accSet;
+    }
+    // we use a set because it removes duplicates by default.
+    // we can have the guarantee that the product ids are not duplicated.
   }, new Set([]));
 
   return relevantProductIds;
@@ -115,8 +127,50 @@ function makeShopifyInstance(){
   return shopify;
 }
 
+async function loadAllShopifyProducts(){
+  const shopify = makeShopifyInstance();
 
+  let allProducts;
 
+  try {
+    allProducts = await shopify.product.list();
+  }catch(err){
+    console.log("Error when loading shopify products:")
+    console.log(err);
+  }
+
+  if(allProducts){
+    return allProducts.map(rawProduct => {
+
+      const media = rawProduct.images.map(img => {
+        return img.src;
+      });
+
+      const normalizedProductData = {
+        externalProductId: rawProduct.id,
+        name: rawProduct.title || "",
+        mainProductImage: (rawProduct.image || {}).src || "",
+        price: rawProduct.variants[0].price || 0,
+        description: rawProduct.body_html || "",
+        media: media,
+      };
+
+      return normalizedProductData;
+    });
+  }
+
+  return;
+}
+
+// return {
+//         mainProductImage:  (product.image || {}).src || "",
+//         media: product.images.map(img => {
+//           return img.src
+//         }),
+//         name: product.title,
+//         price: product.variants[0].price || 0,
+//         description: product.body_html
+//       }
 
   // the entire settings object that holds api keys secrets and other stuff to access all shops.
 
@@ -212,45 +266,41 @@ function makeShopifyInstance(){
 // });
 
 
-async function getAllExternalCategoriesIndexedByProductId(){
+// async function getAllExternalCategoriesIndexedByProductId(){
+//
+//     // TODO: implement error handling with catch try..
+//
+//     const allCollects = await shopify.collect.list();
+//     const externalCollectionsIds = allCollects.reduce((acc, collect) => {
+//       // check if this product id already exists as a key.
+//       // if it does, then just push the
+//       if(acc[collect.product_id]){
+//         acc[collect.product_id].push(collect.collection_id);
+//       }else{
+//         acc[collect.product_id] = [];
+//         acc[collect.product_id].push(collect.collection_id);
+//       }
+//
+//       return acc;
+//     }, {});
+//
+//     return externalCollectionsIds;
+//
+// }
 
-    // TODO: implement error handling with catch try..
-
-    const allCollects = await shopify.collect.list();
-    const externalCollectionsIds = allCollects.reduce((acc, collect) => {
-      // check if this product id already exists as a key.
-      // if it does, then just push the
-      if(acc[collect.product_id]){
-        acc[collect.product_id].push(collect.collection_id);
-      }else{
-        acc[collect.product_id] = [];
-        acc[collect.product_id].push(collect.collection_id);
-      }
-
-      return acc;
-    }, {});
-
-    return externalCollectionsIds;
-
-}
 
 
-async function loadAllShopifyProducts(){
-  return new Promise((resolve, reject) => {
-    resolve("some crap");
-  });
-}
 
-function normalizeShopifyProduct(rawProduct){
-  return "normalized product."
-}
-
-async function getShopifyCollectionsForSpecificProduct(productId){
-  // get all collects for this product usingL:
-  // Retrieve only collects for a certain product
-  // GET /admin/collects.json?product_id=632910392 .
-  // then..
-  // extract by transformation all the categories ids.
-  // dedupe the categories ids list just in case.
-  return [];
-}
+// function normalizeShopifyProduct(rawProduct){
+//   return "normalized product."
+// }
+//
+// async function getShopifyCollectionsForSpecificProduct(productId){
+//   // get all collects for this product usingL:
+//   // Retrieve only collects for a certain product
+//   // GET /admin/collects.json?product_id=632910392 .
+//   // then..
+//   // extract by transformation all the categories ids.
+//   // dedupe the categories ids list just in case.
+//   return [];
+// }

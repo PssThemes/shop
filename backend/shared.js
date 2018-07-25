@@ -46,11 +46,13 @@ async function getRelevantExternalCategoriesIds(shopName){
   // Note relevant means.. every external category that we asociated with at least 1 custom category that the admin created.
   // the shops can have many other external categories.. but is not worth accounting for them if no asociation has been made.
   // since relevant means.. categories that have been asociated.
-  const categories = await loadCategories();
 
-  const externalCatsIds = Object.keys(categories).reduce((acc, pushKey) => {
+  // simplified, this means all externalCatId that exist in firebase.
 
-    const externalCats = ((categories[pushKey] || {}).linkedTo[shopName] || {}).categories;
+  const firebaseCategories = await loadCategories();
+  const externalCatsIds = Object.keys(firebaseCategories).reduce((acc, pushKey) => {
+
+    const externalCats = (((firebaseCategories[pushKey] || {}).linkedTo || {})[shopName] || {}).categories;
 
     if(externalCats){
       acc = acc.concat(Object.keys(externalCats));

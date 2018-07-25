@@ -2,8 +2,32 @@
 ===============================================================================================================================
 ===============================================================================================================================
 ===============================================================================================================================
-24 june 2018
+25 june 2018
+what can i do today?
 
+- first finish the shopify functionality no cloud function yet.
+
+Clarify w2hat i need to do.
+i have the settings..
+the relevantexternal  cat ids..
+which we use to detect what are the relevant products, by just exteracting their products ids.
+then we filter out and retrive the relevant products by this.
+
+! Focus on extracting the relevant products.
+relevant product  means a product whos selfId.. or just id.. or externalProduct id .. exists in the relevantProductIds list we constructed erlier.
+
+Test out the gouping.
+  - create 2 categories..
+  - each 2 with 2 products.
+See if the grouping is done corectly by checking each id.
+DONE.
+
+Get ll products form shopify.
+Normalize them by extracting only the data we use.
+
+Need to clarify how to generate a relevant products ids...
+If we group products by category.. we have a category to map against.
+If a category exists in relevant external cats.. then we grab its products and dedupe it.
 
 
 
