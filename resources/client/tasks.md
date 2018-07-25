@@ -28,6 +28,14 @@ Normalize them by extracting only the data we use.
 Need to clarify how to generate a relevant products ids...
 If we group products by category.. we have a category to map against.
 If a category exists in relevant external cats.. then we grab its products and dedupe it.
+DONE.
+
+
+Clarifinbg how to detect who needs to be deleted.
+First we need just the ids of external relevant products..
+and just the external ids of firebase products.
+by comparing this 2 lists we can get the defleted products.
+
 
 
 
