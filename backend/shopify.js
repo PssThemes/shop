@@ -2,7 +2,7 @@
 // all different cloud functions use this module.
 const Shared = require("./shared.js");
 const SHOPNAME = "shopify"
-const uitls = require("./utils.js");
+const utils = require("./utils.js");
 
 
 shopify().then();
@@ -10,6 +10,8 @@ async function shopify(){
 
   // settings object contains apiKey and secrets for accesing the shops.
   const settings = await Shared.loadSettings();
+  const intenralCategories = await Shared.getInternalCategories(SHOPNAME);
+
   const relevantExternalCatsIds = await Shared.getRelevantExternalCategoriesIds(SHOPNAME);
 
   // // prepare external products and asociated pieces we need for them.
@@ -44,20 +46,45 @@ async function shopify(){
   const externalProductsIdsFromFirebaseSet = new Set(Object.keys(internalProducts).map(key => internalProducts[key].externalProductId));
   const externalProductsIdsFromShopSet = relevantProductIdsSet;
 
-
   // Deleted products.
   // removed products are the ones we have in firebase .. but we dont have in shop.
   // from a cs perspective this is a disgioint between 2 sets... FirebaseSet - ShopSet
-  const deletedSet = uitls.setDifference(externalProductsIdsFromFirebaseSet, externalProductsIdsFromShopSet);
+  const deletedSet = utils.setDifference(externalProductsIdsFromFirebaseSet, externalProductsIdsFromShopSet);
 
   // Created Products products.
   // created products are the ones we have in shop .. but we dont have them in firebase yet .
   // meaning is a disgioint between ShopSet - FirebaseSet;
-  const createdSet = uitls.setDifference(externalProductsIdsFromShopSet, externalProductsIdsFromFirebaseSet);
+  const createdSet = utils.setDifference(externalProductsIdsFromShopSet, externalProductsIdsFromFirebaseSet);
 
-  const createdOrDeletedSet = utils.setUnion(removedProductsSet, createdProductsSet);
+  const createdOrDeletedSet = utils.setUnion(deletedSet, createdSet);
 
-  const updatedProductsSet = uitls.setDifference(externalProductsIdsFromShopSet, createdOrDeletedSet);
+  const updatedProductsSet = utils.setDifference(externalProductsIdsFromShopSet, createdOrDeletedSet);
+
+  // remove deleted products..
+  Array.from(deletedSet).map(id => {
+    Shared.removeFirebaseProduct(id);
+  });
+
+
+  // create products..
+  Array.from(createdSet).map(id => {
+
+    const productData = relevantProducts[id];
+    const externalCatIds = externalCategoriesGroupedByProduct[id];
+    const internalCategoriesIds = Shared.extractAsociatedInternalCategories(SHOPNAME, externalCatIds, intenralCategories);
+
+    Shared.createFirebaseProduct(productData, externalCatIds, internalCategoriesIds );
+  });
+
+
+  // // update products..
+  // Array.from(updatedProductsSet).map(id => {
+  //   Shared.removeFirebaseProduct(id);
+  // });
+
+
+
+
 
   console.log("deletedSet: ", deletedSet );
   console.log("createdSet: ", createdSet );
@@ -117,15 +144,17 @@ async function loadAllShopifyCollects(){
   return collects;
 }
 
+
 function makeShopifyInstance(){
   const Shopify = require('shopify-api-node');
   const shopify = new Shopify({
-    shopName: "shop-dop.myshopify.com",
-    apiKey: "5a0e2ee78ef4cf8195d8b09ab4008b09",
-    password: "1d5b877b681052373a8b375c0ff6ccc2",
+    shopName: "aion-shop.myshopify.com",
+    apiKey: "646fbee50103355217533c95aad3520d",
+    password: "0f4b837596ecfa3b700ef1fd975efec0",
   });
   return shopify;
 }
+
 
 async function loadAllShopifyProducts(){
   const shopify = makeShopifyInstance();

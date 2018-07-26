@@ -27,7 +27,7 @@ async function loadSettings(){
 
 
 
-async function loadCategories(){
+async function getInternalCategories(){
   let snap;
   try{
     snap = await db.ref("categories").once("value");
@@ -49,7 +49,7 @@ async function getRelevantExternalCategoriesIds(shopName){
 
   // simplified, this means all externalCatId that exist in firebase.
 
-  const firebaseCategories = await loadCategories();
+  const firebaseCategories = await getInternalCategories();
   const externalCatsIds = Object.keys(firebaseCategories).reduce((acc, pushKey) => {
 
     const externalCats = (((firebaseCategories[pushKey] || {}).linkedTo || {})[shopName] || {}).categories;
@@ -80,9 +80,77 @@ async function loadInternalProducts(shopName){
     return new Error(`could not load products for shop: ${shopName} because of reason: ${err}`);
   }
 
-  return snap.val();
+  return snap.val() || {};
 }
+
+async function removeFirebaseProduct(productId){
+  let result;
+  if(productId){
+    result = await db.ref("products").child(productId).set(null);
+  }
+  return result;
+}
+
+async function createFirebaseProduct(){
+
+}
+
+async function updateFirebaseProduct(){
+
+}
+
+function extractAsociatedInternalCategories(shopName, externalCategoriesIds, internalCategories){
+
+  const internalCategoriesIdsSet = externalCategoriesIds.reduce((acc, externalCatId) => {
+
+    const internalCatIds = extractIntenralCategoriesFor(shopName, externalCatId, internalCategories);
+
+
+    internalCatIds.map(id => acc.add(id));
+
+    return acc;
+  }, new Set([]));
+
+  return Array.from(internalCategoriesIdsSet);
+}
+
+
+function extractIntenralCategoriesFor(shopName, externalCatId, internalCategories){
+  // NOTE: using object keys here pretty much gives us the ids directly
+
+  // this converts externalCatId to a string..
+  externalCatId = externalCatId + ''
+
+  return Object.keys(internalCategories).filter(internalCatId => {
+    const cat = internalCategories[internalCatId];
+    const externalCats =  (((cat || {}).linkedTo || {})[shopName] || {}).categories;
+
+    if(externalCats){
+
+      const externalCatsIds = Object.keys(externalCats);
+      const asociationExists = externalCatsIds.includes(externalCatId);
+      return asociationExists;
+
+    }else{
+
+      return false;
+
+    }
+
+  });
+  
+}
+
+
 
 module.exports.loadSettings = loadSettings;
 module.exports.getRelevantExternalCategoriesIds = getRelevantExternalCategoriesIds;
+
 module.exports.loadInternalProducts = loadInternalProducts;
+module.exports.getInternalCategories = getInternalCategories;
+
+module.exports.extractAsociatedInternalCategories = extractAsociatedInternalCategories;
+
+module.exports.removeFirebaseProduct = removeFirebaseProduct;
+module.exports.createFirebaseProduct = createFirebaseProduct;
+module.exports.updateFirebaseProduct = updateFirebaseProduct;

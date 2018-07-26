@@ -2,6 +2,36 @@
 ===============================================================================================================================
 ===============================================================================================================================
 ===============================================================================================================================
+26 june 2018
+
+I need to attach the custom categories when creating a product.
+I only have external categories for each product.. this means i need to get the associated custom categories.. based on the provided external categories.
+
+Best way to do it is for each external category.. to grab all the custom categories.
+Repeat this for each external category..
+Then accumulate all intenralCategoriesIds in a list.
+Then dedupe that list.
+
+extractAsociatedInternalCategories : List ExternalCatId -> List InternalCategory -> List InternalCategoryId
+  extractIntenralCategoriesFor : ExternalCatId -> List InternalCategory -> List InternalCategoryId
+
+
+Clarifing how to extract all the internalCategories which contain an asociation to a specific external category which is given (SCat).
+
+for each intenral category.. IC
+lookup the list of external categories asociated with it. LEC
+if our specific external category .. SCat .. exist inside the LEC then we include IC id in the acumulator... or we just return true since this can be done with a filtering process also.
+
+
+// NEXT: verify if extracting the asociated custom categories actually works.
+
+// Next.
+firgure out why exteact internal cats for a specific external cat doe snot work,.
+
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
 25 june 2018
 what can i do today?
 
