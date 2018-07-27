@@ -73,7 +73,7 @@ async function shopify(){
 
   // remove deleted products..
   Array.from(deletedSet).map(externalProductId => {
-    console.log("externalProductId: ", externalProductId);
+    
     // console.log("internalProducts: ", internalProducts);
     const internalProductId = Shared.getInternalProductIdFor(externalProductId, internalProducts);
 
@@ -95,16 +95,42 @@ async function shopify(){
   });
 
 
-  // // update products..
-  // Array.from(updatedProductsSet).map(id => {
-  //   Shared.removeFirebaseProduct(id);
-  // });
+  // update products..
+  Array.from(updatedProductsSet).map(extenralProductId => {
+
+    const newProductData = allExternalProducts.filter(product => product.externalProductId == extenralProductId)[0];
+    const externalCatIds = externalCategoriesGroupedByProduct[extenralProductId];
+    const internalCategoriesIds = Shared.extractAsociatedInternalCategories(SHOPNAME, externalCatIds, intenralCategories);
+
+    const internalProductId = getAsociatedProductId(extenralProductId, internalProducts);
+
+    const existingProduct = internalProducts[internalProductId];
+
+    Shared.updateFirebaseProduct(newProductData, externalCatIds, internalCategoriesIds, existingProduct);
+  });
 
 
 
 
 
 }
+
+function getAsociatedProductId(extenralId, internalProducts){
+  // given an external product id.. it finds inside the internalProducts object.. the
+  // the specific internalProductId asociated with this externalProductId.
+  const productId = Object.keys(internalProducts).filter(key => {
+    return internalProducts[key].externalProductId == extenralId
+  })[0];
+
+  if(productId){
+    return productId;
+  }else{
+    return false;
+  }
+
+}
+
+
 
 function getRelevantProductIds(relevantExternalCatsIds, externalProductsGroupedByCategory){
 

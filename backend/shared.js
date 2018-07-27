@@ -135,7 +135,6 @@ function getInternalProductIdFor(externalProductId, internalProducts){
   const internalProductIds = Object.keys(internalProducts).filter(internalProductId => {
     const product = internalProducts[internalProductId];
     const result =  product.externalProductId + "" == externalProductId + "";
-    console.log("result: ", result)
     return result;
   });
 
@@ -150,9 +149,76 @@ function getInternalProductIdFor(externalProductId, internalProducts){
 
 }
 
-async function updateFirebaseProduct(newProductData, existingProduct){
-  // function requiresUpdating
+
+
+async function updateFirebaseProduct(newProductData, externalCategoriesIds, internalCategoriesIds, existingProduct){
+  const short_description = newProductData.description.substring(0,200);
+
+  // console.log("internalCategoriesIds: ", internalCategoriesIds)
+  // console.log("existingProduct.internalCategoriesIds: ", existingProduct.internalCategoriesIds)
+  function requiresUpdating(){
+    // console.log("newProductData.media: ", Array.from(newProductData.media).length);
+
+    const newMedia = newProductData.media || [];
+    const existingMedia = existingProduct.media || [];
+
+    const areTheSame =
+      arraysEqual(internalCategoriesIds, existingProduct.internalCategoriesIds)
+      && arraysEqual(externalCategoriesIds, existingProduct.externalCategoriesIds)
+      && newProductData.name == existingProduct.name
+      && arraysEqual(newMedia, existingMedia)
+      && newProductData.price == existingProduct.price
+      && short_description == existingProduct.short_description;
+    console.log("areTheSame: ", areTheSame);
+    return areTheSame ? false : true;
+    
+  }
+
+  console.log("requiresUpdating: ", requiresUpdating());
+
+  if(requiresUpdating()){
+    console.log("requiresUpdating");
+
+    const newData = {
+      internalCategoriesIds: internalCategoriesIds || [],
+      externalCategoriesIds: externalCategoriesIds || [],
+      mainProductImage: newProductData.mainProductImage || "",
+      name: newProductData.name || "",
+      media: newProductData.media || [],
+      price: newProductData.price || 0.0,
+      short_description: short_description,
+      // short_description: newProductData.short_description || ""
+    };
+
+    db.ref("products").child(existingProduct.selfId).update(newData);
+  }
+
 }
+function arraysEqual(arr1, arr2) {
+    if(arr1.length !== arr2.length)
+        return false;
+    for(var i = arr1.length; i--;) {
+        if(arr1[i] !== arr2[i])
+            return false;
+    }
+
+    return true;
+}
+
+// const product = {
+//   selfId: key,
+//   internalCategoriesIds: internalCategoriesIdsAsObj,
+//   externalCategoriesIds: externalCategoriesIdsAsObj,
+//   externalProductId: externalProductId,
+//   isHidden: false,
+//   mainProductImage:  productData.mainProductImage,
+//   media: productData.media,
+//   name: productData.name,
+//   price: productData.price,
+//   short_description: productData.description.substring(0,200),
+//   shopName: shopName,
+//   howManyTimesWasOrdered : 0,
+// };
 
 function extractAsociatedInternalCategories(shopName, externalCategoriesIds, internalCategories){
 
