@@ -21,6 +21,8 @@ async function shopify(){
 
   const allExternalProducts = await loadAllShopifyProducts();
 
+  // console.log("allExternalProducts: ", allExternalProducts);
+
   const relevantProductIdsSet = getRelevantProductIds(relevantExternalCatsIds, externalProductsGroupedByCategory);
 
   const relevantProducts = Object.keys(allExternalProducts).reduce((acc, key) => {
@@ -46,6 +48,9 @@ async function shopify(){
   const externalProductsIdsFromFirebaseSet = new Set(Object.keys(internalProducts).map(key => internalProducts[key].externalProductId));
   const externalProductsIdsFromShopSet = relevantProductIdsSet;
 
+  // console.log("externalProductsIdsFromFirebaseSet: ", externalProductsIdsFromFirebaseSet);
+  // console.log("externalProductsIdsFromShopSet: ", externalProductsIdsFromShopSet);
+
   // Deleted products.
   // removed products are the ones we have in firebase .. but we dont have in shop.
   // from a cs perspective this is a disgioint between 2 sets... FirebaseSet - ShopSet
@@ -60,20 +65,33 @@ async function shopify(){
 
   const updatedProductsSet = utils.setDifference(externalProductsIdsFromShopSet, createdOrDeletedSet);
 
+  console.log("deletedSet: ", deletedSet );
+  console.log("createdSet: ", createdSet );
+  console.log("createdOrDeletedSet: ", createdOrDeletedSet );
+  console.log("updatedProductsSet: ", updatedProductsSet );
+
+
   // remove deleted products..
-  Array.from(deletedSet).map(id => {
-    Shared.removeFirebaseProduct(id);
+  Array.from(deletedSet).map(externalProductId => {
+    console.log("externalProductId: ", externalProductId);
+    // console.log("internalProducts: ", internalProducts);
+    const internalProductId = Shared.getInternalProductIdFor(externalProductId, internalProducts);
+
+    if(internalProductId){
+      Shared.removeFirebaseProduct(internalProductId);
+    }
   });
 
 
-  // create products..
+  // create products.. externalProductId
   Array.from(createdSet).map(id => {
+    const productData = allExternalProducts.filter(product => product.externalProductId == id)[0];
 
-    const productData = relevantProducts[id];
     const externalCatIds = externalCategoriesGroupedByProduct[id];
     const internalCategoriesIds = Shared.extractAsociatedInternalCategories(SHOPNAME, externalCatIds, intenralCategories);
 
-    Shared.createFirebaseProduct(productData, externalCatIds, internalCategoriesIds );
+    Shared.createFirebaseProduct(SHOPNAME, productData, externalCatIds, internalCategoriesIds);
+
   });
 
 
@@ -86,11 +104,6 @@ async function shopify(){
 
 
 
-  console.log("deletedSet: ", deletedSet );
-  console.log("createdSet: ", createdSet );
-  console.log("createdOrDeletedSet: ", createdOrDeletedSet );
-  console.log("updatedProductsSet: ", updatedProductsSet );
-
 }
 
 function getRelevantProductIds(relevantExternalCatsIds, externalProductsGroupedByCategory){
@@ -99,7 +112,7 @@ function getRelevantProductIds(relevantExternalCatsIds, externalProductsGroupedB
     const productsIds = externalProductsGroupedByCategory[catId];
 
     if(productsIds){
-      productsIds.map(id => accSet.add(id));
+      productsIds.map(id => accSet.add(id + ""));
       return accSet;
     }else{
       return accSet;
@@ -176,7 +189,7 @@ async function loadAllShopifyProducts(){
       });
 
       const normalizedProductData = {
-        externalProductId: rawProduct.id,
+        externalProductId: rawProduct.id + '',
         name: rawProduct.title || "",
         mainProductImage: (rawProduct.image || {}).src || "",
         price: rawProduct.variants[0].price || 0,

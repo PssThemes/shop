@@ -2,6 +2,33 @@
 ===============================================================================================================================
 ===============================================================================================================================
 ===============================================================================================================================
+27 june 2018
+
+# Create a product functionality in shopify. DONE.
+Build the product.
+  - decide what fields i need, by looking up wahtivedone before.
+Build the big description.
+
+# modify the external products ids from shop set to be strings insteadf of numbers. DONE.
+  - look inside getRelevantProductIds, and create a + "" for each add to the set.
+
+# understand why productData is undefined. DONE.
+  was a spelling mistake. fucking js.. dor de elm..
+
+# test delete functionality by deleting product 1.3
+
+# extract the coresponding product id. DONE.
+
+# whats up with this error: externalProductId has already been declared?
+
+# product does not get removed if you remove it form the collection... ?WHY?
+
+
+
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
 26 june 2018
 
 I need to attach the custom categories when creating a product.

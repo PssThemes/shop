@@ -91,12 +91,67 @@ async function removeFirebaseProduct(productId){
   return result;
 }
 
-async function createFirebaseProduct(){
+
+async function createFirebaseProduct(shopName, productData, externalCatsIds, internalCatsIds){
+  const key = db.ref().child("products").push().key;
+  const productRef = db.ref().child("products").child(key);
+
+  const internalCategoriesIdsAsObj = internalCatsIds.reduce((acc, id) => {
+    acc[id] = id + "";
+    return acc;
+  }, {});
+
+  const externalCategoriesIdsAsObj = externalCatsIds.reduce((acc, id) => {
+    acc[id] = id + "";
+    return acc;
+  }, {});
+
+  // console.log("productData: ", productData);
+  const externalProductId = productData.externalProductId;
+
+  const product = {
+    selfId: key,
+    internalCategoriesIds: internalCategoriesIdsAsObj,
+    externalCategoriesIds: externalCategoriesIdsAsObj,
+    externalProductId: externalProductId,
+    isHidden: false,
+    mainProductImage:  productData.mainProductImage,
+    media: productData.media,
+    name: productData.name,
+    price: productData.price,
+    short_description: productData.description.substring(0,200),
+    shopName: shopName,
+    howManyTimesWasOrdered : 0,
+  };
+
+  // TODO: create the long description too .
+  // console.log("product: ", product);
+  productRef.set(product);
 
 }
 
-async function updateFirebaseProduct(){
+function getInternalProductIdFor(externalProductId, internalProducts){
 
+  const internalProductIds = Object.keys(internalProducts).filter(internalProductId => {
+    const product = internalProducts[internalProductId];
+    const result =  product.externalProductId + "" == externalProductId + "";
+    console.log("result: ", result)
+    return result;
+  });
+
+  externalProductId = internalProductIds[0];
+  console.log("externalProductId: ", externalProductId);
+
+  if(externalProductId){
+    return externalProductId;
+  } else {
+    return false;
+  }
+
+}
+
+async function updateFirebaseProduct(newProductData, existingProduct){
+  // function requiresUpdating
 }
 
 function extractAsociatedInternalCategories(shopName, externalCategoriesIds, internalCategories){
@@ -104,7 +159,6 @@ function extractAsociatedInternalCategories(shopName, externalCategoriesIds, int
   const internalCategoriesIdsSet = externalCategoriesIds.reduce((acc, externalCatId) => {
 
     const internalCatIds = extractIntenralCategoriesFor(shopName, externalCatId, internalCategories);
-
 
     internalCatIds.map(id => acc.add(id));
 
@@ -138,9 +192,8 @@ function extractIntenralCategoriesFor(shopName, externalCatId, internalCategorie
     }
 
   });
-  
-}
 
+}
 
 
 module.exports.loadSettings = loadSettings;
@@ -150,6 +203,7 @@ module.exports.loadInternalProducts = loadInternalProducts;
 module.exports.getInternalCategories = getInternalCategories;
 
 module.exports.extractAsociatedInternalCategories = extractAsociatedInternalCategories;
+module.exports.getInternalProductIdFor = getInternalProductIdFor;
 
 module.exports.removeFirebaseProduct = removeFirebaseProduct;
 module.exports.createFirebaseProduct = createFirebaseProduct;
