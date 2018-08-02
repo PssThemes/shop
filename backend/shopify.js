@@ -1,7 +1,7 @@
 // Import stuff from the shared module.
 // all different cloud functions use this module.
 const Shared = require("./shared.js");
-const SHOPNAME = "shopify"
+const SHOPNAME = "shopify";
 const utils = require("./utils.js");
 
 
@@ -65,15 +65,15 @@ async function shopify(){
 
   const updatedProductsSet = utils.setDifference(externalProductsIdsFromShopSet, createdOrDeletedSet);
 
-  console.log("deletedSet: ", deletedSet );
-  console.log("createdSet: ", createdSet );
-  console.log("createdOrDeletedSet: ", createdOrDeletedSet );
-  console.log("updatedProductsSet: ", updatedProductsSet );
+  // console.log("deletedSet: ", deletedSet );
+  // console.log("createdSet: ", createdSet );
+  // console.log("createdOrDeletedSet: ", createdOrDeletedSet );
+  // console.log("updatedProductsSet: ", updatedProductsSet );
 
 
   // remove deleted products..
   Array.from(deletedSet).map(externalProductId => {
-    
+
     // console.log("internalProducts: ", internalProducts);
     const internalProductId = Shared.getInternalProductIdFor(externalProductId, internalProducts);
 
@@ -104,9 +104,11 @@ async function shopify(){
 
     const internalProductId = getAsociatedProductId(extenralProductId, internalProducts);
 
-    const existingProduct = internalProducts[internalProductId];
+    if(internalProductId){
+      const existingProduct = internalProducts[internalProductId];
+      Shared.updateFirebaseProduct(newProductData, externalCatIds, internalCategoriesIds, existingProduct);
+    }
 
-    Shared.updateFirebaseProduct(newProductData, externalCatIds, internalCategoriesIds, existingProduct);
   });
 
 
