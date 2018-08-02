@@ -162,26 +162,40 @@ async function updateFirebaseProduct(newProductData, externalCategoriesIds, inte
     const newMedia = newProductData.media || [];
     const existingMedia = existingProduct.media || [];
 
+    externalCategoriesIds = externalCategoriesIds.map(id => id + "");
+
     const areTheSame =
-      arraysEqual(internalCategoriesIds, existingProduct.internalCategoriesIds)
-      && arraysEqual(externalCategoriesIds, existingProduct.externalCategoriesIds)
+      arraysEqual(internalCategoriesIds,(Object.keys(existingProduct.internalCategoriesIds) || []))
+      && arraysEqual(externalCategoriesIds, (Object.keys(existingProduct.externalCategoriesIds) || []))
       && newProductData.name == existingProduct.name
       && arraysEqual(newMedia, existingMedia)
       && newProductData.price == existingProduct.price
       && short_description == existingProduct.short_description;
-    console.log("areTheSame: ", areTheSame);
+    // console.log("areTheSame: ", areTheSame);
     return areTheSame ? false : true;
-    
+
   }
 
-  console.log("requiresUpdating: ", requiresUpdating());
+  // console.log("requiresUpdating: ", requiresUpdating());
 
-  if(requiresUpdating()){
-    console.log("requiresUpdating");
+  const internalCategoriesIdsAsObj = internalCategoriesIds.reduce((acc, id) => {
+    acc[id] = id + "";
+    return acc;
+  }, {});
+
+  const externalCategoriesIdsAsObj = externalCategoriesIds.reduce((acc, id) => {
+    acc[id] = id + "";
+    return acc;
+  }, {});
+
+  const doesRequireUpdating = requiresUpdating();
+
+  if(doesRequireUpdating){
+    // console.log("it does requre updating.. ");
 
     const newData = {
-      internalCategoriesIds: internalCategoriesIds || [],
-      externalCategoriesIds: externalCategoriesIds || [],
+      internalCategoriesIds: internalCategoriesIdsAsObj || {},
+      externalCategoriesIds: externalCategoriesIdsAsObj || {},
       mainProductImage: newProductData.mainProductImage || "",
       name: newProductData.name || "",
       media: newProductData.media || [],
@@ -194,6 +208,7 @@ async function updateFirebaseProduct(newProductData, externalCategoriesIds, inte
   }
 
 }
+
 function arraysEqual(arr1, arr2) {
     if(arr1.length !== arr2.length)
         return false;
