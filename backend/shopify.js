@@ -23,7 +23,7 @@ async function shopify(){
 
   // console.log("allExternalProducts: ", allExternalProducts);
 
-  const relevantProductIdsSet = getRelevantProductIds(relevantExternalCatsIds, externalProductsGroupedByCategory);
+  const relevantProductIdsSet = Shared.getRelevantProductIds(relevantExternalCatsIds, externalProductsGroupedByCategory);
 
   const relevantProducts = Object.keys(allExternalProducts).reduce((acc, key) => {
 
@@ -134,23 +134,7 @@ function getAsociatedProductId(extenralId, internalProducts){
 
 
 
-function getRelevantProductIds(relevantExternalCatsIds, externalProductsGroupedByCategory){
 
-  const relevantProductIds = relevantExternalCatsIds.reduce((accSet, catId) => {
-    const productsIds = externalProductsGroupedByCategory[catId];
-
-    if(productsIds){
-      productsIds.map(id => accSet.add(id + ""));
-      return accSet;
-    }else{
-      return accSet;
-    }
-    // we use a set because it removes duplicates by default.
-    // we can have the guarantee that the product ids are not duplicated.
-  }, new Set([]));
-
-  return relevantProductIds;
-}
 
 async function groupExternalCategoriesAndExternalProducts() {
   const allCollects = await loadAllShopifyCollects();
