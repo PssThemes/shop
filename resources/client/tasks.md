@@ -4,8 +4,10 @@
 ===============================================================================================================================
 06 august 2018
 
-Prestasshop[ function.
-]
+Prestashop function.
+relevant cat external ids  means only the external categories that make snese
+
+- load all products from prestashop
 
 
 ===============================================================================================================================

@@ -63,8 +63,7 @@
 //   const targetUrl = 'https://ecom.pssthemes.com/prestashop/api/products/?output_format=JSON';
 //
 //   function Prestashop_getProduct(id){
-//     const targetUrl = `https://ecom.pssthemes.com/prestashop/api/products/${id}?output_format=JSON`;
-//     return request.get(targetUrl, {}).auth(apiPrestashopKey)
+//
 //   }
 //
 //   request.get(targetUrl, {}).auth(apiPrestashopKey)

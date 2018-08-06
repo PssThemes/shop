@@ -14,7 +14,7 @@ async function prestashop(){
   // all categoryIds that exist in firebase..
   const relevantExternalCatsIds = await Shared.getRelevantExternalCategoriesIds(SHOPNAME);
   // // prepare external products and asociated pieces we need for them.
-  const allExternalProducts = await loadAllPrestashopProducts();
+  const allExternalProducts = await prestashop_loadAllPrestashopProducts();
 
   const group = await groupExternalCategoriesAndExternalProducts(allExternalProducts);
   const externalProductsGroupedByCategory = group.externalProductsGroupedByCategory;
@@ -74,6 +74,90 @@ async function groupExternalCategoriesAndExternalProducts(externalProducts) {
   // return group;
 }
 
-async function loadAllPrestashopProducts(){
-  return {};
+
+async function prestashop_getProductIds(){
+  const request = require("request-promise-native");
+  const apiPrestashopKey = "R21PLEPZI2H4KAXQ4RPG1FELYEI17GYI";
+  const targetUrl = 'https://ecom.pssthemes.com/prestashop/api/products/?output_format=JSON';
+  let ids;
+  let result;
+  try{
+    result  = await request.get(targetUrl, {}).auth(apiPrestashopKey);
+  }catch(err){
+    console.log("seems we have an error with loading the products, eror is: ");
+    console.log(err);
+  }finally{
+    result = JSON.parse(result);
+    ids = result.products.map(x => x.id);
+  }
+  return ids;
+}
+
+async function prestashop_getProductById(id){
+  const request = require("request-promise-native");
+  const apiPrestashopKey = "R21PLEPZI2H4KAXQ4RPG1FELYEI17GYI";
+  const targetUrl = `https://ecom.pssthemes.com/prestashop/api/products/${id}?output_format=JSON`;
+
+  let rawData;
+  let normalizedProductData;
+
+  try{
+    rawData = await request.get(targetUrl, {}).auth(apiPrestashopKey);
+  }catch(err){
+    console.log(`Could not load product with id: ${id}, eror is: `);
+    console.log(err);
+  }finally{
+    const productWrapper = JSON.parse(rawData);
+    const rawProduct = productWrapper.product;
+
+    const imagesIds = rawProduct.associations.images.map(x => x.id);
+    const images = await Promise.all(imagesIds.map(async id => {
+      // TODO: learn how to load this images as urls..
+      return Promise.resolve("some image url");
+    }));
+
+    const media = images;
+
+    const normalizedProductData = {
+      externalProductId: rawProduct.id + '',
+      name: rawProduct.name || "",
+      price: rawProduct.price || 0,
+      mainProductImage: media[0] || "",
+      description: rawProduct.description || "",
+      media: media,
+    };
+
+    console.log("normalizedProductData: ", normalizedProductData);
+  }
+  return normalizedProductData;
+
+}
+
+async function test(){
+  const stuff = await prestashop_getProductById(2);
+  // console.log("stuff: ", stuff);
+}
+
+test().then();
+
+
+async function prestashop_loadAllPrestashopProducts(){
+
+  productIds = await prestashop_getProductIds();
+  console.log("productIds: ", productIds);
+
+  const stuff = await Promise.all(productIds.map( async (id) => {
+    return Promise.resolve("yes..");
+  }));
+
+  console.log("stuff: ", stuff);
+
+//
+//
+//
+//   console.log("productIds: ", productIds);
+//
+//
+//   return productIds;
+  return Promise.resolve({});
 }
