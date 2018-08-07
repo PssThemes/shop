@@ -24,21 +24,21 @@ async function prestashop(){
 
   const relevantProductIdsSet = Shared.getRelevantProductIds(relevantExternalCatsIds, externalProductsGroupedByCategory);
 
-  const relevantProducts = Object.keys(allExternalProducts).reduce((acc, key) => {
-
-    const product = allExternalProducts[key];
-    const productId = product.externalProductId;
-
-    if(relevantProductIdsSet.has(productId)){
-      acc[productId] = product;
-      return acc;
-    } else {
-      return acc;
-    }
-
-  }, {});
-
-  console.log("relevantProducts: ", relevantProducts);
+  // const relevantProducts = Object.keys(allExternalProducts).reduce((acc, key) => {
+  //
+  //   const product = allExternalProducts[key];
+  //   const productId = product.externalProductId;
+  //
+  //   if(relevantProductIdsSet.has(productId)){
+  //     acc[productId] = product;
+  //     return acc;
+  //   } else {
+  //     return acc;
+  //   }
+  //
+  // }, {});
+  //
+  // console.log("relevantProducts: ", relevantProducts);
 
 }
 
@@ -47,7 +47,8 @@ async function groupExternalCategoriesAndExternalProducts(externalProducts) {
   // we get the external categories first.
   // const allCollects = await loadAllShopifyCollects();
 
-  console.log(externalProducts);
+  console.log("externalProducts: ", externalProducts);
+
   return Promise.resolve( { externalProductsGroupedByCategory : {}, externalCategoriesGroupedByProduct : {} });
   // const group = allCollects.reduce((acc, collect) => {
   //
@@ -79,7 +80,7 @@ async function prestashop_getProductIds(){
   const request = require("request-promise-native");
   const apiPrestashopKey = "R21PLEPZI2H4KAXQ4RPG1FELYEI17GYI";
   const targetUrl = 'https://ecom.pssthemes.com/prestashop/api/products/?output_format=JSON';
-  let ids;
+  let ids = [];
   let result;
   try{
     result  = await request.get(targetUrl, {}).auth(apiPrestashopKey);
@@ -89,9 +90,11 @@ async function prestashop_getProductIds(){
   }finally{
     result = JSON.parse(result);
     ids = result.products.map(x => x.id);
+    return ids;
   }
-  return ids;
 }
+
+
 
 async function prestashop_getProductById(id){
   const request = require("request-promise-native");
@@ -110,28 +113,39 @@ async function prestashop_getProductById(id){
     const productWrapper = JSON.parse(rawData);
     const rawProduct = productWrapper.product;
 
-    const imagesIds = rawProduct.associations.images.map(x => x.id);
-    const images = await Promise.all(imagesIds.map(async id => {
-      // TODO: learn how to load this images as urls..
-      return Promise.resolve("some image url");
-    }));
 
-    const media = images;
+    const temp = rawProduct.associations.images;
 
-    const normalizedProductData = {
-      externalProductId: rawProduct.id + '',
+    console.log("rawProduct.associations.images: ", Array.isArray(temp), temp);
+
+
+    const imagesIds = rawProduct.associations.images.map(x => x.id); 
+    const images = getImgUrls(imagesIds);
+
+    normalizedProductData = {
+      externalProductId: rawProduct.id + "",
       name: rawProduct.name || "",
+      mainProductImage: images[0] || "",
       price: rawProduct.price || 0,
-      mainProductImage: media[0] || "",
       description: rawProduct.description || "",
-      media: media,
+      media: images,
     };
 
-    console.log("normalizedProductData: ", normalizedProductData);
+    // console.log("normalizedProductData: ", normalizedProductData);
   }
+
   return normalizedProductData;
 
 }
+
+function getImgUrls(imgsIds){
+  function template(x){
+    return `https://ecom.pssthemes.com/prestashop/img/p/${x}/${x}.jpg`
+  }
+  return  imgsIds.map(id => template(id + ""));
+}
+
+
 
 async function test(){
   const stuff = await prestashop_getProductById(2);
@@ -143,14 +157,49 @@ test().then();
 
 async function prestashop_loadAllPrestashopProducts(){
 
-  productIds = await prestashop_getProductIds();
-  console.log("productIds: ", productIds);
+  // let productIds;
+  prestashop_getProductIds()
+    .then(ids => {
+      return Promise.all(ids.map(id => prestashop_getProductById(id)));
+      // console.log('ids: ', ids);
+    })
+    .then(what => {
+      console.log("whatL: ", what);
+    });
 
-  const stuff = await Promise.all(productIds.map( async (id) => {
-    return Promise.resolve("yes..");
-  }));
 
-  console.log("stuff: ", stuff);
+
+  // .then()
+  // try{
+  //   productsIds = await prestashop_getProductIds();
+  //   let shit= []
+  //   shit = Array.from(productsIds);
+  //
+  //   console.log("productIds: ", shit);
+  //
+  //   const allPromisedProducts = [...shit].map(id => {
+  //     return prestashop_getProductById(id);
+  //   });
+  //
+  //   const stuff = await Promise.all(allPromisedProducts);
+  //
+  //   // console.log("typeof productIds: ", typeof productIds);
+  //
+  // }catch(err){
+  //   console.log("error when loading the products: ");
+  //   console.log(err);
+  // }finally{
+  //
+  // }
+
+
+  // productsIds = productIds;
+  //
+  // const stuff = await Promise.all(productIds.map( async (id) => {
+  //   return prestashop_getProductById(id);
+  // }));
+  //
+  // console.log("stuff: ", stuff);
 
 //
 //
@@ -159,5 +208,5 @@ async function prestashop_loadAllPrestashopProducts(){
 //
 //
 //   return productIds;
-  return Promise.resolve({});
+  // return Promise.resolve({});
 }
