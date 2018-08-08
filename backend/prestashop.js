@@ -22,7 +22,7 @@ async function prestashop(){
 
 
 
-  const relevantProductIdsSet = Shared.getRelevantProductIds(relevantExternalCatsIds, externalProductsGroupedByCategory);
+  const relevantExternalProductIdsSet = Shared.getRelevantProductIds(relevantExternalCatsIds, externalProductsGroupedByCategory);
 
   // const relevantProducts = Object.keys(allExternalProducts).reduce((acc, key) => {
   //
@@ -119,7 +119,7 @@ async function prestashop_getProductById(id){
     console.log("rawProduct.associations.images: ", Array.isArray(temp), temp);
 
 
-    const imagesIds = rawProduct.associations.images.map(x => x.id); 
+    const imagesIds = rawProduct.associations.images.map(x => x.id);
     const images = getImgUrls(imagesIds);
 
     normalizedProductData = {

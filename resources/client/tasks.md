@@ -2,6 +2,33 @@
 ===============================================================================================================================
 ===============================================================================================================================
 ===============================================================================================================================
+08 august 2018
+
+Clarification.
+Settings loaded.
+Internal categoires.. this are custom ones. DONE
+relevant external cats.. this are ones that were asociated in firebase.
+indexed by shop name .. good since a categori is unique in a shop.
+
+loading external products.. ok..
+groupigg togheter the external products and external categories.. making 2 acumulation indexing on each other..
+
+relevant product ids.
+meaning all externa lproducts.. are loaded.. but only some of them are actually neded ..
+
+sooo..
+we fiter allExternalProducts with the list of relevant stuff.
+then we get only the relevant products.
+
+from this.. we
+
+
+
+
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
 07 august 2018
 
 -  
