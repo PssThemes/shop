@@ -4,8 +4,7 @@
     "repository": "https://github.com/user/project.git",
     "license": "BSD3",
     "source-directories": [
-        ".",
-        "./testElm"
+        "."
     ],
     "exposed-modules": [],
     "dependencies": {
@@ -15,4 +14,3 @@
     },
     "elm-version": "0.18.0 <= v < 0.19.0"
 }
- 
