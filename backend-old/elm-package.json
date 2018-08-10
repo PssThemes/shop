@@ -5,8 +5,7 @@
     "license": "BSD3",
     "source-directories": [
         ".",
-        "./shopify",
-        "./prestashop"
+        "./testElm"
     ],
     "exposed-modules": [],
     "dependencies": {

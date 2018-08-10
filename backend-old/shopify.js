@@ -1,147 +1,360 @@
-
-
+// Import stuff from the shared module.
+// all different cloud functions use this module.
+const Shared = require("./shared.js");
 const SHOPNAME = "shopify";
+const utils = require("./utils.js");
+
+
+shopify().then();
+async function shopify(){
+
+  // settings object contains apiKey and secrets for accesing the shops.
+  const settings = await Shared.loadSettings();
+  const intenralCategories = await Shared.getInternalCategories(SHOPNAME);
+
+  const relevantExternalCatsIds = await Shared.getRelevantExternalCategoriesIds(SHOPNAME);
+
+  // // prepare external products and asociated pieces we need for them.
+  const group = await groupExternalCategoriesAndExternalProducts();
+  const externalProductsGroupedByCategory = group.externalProductsGroupedByCategory;
+  const externalCategoriesGroupedByProduct = group.externalCategoriesGroupedByProduct;
+
+  const allExternalProducts = await loadAllShopifyProducts();
+
+  // console.log("allExternalProducts: ", allExternalProducts);
+
+  const relevantProductIdsSet = Shared.getRelevantProductIds(relevantExternalCatsIds, externalProductsGroupedByCategory);
+
+  const relevantProducts = Object.keys(allExternalProducts).reduce((acc, key) => {
+
+    const product = allExternalProducts[key];
+    const productId = product.externalProductId;
+
+    if(relevantProductIdsSet.has(productId)){
+      acc[productId] = product;
+      return acc;
+    } else {
+      return acc;
+    }
+
+  }, {});
+
+
+  // get internal products and asociated functionality.
+  const internalProducts = await Shared.loadInternalProducts(SHOPNAME);
+
+  // Compare between firebase and shop.
+  // 2 lists of externalproductsids.
+  const externalProductsIdsFromFirebaseSet = new Set(Object.keys(internalProducts).map(key => internalProducts[key].externalProductId));
+  const externalProductsIdsFromShopSet = relevantProductIdsSet;
+
+  // console.log("externalProductsIdsFromFirebaseSet: ", externalProductsIdsFromFirebaseSet);
+  // console.log("externalProductsIdsFromShopSet: ", externalProductsIdsFromShopSet);
+
+  // Deleted products.
+  // removed products are the ones we have in firebase .. but we dont have in shop.
+  // from a cs perspective this is a disgioint between 2 sets... FirebaseSet - ShopSet
+  const deletedSet = utils.setDifference(externalProductsIdsFromFirebaseSet, externalProductsIdsFromShopSet);
+
+  // Created Products products.
+  // created products are the ones we have in shop .. but we dont have them in firebase yet .
+  // meaning is a disgioint between ShopSet - FirebaseSet;
+  const createdSet = utils.setDifference(externalProductsIdsFromShopSet, externalProductsIdsFromFirebaseSet);
+
+  const createdOrDeletedSet = utils.setUnion(deletedSet, createdSet);
+
+  const updatedProductsSet = utils.setDifference(externalProductsIdsFromShopSet, createdOrDeletedSet);
+
+  // console.log("deletedSet: ", deletedSet );
+  // console.log("createdSet: ", createdSet );
+  // console.log("createdOrDeletedSet: ", createdOrDeletedSet );
+  // console.log("updatedProductsSet: ", updatedProductsSet );
+
+
+  // remove deleted products..
+  Array.from(deletedSet).map(externalProductId => {
+
+    // console.log("internalProducts: ", internalProducts);
+    const internalProductId = Shared.getInternalProductIdFor(externalProductId, internalProducts);
+
+    if(internalProductId){
+      Shared.removeFirebaseProduct(internalProductId);
+    }
+  });
+
+
+  // create products.. externalProductId
+  Array.from(createdSet).map(id => {
+    const productData = allExternalProducts.filter(product => product.externalProductId == id)[0];
+
+    const externalCatIds = externalCategoriesGroupedByProduct[id];
+    const internalCategoriesIds = Shared.extractAsociatedInternalCategories(SHOPNAME, externalCatIds, intenralCategories);
+
+    Shared.createFirebaseProduct(SHOPNAME, productData, externalCatIds, internalCategoriesIds);
+
+  });
+
+
+  // update products..
+  Array.from(updatedProductsSet).map(extenralProductId => {
+
+    const newProductData = allExternalProducts.filter(product => product.externalProductId == extenralProductId)[0];
+    const externalCatIds = externalCategoriesGroupedByProduct[extenralProductId];
+    const internalCategoriesIds = Shared.extractAsociatedInternalCategories(SHOPNAME, externalCatIds, intenralCategories);
+
+    const internalProductId = getAsociatedProductId(extenralProductId, internalProducts);
+
+    if(internalProductId){
+      const existingProduct = internalProducts[internalProductId];
+      Shared.updateFirebaseProduct(newProductData, externalCatIds, internalCategoriesIds, existingProduct);
+    }
+
+  });
 
 
 
 
 
+}
+
+function getAsociatedProductId(extenralId, internalProducts){
+  // given an external product id.. it finds inside the internalProducts object.. the
+  // the specific internalProductId asociated with this externalProductId.
+  const productId = Object.keys(internalProducts).filter(key => {
+    return internalProducts[key].externalProductId == extenralId
+  })[0];
+
+  if(productId){
+    return productId;
+  }else{
+    return false;
+  }
+
+}
 
 
 
 
-// 1.
-// Load the api key and secret from the firebase database.
-// I need shop name. apikey  and password.
-// const shopify = new Shopify({
-//   shopName: 'shop-dop.myshopify.com',
-//   apiKey: '5a0e2ee78ef4cf8195d8b09ab4008b09',
-//   password: '1d5b877b681052373a8b375c0ff6ccc2'
+
+async function groupExternalCategoriesAndExternalProducts() {
+  const allCollects = await loadAllShopifyCollects();
+  const group = allCollects.reduce((acc, collect) => {
+
+    const productId = collect.product_id;
+    const categoryId = collect.collection_id;
+
+    if(acc.externalProductsGroupedByCategory[categoryId]){
+      acc.externalProductsGroupedByCategory[categoryId].push(productId);
+    }else {
+      acc.externalProductsGroupedByCategory[categoryId] = [];
+      acc.externalProductsGroupedByCategory[categoryId].push(productId);
+    }
+
+    if(acc.externalCategoriesGroupedByProduct[productId]){
+      acc.externalCategoriesGroupedByProduct[productId].push(categoryId);
+    }else {
+      acc.externalCategoriesGroupedByProduct[productId] = [];
+      acc.externalCategoriesGroupedByProduct[productId].push(categoryId);
+    }
+
+    return acc;
+  }, { externalProductsGroupedByCategory : {}, externalCategoriesGroupedByProduct : {} });
+
+  return group;
+}
+
+async function loadAllShopifyCollects(){
+  const shopify = makeShopifyInstance();
+  const collects = await shopify.collect.list();
+  return collects;
+}
+
+
+function makeShopifyInstance(){
+  const Shopify = require('shopify-api-node');
+  const shopify = new Shopify({
+    shopName: "aion-shop.myshopify.com",
+    apiKey: "646fbee50103355217533c95aad3520d",
+    password: "0f4b837596ecfa3b700ef1fd975efec0",
+  });
+  return shopify;
+}
+
+
+async function loadAllShopifyProducts(){
+  const shopify = makeShopifyInstance();
+
+  let allProducts;
+
+  try {
+    allProducts = await shopify.product.list();
+  }catch(err){
+    console.log("Error when loading shopify products:")
+    console.log(err);
+  }
+
+  if(allProducts){
+    return allProducts.map(rawProduct => {
+
+      const media = rawProduct.images.map(img => {
+        return img.src;
+      });
+
+      const normalizedProductData = {
+        externalProductId: rawProduct.id + '',
+        name: rawProduct.title || "",
+        mainProductImage: (rawProduct.image || {}).src || "",
+        price: rawProduct.variants[0].price || 0,
+        description: rawProduct.body_html || "",
+        media: media,
+      };
+
+      return normalizedProductData;
+    });
+  }
+
+  return;
+}
+
+// return {
+//         mainProductImage:  (product.image || {}).src || "",
+//         media: product.images.map(img => {
+//           return img.src
+//         }),
+//         name: product.title,
+//         price: product.variants[0].price || 0,
+//         description: product.body_html
+//       }
+
+  // the entire settings object that holds api keys secrets and other stuff to access all shops.
+
+
+  // type:  List { customCategoryId: String , externalCategoryId: String }
+
+
+  // in firebase products share a common interface, no matter form what shop they come from.
+  // we call that interface and custom data asociated with it an intenral product.
+  // const internalProducts = result[2] || {};
+
+  // load all externalProducts from shopify..
+
+
+
+  // // type: Dict IntenralCatId (List ExternalCatId)
+  // const dictOfOneIntenralToManyExternalCategoriesIds = pairsOfIntenralAndExternalCateories.reduce(( acc, pair ) => {
+  //
+  //   // initally the accumulator is empty.
+  //   // first time we create the key value pair.. the key will not exist. this is why we set [] on the key..
+  //   // because after doing that, we receive a .push() function on that array.
+  //   // we use this array to push the externalCategoryId into it.
+  //   // second and next times.. we just push the id into that array as expected.
+  //   if(acc[pair.internalCategoryId]){
+  //     acc[pair.internalCategoryId].push(pair.externalCategoryId);
+  //   }else{
+  //     acc[pair.internalCategoryId] = [];
+  //     acc[pair.internalCategoryId].push(pair.externalCategoryId);
+  //   }
+  //
+  //   return acc;
+  //
+  // }, {});
+  //
+  //
+  // // type: Dict ExternalCatId (List IntenralCatId)
+  // const dictOfOneExternalToManyIntenralCategoriesIds = pairsOfIntenralAndExternalCateories.reduce(( acc, pair ) => {
+  //   if(acc[pair.externalCategoryId]){
+  //     acc[pair.externalCategoryId].push(pair.internalCategoryId);
+  //   }else {
+  //     acc[pair.externalCategoryId] = [];
+  //     acc[pair.externalCategoryId].push(pair.internalCategoryId);
+  //   }
+  //
+  //   return acc;
+  //
+  // }, {});
+
+
+  // for each intenral product, we keep its external id.
+  // this is a list of all extenralProductId s.
+  // we use it to detect what products have been deleted, removed or updated.
+//   const externalIdsOfInternalProducts = Object.keys(internalProducts).map(key =>  internalProducts[key].externalProductId);
+//
+//
+//   // deciding if a product is relevan.. using the categories is done like this.
+//   // if the product has at least 1 external category.. which is linked to a custom category.
+//   // so instead of relevant products we actually have relevant external categoryes.
+//
+//   const relevantExternalCategoriesIds =
+//   const allAxternalCategoriesIdsForProduct =  await getAllExternalCategoriesIndexedByProductId();
+//   const
+//
+//   // relevant is about taking into consideration that not all products form the shop are included in our system.
+//   // we exclude them based on their asociated external categories..
+//   // by checking if at least 1 internal category is linked to any of this product external categories.
+//   const relevantExternalProducts = allExternalProducts.filter(externalProduct );
+//   const normalizedExternalProducts = relevantExternalProducts.map(normalizeShopifyProduct);
+//   const idsOfExternalProducts = normalizedExternalProducts.map(p => p.externalId);
+//
+//   promisedExternalProducts
+//     .then( => {
+//
+//       // collections ids.
+//       // externalCategoriesIdsIndexedByExternalProductId =
+//
+//
+//
+//
+//
+//
+//     })
+//     .catch(error => {
+//       console.log(new Error(`loading initial stuff failed: ${error}`));
+//     });
+//   // extract all externalIdsOfExternalProducts.
+//
+//   // based on the differences between this 2 list of ids.. detect which products have been deleted, removed or updated.
+//
+// })
+// .catch(error => {
+//   console.log(new Error(`loading initial stuff failed: ${error}`));
 // });
 
 
-
-// 2.
-// build the shopify instance.
-
-// 3.
-// read all categories from firebase.. find the one wich have a link to shopify.
-// llok inside categories.. and extract all external categories ids.
-
-// 4.
-// get this this list of external categories ids.. for each one.. ask shpofiy api to get the products.
-// at this stage the products are just what we have in shoopify.
-
-
-// 5.
-// merge the firebase database info with the new product info we have from shopify.
-
-// 6.
-// if the product is created for the first time then add a categorid .. real one.. intenral one to it.
-// plus other things like is hidden and so on.
-
-
-const firebase = require('firebase');
-
-const config = {
-  apiKey: "AIzaSyBHFgL85LAezq8GV-MIqDvBz53g4LSrk1I",
-  authDomain: "shop-0000.firebaseapp.com",
-  databaseURL: "https://shop-0000.firebaseio.com",
-  projectId: "shop-0000",
-  storageBucket: "shop-0000.appspot.com",
-  messagingSenderId: "809051870205"
-};
-
-firebase.initializeApp(config);
-const db = firebase.database();
-
-db.ref("settings").child("shopify").once("value")
-.then(snap => {
-  // we goit the settings from firebase.
-  const shopifySettings = snap.val();
-
-  // get the categories also.
-  db.ref("categories").once("value")
-  .then(snap => {
-    // we got the custom categories
-    const categories = snap.val();
-    const categoriesIds = Object.keys(categories);
-
-    // given custom categories.. get the external categories just for shjopify.
-    // im appling a map reduce here to ghater up in a list..
-    // all external categories ids (which are basically the real shopify categories/collections..)
-    // here we got the external categoires.
-    const externalCatIds =
-      categoriesIds
-        .map(catId => {
-            const cats = ((categories[catId].linkedTo || {}).shopify || {}).categories;
-            if(cats){
-              return Object.keys(cats);
-            }else{
-              return false;
-            }
-        })
-        .reduce((acc, x) => {
-          acc = acc.concat(x);
-          return acc;
-        }, []);
-
-    // for each external category..  grab all products from shopify.. and put them in firebase..
-    // is a merge action.. so only certain fields get overriden.. the other custom ones like is this product hidden or not they dont.
-
-    // for this to work... i need to detect if a product is already in our firebase.. or is not.
-    // if it is.. we need an update action.. which means i need to find its key.
-    // else.. i need to create a new one with default options.. like productIsHidden is false.
-
-    // this means.. somnehow i need a mapping. a mapping from my own internal product ids .. which are firebase push keys .. to the external product ids.
-    // i need a functiuon which is async which answers to question.. does this this product already exists in our firebase database?
-
-    // this allows me to keep the custom data intact.
-    // i can put it in a special dict .. lets call it a mapper..  which is all about detecting if a product exists already or not.
-
-    // this also mean i need to remove this once the product is not longer in shopify..
-    // this means each time this cloud function runns.. i need to take out the products that have been deleted from shopify.
-    // we are not using hooks.. so i need to implement this mechanism of removing propducts, manually.
-    // what i need is a function that takes in all shopify product ids and compare that with all the shpoify product ids we had before running this function.
-    // or said in anothe way, i need to compare the current state - the product ids we currently have in database.. with the new ids aded..
-    // and this is how we can detect which ones have been removed.
-
-    // same process but backwards works for the newly created products.
-
-    // so 3 different actions: update, create and remove.
-    // each of them requires their own logic.
-    // the process starts by detecing for each product.. what type of action need to perform on it.
-    // not sure if is better to do multiple writes.. or batch them in a transaction.
-    // logically .. since the product is a single logical isolated unit.. it must be true that we need to inact this update write or remove.. at the product level,
-    // im gonna worry about firebase costs later. right now im not even sure if you can do it in any other way.. since this logic of detecting when to remove update or create is quite complex.
-    // requires multiple async checks.. so you cant do it for all products at once.
+// async function getAllExternalCategoriesIndexedByProductId(){
+//
+//     // TODO: implement error handling with catch try..
+//
+//     const allCollects = await shopify.collect.list();
+//     const externalCollectionsIds = allCollects.reduce((acc, collect) => {
+//       // check if this product id already exists as a key.
+//       // if it does, then just push the
+//       if(acc[collect.product_id]){
+//         acc[collect.product_id].push(collect.collection_id);
+//       }else{
+//         acc[collect.product_id] = [];
+//         acc[collect.product_id].push(collect.collection_id);
+//       }
+//
+//       return acc;
+//     }, {});
+//
+//     return externalCollectionsIds;
+//
+// }
 
 
 
-    // console.log("categoriesIds", categoriesIds);
-    console.log("externalCatIds: ", externalCatIds);
-  })
-  .catch(error => {
-    console.log("error: ", error);
-  })
 
-})
-.catch(error => {
-  console.log("error: ", error);
-});
-
-// function concat(x,y){
-//   return x.concat(y);
+// function normalizeShopifyProduct(rawProduct){
+//   return "normalized product."
 // }
 //
-// function flatMap
-//
-//
-
-
-
-
-
-
-
-//
+// async function getShopifyCollectionsForSpecificProduct(productId){
+//   // get all collects for this product usingL:
+//   // Retrieve only collects for a certain product
+//   // GET /admin/collects.json?product_id=632910392 .
+//   // then..
+//   // extract by transformation all the categories ids.
+//   // dedupe the categories ids list just in case.
+//   return [];
+// }
