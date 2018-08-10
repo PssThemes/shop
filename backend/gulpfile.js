@@ -4,14 +4,21 @@ const gulpElm = require('gulp-elm');
 
 gulp.task('elm-init', gulpElm.init);
 
-gulp.task('compileTestElm', ['elm-init'], function(){
-  return gulp.src('testElm/TestElm.elm')
+gulp.task('compileShopify', ['elm-init'], function(){
+  return gulp.src('shopify/Shopify.elm')
     .pipe(gulpElm())
-    .pipe(gulp.dest('testElm'));
+    .pipe(gulp.dest('shopify'));
+});
+
+gulp.task('compilePrestashop', ['elm-init'], function(){
+  return gulp.src('prestashop/Prestashop.elm')
+    .pipe(gulpElm())
+    .pipe(gulp.dest('prestashop'));
 });
 
 gulp.task('watch', function() {
-  gulp.watch('testElm/*.elm', ['compileTestElm']);
+  gulp.watch('shopify/*.elm', [ 'compileShopify' ]);
+  gulp.watch('prestashop/*.elm', [ 'compilePrestashop' ]);
 });
 
-gulp.task('default', ['compileTestElm', 'watch']);
+gulp.task('default', ['compileShopify', 'compilePrestashop', 'watch']);
