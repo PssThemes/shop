@@ -9,14 +9,12 @@ import Rocket exposing ((=>))
 import Json.Decode as JD
 import Json.Encode as JE
 import Process
-
-
--- import Task exposing (..)
+import Task
 
 
 je1 : JE.Value
 je1 =
-    JE.int 1
+    JE.int 2
 
 
 jd1 : JD.Decoder Int
@@ -45,6 +43,7 @@ type alias Model =
 
 type Msg
     = Start
+    | Finish
 
 
 init : ( Model, List (Cmd Msg) )
@@ -56,10 +55,20 @@ update : Msg -> Model -> ( Model, List (Cmd Msg) )
 update msg model =
     case msg of
         Start ->
-            [ Process.sleep 2000
-                |> (\_ -> finish ())
+            [ Process.sleep 6000
+                |> Task.andThen (\_ -> Task.succeed ())
+                |> Task.perform (\_ -> Finish)
+
+            -- |> Task.andThen (\_ ->  finish ())
+            -- |> Task.perform
             ]
                 |> (,) model
+                |> Debug.log "Start"
+
+        Finish ->
+            [ finish () ]
+                |> (,) model
+                |> Debug.log "Finish"
 
 
 subscriptions : Model -> Sub Msg

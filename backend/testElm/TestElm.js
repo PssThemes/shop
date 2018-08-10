@@ -6199,7 +6199,7 @@ var _user$project$TestElm$init = {
 	_1: {ctor: '[]'}
 };
 var _user$project$TestElm$jd1 = _elm_lang$core$Json_Decode$int;
-var _user$project$TestElm$je1 = _elm_lang$core$Json_Encode$int(1);
+var _user$project$TestElm$je1 = _elm_lang$core$Json_Encode$int(2);
 var _user$project$TestElm$start = _elm_lang$core$Native_Platform.incomingPort(
 	'start',
 	_elm_lang$core$Json_Decode$null(
@@ -6209,24 +6209,53 @@ var _user$project$TestElm$finish = _elm_lang$core$Native_Platform.outgoingPort(
 	function (v) {
 		return null;
 	});
+var _user$project$TestElm$Finish = {ctor: 'Finish'};
 var _user$project$TestElm$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
-		return A2(
-			F2(
-				function (v0, v1) {
-					return {ctor: '_Tuple2', _0: v0, _1: v1};
-				}),
-			model,
-			{
-				ctor: '::',
-				_0: function (_p1) {
-					return _user$project$TestElm$finish(
-						{ctor: '_Tuple0'});
-				}(
-					_elm_lang$core$Process$sleep(2000)),
-				_1: {ctor: '[]'}
-			});
+		if (_p0.ctor === 'Start') {
+			return A2(
+				_elm_lang$core$Debug$log,
+				'Start',
+				A2(
+					F2(
+						function (v0, v1) {
+							return {ctor: '_Tuple2', _0: v0, _1: v1};
+						}),
+					model,
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$core$Task$perform,
+							function (_p1) {
+								return _user$project$TestElm$Finish;
+							},
+							A2(
+								_elm_lang$core$Task$andThen,
+								function (_p2) {
+									return _elm_lang$core$Task$succeed(
+										{ctor: '_Tuple0'});
+								},
+								_elm_lang$core$Process$sleep(6000))),
+						_1: {ctor: '[]'}
+					}));
+		} else {
+			return A2(
+				_elm_lang$core$Debug$log,
+				'Finish',
+				A2(
+					F2(
+						function (v0, v1) {
+							return {ctor: '_Tuple2', _0: v0, _1: v1};
+						}),
+					model,
+					{
+						ctor: '::',
+						_0: _user$project$TestElm$finish(
+							{ctor: '_Tuple0'}),
+						_1: {ctor: '[]'}
+					}));
+		}
 	});
 var _user$project$TestElm$Start = {ctor: 'Start'};
 var _user$project$TestElm$subscriptions = function (model) {
@@ -6234,7 +6263,7 @@ var _user$project$TestElm$subscriptions = function (model) {
 		{
 			ctor: '::',
 			_0: _user$project$TestElm$start(
-				function (_p2) {
+				function (_p3) {
 					return _user$project$TestElm$Start;
 				}),
 			_1: {ctor: '[]'}
@@ -6243,9 +6272,9 @@ var _user$project$TestElm$subscriptions = function (model) {
 var _user$project$TestElm$main = _elm_lang$core$Platform$program(
 	{
 		init: _NoRedInk$rocket_update$Rocket$batchInit(_user$project$TestElm$init),
-		update: function (_p3) {
+		update: function (_p4) {
 			return _NoRedInk$rocket_update$Rocket$batchUpdate(
-				_user$project$TestElm$update(_p3));
+				_user$project$TestElm$update(_p4));
 		},
 		subscriptions: _user$project$TestElm$subscriptions
 	})();
