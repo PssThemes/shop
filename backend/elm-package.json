@@ -4,12 +4,6 @@
     "repository": "https://github.com/user/project.git",
     "license": "BSD3",
     "source-directories": [
-<<<<<<< HEAD
-        "."
-    ],
-    "exposed-modules": [],
-    "dependencies": { 
-=======
         ".",
         "./shopify",
         "./prestashop"
@@ -17,7 +11,6 @@
     "exposed-modules": [],
     "dependencies": {
         "NoRedInk/rocket-update": "1.0.0 <= v < 2.0.0",
->>>>>>> test-elm-on-cloud-functions
         "elm-lang/core": "5.1.1 <= v < 6.0.0",
         "elm-lang/html": "2.0.0 <= v < 3.0.0"
     },
