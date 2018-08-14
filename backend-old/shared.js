@@ -15,17 +15,6 @@ const db = firebase.database();
 
 
 
-async function loadSettings(){
-  let snap;
-  try{
-    snap = await db.ref("settings").once("value");
-  }catch(err){
-    console.log(new Error(`clould not load firebase settings for reason: ${err}`));
-  }
-  return snap.val();
-}
-
-
 
 async function getInternalCategories(){
   let snap;

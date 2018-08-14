@@ -3,7 +3,10 @@ module Shopify exposing (..)
 -- import AllDict exposing (..)
 
 import Data exposing (..)
-import Dict exposing (Dict)
+
+
+-- import Dict exposing (Dict)
+
 import Json.Decode as JD
 import Json.Encode as JE
 import Platform
@@ -36,8 +39,8 @@ main =
 type alias Model =
     { settings : Maybe Settings
     , internalCategories : Maybe (EveryDict InternalCatId InternalCategory)
-    , allInternalProducts : Maybe (Dict InternalProductId InternalProduct)
-    , allExternalProducts : Maybe (Dict ExternalProductId NormalizedProduct)
+    , internalProducts : Maybe (EveryDict InternalProductId InternalProduct)
+    , externalProducts : Maybe (EveryDict ExternalProductId NormalizedProduct)
     , shopifyCollects : Maybe (List ( ExternalCatId, ExternalProductId ))
     }
 
@@ -47,20 +50,28 @@ type Msg
     | Finish
     | ReceivedSettings Settings
     | ReceivedInternalCategories (EveryDict InternalCatId InternalCategory)
-    | ReceivedInternalProducts (EveryDict InternalCatId InternalCategory)
+    | ReceivedInternalProducts (EveryDict InternalProductId InternalProduct)
+    | ReceivedNormalizedProduct (EveryDict ExternalProductId NormalizedProduct)
+    | ReceivedShopifyCollects (List ( ExternalCatId, ExternalProductId ))
     | DecodingError String
+    | Work
 
 
 init : ( Model, List (Cmd Msg) )
 init =
     ( { settings = Nothing
       , internalCategories = Nothing
-      , allInternalProducts = Nothing
-      , allExternalProducts = Nothing
+      , internalProducts = Nothing
+      , externalProducts = Nothing
       , shopifyCollects = Nothing
       }
     , []
     )
+
+
+selfCall : Msg -> Cmd Msg
+selfCall msg =
+    Task.perform (\_ -> msg) (Task.succeed ())
 
 
 update : Msg -> Model -> ( Model, List (Cmd Msg) )
@@ -72,18 +83,42 @@ update msg model =
                 |> Task.perform (\_ -> Finish)
             ]
                 |> (,) model
-                |> Debug.log "Start"
 
         Finish ->
             [ Ports.finish () ]
                 |> (,) model
-                |> Debug.log "Finish"
 
         ReceivedSettings settings ->
-            { model | settings = Just settings } => []
+            { model | settings = Just settings } => [ selfCall Work ]
 
         ReceivedInternalCategories intCats ->
-            { model | internalCategories = Just intCats } => []
+            { model | internalCategories = Just intCats } => [ selfCall Work ]
+
+        ReceivedInternalProducts internalProducts ->
+            { model | internalProducts = Just internalProducts } => [ selfCall Work ]
+
+        ReceivedNormalizedProduct normalizedProducts ->
+            { model | externalProducts = Just normalizedProducts } => [ selfCall Work ]
+
+        ReceivedShopifyCollects collects ->
+            { model | shopifyCollects = Just collects } => [ selfCall Work ]
+
+        Work ->
+            Maybe.map5
+                (\settings internalCategories internalProducts externalProducts shopifyCollects ->
+                    let
+                        _ =
+                            Debug.log "stuff: " ( settings, internalCategories, internalProducts, externalProducts, shopifyCollects )
+                    in
+                        model
+                            => []
+                )
+                model.settings
+                model.internalCategories
+                model.internalProducts
+                model.externalProducts
+                model.shopifyCollects
+                |> Maybe.withDefault (model => [])
 
         DecodingError error ->
             model
@@ -104,11 +139,32 @@ subscriptions model =
                 Err error ->
                     DecodingError error
         )
-    , Ports.received_internalProducts
+    , Ports.received_InternalProducts
         (\value ->
             case JD.decodeValue internalProductsDecoder value of
                 Ok internalProducts ->
                     ReceivedInternalProducts internalProducts
+
+                Err error ->
+                    DecodingError error
+        )
+    , Ports.received_ExternalProducts
+        (\value ->
+            case JD.decodeValue normalizedProductsDecoder value of
+                Ok normalizedProducts ->
+                    ReceivedNormalizedProduct normalizedProducts
+
+                Err error ->
+                    DecodingError error
+        )
+    , Ports.received_Collects
+        (\value ->
+            case JD.decodeValue shopifyCollectsDecoder value of
+                Ok normalizedProducts ->
+                    ReceivedShopifyCollects normalizedProducts
+
+                Err error ->
+                    DecodingError error
         )
     ]
         |> Sub.batch

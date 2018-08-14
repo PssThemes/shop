@@ -27,4 +27,10 @@ port received_settings : (Settings -> msg) -> Sub msg
 port received_internalCategories : (JD.Value -> msg) -> Sub msg
 
 
-port received_allInternalProducts : (JD.Value -> msg) -> Sub msg
+port received_InternalProducts : (JD.Value -> msg) -> Sub msg
+
+
+port received_ExternalProducts : (JD.Value -> msg) -> Sub msg
+
+
+port received_Collects : (JD.Value -> msg) -> Sub msg
