@@ -37,35 +37,35 @@ ports.finish.subscribe(() => {
 // });
 
 
-// Load internalCategories..
-db.ref("categories").once("value").then(snap => {
-  const categories = snap.val();
-  if(categories){
-    let categoriesAsArray = [];
-
-    Object.keys(categories).map(key => {
-
-      const firebaseCat = categories[key];
-
-      const cat = {};
-
-      cat.shopify = transformObjectInArray(firebaseCat.shopify);
-      cat.prestashop = transformObjectInArray(firebaseCat.prestashop);
-      cat.selfId = firebaseCat.selfId;
-      cat.name = firebaseCat.name;
-
-      categoriesAsArray.push(cat);
-
-    });
-
-    ports.received_internalCategories.send(categoriesAsArray);
-
-  }
-})
-.catch(err => {
-  console.log("error in loading internalCategories: ", err);
-});
-
+// // Load internalCategories..
+// db.ref("categories").once("value").then(snap => {
+//   const categories = snap.val();
+//   if(categories){
+//     let categoriesAsArray = [];
+//
+//     Object.keys(categories).map(key => {
+//
+//       const firebaseCat = categories[key];
+//
+//       const cat = {};
+//
+//       cat.shopify = transformObjectInArray(firebaseCat.shopify);
+//       cat.prestashop = transformObjectInArray(firebaseCat.prestashop);
+//       cat.selfId = firebaseCat.selfId;
+//       cat.name = firebaseCat.name;
+//
+//       categoriesAsArray.push(cat);
+//
+//     });
+//
+//     ports.received_internalCategories.send(categoriesAsArray);
+//
+//   }
+// })
+// .catch(err => {
+//   console.log("error in loading internalCategories: ", err);
+// });
+//
 function transformObjectInArray(obj){
   const array = [];
   Object.keys(obj).map(key => {
@@ -74,16 +74,17 @@ function transformObjectInArray(obj){
   return array;
 }
 
-// // Load InternalProducts..
-// db.ref("products").once("value").then(snap => {
-//   const products = snap.val();
-//   if(products){
-//     ports.received_InternalProducts.send(products);
-//   }
-// })
-// .catch(err => {
-//   console.log("error in loading InternalProducts: ", err);
-// });
+// Load InternalProducts..
+db.ref("products").once("value").then(snap => {
+  const products = snap.val();
+  if(products){
+    const productsAsArray = transformObjectInArray(products);
+    ports.received_InternalProducts.send(productsAsArray);
+  }
+})
+.catch(err => {
+  console.log("error in loading InternalProducts: ", err);
+});
 
 
 // // Extenral products..

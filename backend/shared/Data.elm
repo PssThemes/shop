@@ -218,7 +218,7 @@ internalProductDecoder =
             , externalId = ExternalProductId externalId
             , name = name
             , short_description = short_description
-            , price = price
+            , price = price |> String.toFloat |> Result.withDefault 0
             , externalCatIds = externalCatIds |> List.map ExternalCatId |> EverySet.fromList
             , internalCatIds = internalCatIds |> List.map InternalCatId |> EverySet.fromList
             , mainImage = mainImage
@@ -232,7 +232,7 @@ internalProductDecoder =
         |> JDP.required "externalId" (JD.string)
         |> JDP.required "name" JD.string
         |> JDP.required "short_description" JD.string
-        |> JDP.required "price" JD.float
+        |> JDP.required "price" JD.string
         |> JDP.required "externalCatIds" (JD.list JD.string)
         |> JDP.required "internalCatIds" (JD.list JD.string)
         |> JDP.optional "mainImage" (JD.string |> JD.map (\x -> Just x)) Nothing
@@ -247,10 +247,10 @@ shopNameDecoder =
         |> JD.andThen
             (\string ->
                 case string of
-                    "Shopify" ->
+                    "shopify" ->
                         JD.succeed Shopify
 
-                    "Prestashop" ->
+                    "prestashop" ->
                         JD.succeed Prestashop
 
                     shopName ->
