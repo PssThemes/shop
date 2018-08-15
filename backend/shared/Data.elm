@@ -114,27 +114,44 @@ normalizedProductDecoder =
 
 shopifyProductDecoder : JD.Decoder NormalizedProduct
 shopifyProductDecoder =
-    -- JD.fail "not implemented"
     JDP.decode
         (\id title maybe_mainImgSrc variants body_html images ->
-            { externalId = ExternalProductId id
+            { externalId = ExternalProductId (toString id)
             , name = title
             , mainImage = maybe_mainImgSrc
-            , price = variants |> List.head |> Maybe.withDefault 0
+            , price =
+                variants
+                    |> List.head
+                    |> Maybe.map
+                        (\string ->
+                            string
+                                |> String.toFloat
+                                |> Result.withDefault 0
+                        )
+                    |> Maybe.withDefault 0
             , description = body_html
-            , media = images
+            , media = []
             }
         )
-        |> JDP.required "id" (JD.string)
+        |> JDP.required "id" JD.int
         |> JDP.required "title" JD.string
         |> JDP.optionalAt [ "image", "src" ] (JD.string |> JD.map Just) Nothing
-        -- rawProduct.variants[0].price
-        |> JDP.required "variants" (JD.list (JD.field "price" JD.float))
+        |> JDP.required "variants" (JD.list (JD.field "price" JD.string))
         |> JDP.required "body_html" JD.string
         |> JDP.required "images" (JD.list (JD.field "src" JD.string))
 
 
 
+-- JD.field "id" JD.int
+--     |> JD.andThen
+--         (\stuff ->
+--             let
+--                 what : Int
+--                 what =
+--                     stuff
+--             in
+--                 JD.fail "crap./. "
+--         )
 -- {
 --   externalProductId: rawProduct.id + '',
 --   name: rawProduct.title || "",
@@ -248,3 +265,36 @@ shopifyCollectsDecoder =
         (JD.field "product_id" JD.string)
     )
         |> JD.list
+
+
+settingsDecoder : JD.Decoder Settings
+settingsDecoder =
+    (JD.map2
+        (\shopify prestashop ->
+            { shopify = shopify
+            , prestashop = prestashop
+            }
+        )
+        (JD.field "shopify"
+            (JD.map3
+                (\apiKey apiSecret shopName ->
+                    { apiKey = apiKey
+                    , apiSecret = apiSecret
+                    , shopName = shopName
+                    }
+                )
+                (JD.field "apiKey" JD.string)
+                (JD.field "apiSecret" JD.string)
+                (JD.field "shopName" JD.string)
+            )
+        )
+        (JD.field "prestashop"
+            (JD.map
+                (\apiKey ->
+                    { apiKey = apiKey
+                    }
+                )
+                (JD.field "apiKey" JD.string)
+            )
+        )
+    )

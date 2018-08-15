@@ -17,6 +17,7 @@ gulp.task('compilePrestashop', ['elm-init'], function(){
 });
 
 gulp.task('watch', function() {
+  gulp.watch('shared/*.elm', [ 'compileShopify' ]);
   gulp.watch('shopify/*.elm', [ 'compileShopify' ]);
   gulp.watch('prestashop/*.elm', [ 'compilePrestashop' ]);
 });

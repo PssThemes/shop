@@ -7400,6 +7400,33 @@ var _elm_lang$core$Process$kill = _elm_lang$core$Native_Scheduler.kill;
 var _elm_lang$core$Process$sleep = _elm_lang$core$Native_Scheduler.sleep;
 var _elm_lang$core$Process$spawn = _elm_lang$core$Native_Scheduler.spawn;
 
+var _user$project$Data$settingsDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (shopify, prestashop) {
+			return {shopify: shopify, prestashop: prestashop};
+		}),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'shopify',
+		A4(
+			_elm_lang$core$Json_Decode$map3,
+			F3(
+				function (apiKey, apiSecret, shopName) {
+					return {apiKey: apiKey, apiSecret: apiSecret, shopName: shopName};
+				}),
+			A2(_elm_lang$core$Json_Decode$field, 'apiKey', _elm_lang$core$Json_Decode$string),
+			A2(_elm_lang$core$Json_Decode$field, 'apiSecret', _elm_lang$core$Json_Decode$string),
+			A2(_elm_lang$core$Json_Decode$field, 'shopName', _elm_lang$core$Json_Decode$string))),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'prestashop',
+		A2(
+			_elm_lang$core$Json_Decode$map,
+			function (apiKey) {
+				return {apiKey: apiKey};
+			},
+			A2(_elm_lang$core$Json_Decode$field, 'apiKey', _elm_lang$core$Json_Decode$string))));
 var _user$project$Data$prestashopProductDecoder = _elm_lang$core$Json_Decode$fail('not implemented');
 var _user$project$Data$InternalProduct = function (a) {
 	return function (b) {
@@ -7454,7 +7481,7 @@ var _user$project$Data$shopifyProductDecoder = A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 			'variants',
 			_elm_lang$core$Json_Decode$list(
-				A2(_elm_lang$core$Json_Decode$field, 'price', _elm_lang$core$Json_Decode$float)),
+				A2(_elm_lang$core$Json_Decode$field, 'price', _elm_lang$core$Json_Decode$string)),
 			A4(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalAt,
 				{
@@ -7475,20 +7502,29 @@ var _user$project$Data$shopifyProductDecoder = A3(
 					A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 						'id',
-						_elm_lang$core$Json_Decode$string,
+						_elm_lang$core$Json_Decode$int,
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(
 							F6(
 								function (id, title, maybe_mainImgSrc, variants, body_html, images) {
 									return {
-										externalId: _user$project$Data$ExternalProductId(id),
+										externalId: _user$project$Data$ExternalProductId(
+											_elm_lang$core$Basics$toString(id)),
 										name: title,
 										mainImage: maybe_mainImgSrc,
 										price: A2(
 											_elm_lang$core$Maybe$withDefault,
 											0,
-											_elm_lang$core$List$head(variants)),
+											A2(
+												_elm_lang$core$Maybe$map,
+												function (string) {
+													return A2(
+														_elm_lang$core$Result$withDefault,
+														0,
+														_elm_lang$core$String$toFloat(string));
+												},
+												_elm_lang$core$List$head(variants))),
 										description: body_html,
-										media: images
+										media: {ctor: '[]'}
 									};
 								}))))))));
 var _user$project$Data$normalizedProductDecoder = _elm_lang$core$Json_Decode$oneOf(
@@ -7725,48 +7761,7 @@ var _user$project$Ports$start = _elm_lang$core$Native_Platform.incomingPort(
 	'start',
 	_elm_lang$core$Json_Decode$null(
 		{ctor: '_Tuple0'}));
-var _user$project$Ports$received_settings = _elm_lang$core$Native_Platform.incomingPort(
-	'received_settings',
-	A2(
-		_elm_lang$core$Json_Decode$andThen,
-		function (shopify) {
-			return A2(
-				_elm_lang$core$Json_Decode$andThen,
-				function (prestashop) {
-					return _elm_lang$core$Json_Decode$succeed(
-						{shopify: shopify, prestashop: prestashop});
-				},
-				A2(
-					_elm_lang$core$Json_Decode$field,
-					'prestashop',
-					A2(
-						_elm_lang$core$Json_Decode$andThen,
-						function (apiKey) {
-							return _elm_lang$core$Json_Decode$succeed(
-								{apiKey: apiKey});
-						},
-						A2(_elm_lang$core$Json_Decode$field, 'apiKey', _elm_lang$core$Json_Decode$string))));
-		},
-		A2(
-			_elm_lang$core$Json_Decode$field,
-			'shopify',
-			A2(
-				_elm_lang$core$Json_Decode$andThen,
-				function (apiKey) {
-					return A2(
-						_elm_lang$core$Json_Decode$andThen,
-						function (apiSecret) {
-							return A2(
-								_elm_lang$core$Json_Decode$andThen,
-								function (shopName) {
-									return _elm_lang$core$Json_Decode$succeed(
-										{apiKey: apiKey, apiSecret: apiSecret, shopName: shopName});
-								},
-								A2(_elm_lang$core$Json_Decode$field, 'shopName', _elm_lang$core$Json_Decode$string));
-						},
-						A2(_elm_lang$core$Json_Decode$field, 'apiSecret', _elm_lang$core$Json_Decode$string));
-				},
-				A2(_elm_lang$core$Json_Decode$field, 'apiKey', _elm_lang$core$Json_Decode$string)))));
+var _user$project$Ports$received_settings = _elm_lang$core$Native_Platform.incomingPort('received_settings', _elm_lang$core$Json_Decode$value);
 var _user$project$Ports$received_internalCategories = _elm_lang$core$Native_Platform.incomingPort('received_internalCategories', _elm_lang$core$Json_Decode$value);
 var _user$project$Ports$received_InternalProducts = _elm_lang$core$Native_Platform.incomingPort('received_InternalProducts', _elm_lang$core$Json_Decode$value);
 var _user$project$Ports$received_ExternalProducts = _elm_lang$core$Native_Platform.incomingPort('received_ExternalProducts', _elm_lang$core$Json_Decode$value);
@@ -7814,143 +7809,147 @@ var _user$project$Shopify$ReceivedSettings = function (a) {
 var _user$project$Shopify$Finish = {ctor: 'Finish'};
 var _user$project$Shopify$update = F2(
 	function (msg, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
-			case 'Start':
-				return A2(
-					F2(
-						function (v0, v1) {
-							return {ctor: '_Tuple2', _0: v0, _1: v1};
-						}),
-					model,
-					{
-						ctor: '::',
-						_0: A2(
-							_elm_lang$core$Task$perform,
-							function (_p2) {
-								return _user$project$Shopify$Finish;
-							},
+		return function (_p1) {
+			var _p2 = _p1;
+			var _p4 = _p2._0;
+			var _p3 = A2(_elm_lang$core$Debug$log, 'new model: ', _p4.internalCategories);
+			return {ctor: '_Tuple2', _0: _p4, _1: _p2._1};
+		}(
+			function () {
+				var _p5 = msg;
+				switch (_p5.ctor) {
+					case 'Start':
+						return A2(
+							F2(
+								function (v0, v1) {
+									return {ctor: '_Tuple2', _0: v0, _1: v1};
+								}),
+							model,
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$core$Task$perform,
+									function (_p6) {
+										return _user$project$Shopify$Finish;
+									},
+									A2(
+										_elm_lang$core$Task$andThen,
+										function (_p7) {
+											return _elm_lang$core$Task$succeed(
+												{ctor: '_Tuple0'});
+										},
+										_elm_lang$core$Process$sleep(6000))),
+								_1: {ctor: '[]'}
+							});
+					case 'Finish':
+						return A2(
+							F2(
+								function (v0, v1) {
+									return {ctor: '_Tuple2', _0: v0, _1: v1};
+								}),
+							model,
+							{
+								ctor: '::',
+								_0: _user$project$Ports$finish(
+									{ctor: '_Tuple0'}),
+								_1: {ctor: '[]'}
+							});
+					case 'ReceivedSettings':
+						return A2(
+							_NoRedInk$rocket_update$Rocket_ops['=>'],
+							_elm_lang$core$Native_Utils.update(
+								model,
+								{
+									settings: _elm_lang$core$Maybe$Just(_p5._0)
+								}),
+							{
+								ctor: '::',
+								_0: _user$project$Shopify$selfCall(_user$project$Shopify$Work),
+								_1: {ctor: '[]'}
+							});
+					case 'ReceivedInternalCategories':
+						return A2(
+							_NoRedInk$rocket_update$Rocket_ops['=>'],
+							_elm_lang$core$Native_Utils.update(
+								model,
+								{
+									internalCategories: _elm_lang$core$Maybe$Just(_p5._0)
+								}),
+							{
+								ctor: '::',
+								_0: _user$project$Shopify$selfCall(_user$project$Shopify$Work),
+								_1: {ctor: '[]'}
+							});
+					case 'ReceivedInternalProducts':
+						return A2(
+							_NoRedInk$rocket_update$Rocket_ops['=>'],
+							_elm_lang$core$Native_Utils.update(
+								model,
+								{
+									internalProducts: _elm_lang$core$Maybe$Just(_p5._0)
+								}),
+							{
+								ctor: '::',
+								_0: _user$project$Shopify$selfCall(_user$project$Shopify$Work),
+								_1: {ctor: '[]'}
+							});
+					case 'ReceivedNormalizedProduct':
+						return A2(
+							_NoRedInk$rocket_update$Rocket_ops['=>'],
+							_elm_lang$core$Native_Utils.update(
+								model,
+								{
+									externalProducts: _elm_lang$core$Maybe$Just(_p5._0)
+								}),
+							{
+								ctor: '::',
+								_0: _user$project$Shopify$selfCall(_user$project$Shopify$Work),
+								_1: {ctor: '[]'}
+							});
+					case 'ReceivedShopifyCollects':
+						return A2(
+							_NoRedInk$rocket_update$Rocket_ops['=>'],
+							_elm_lang$core$Native_Utils.update(
+								model,
+								{
+									shopifyCollects: _elm_lang$core$Maybe$Just(_p5._0)
+								}),
+							{
+								ctor: '::',
+								_0: _user$project$Shopify$selfCall(_user$project$Shopify$Work),
+								_1: {ctor: '[]'}
+							});
+					case 'Work':
+						return A2(
+							_elm_lang$core$Maybe$withDefault,
 							A2(
-								_elm_lang$core$Task$andThen,
-								function (_p3) {
-									return _elm_lang$core$Task$succeed(
-										{ctor: '_Tuple0'});
-								},
-								_elm_lang$core$Process$sleep(6000))),
-						_1: {ctor: '[]'}
-					});
-			case 'Finish':
-				return A2(
-					F2(
-						function (v0, v1) {
-							return {ctor: '_Tuple2', _0: v0, _1: v1};
-						}),
-					model,
-					{
-						ctor: '::',
-						_0: _user$project$Ports$finish(
-							{ctor: '_Tuple0'}),
-						_1: {ctor: '[]'}
-					});
-			case 'ReceivedSettings':
-				return A2(
-					_NoRedInk$rocket_update$Rocket_ops['=>'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{
-							settings: _elm_lang$core$Maybe$Just(_p1._0)
-						}),
-					{
-						ctor: '::',
-						_0: _user$project$Shopify$selfCall(_user$project$Shopify$Work),
-						_1: {ctor: '[]'}
-					});
-			case 'ReceivedInternalCategories':
-				return A2(
-					_NoRedInk$rocket_update$Rocket_ops['=>'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{
-							internalCategories: _elm_lang$core$Maybe$Just(_p1._0)
-						}),
-					{
-						ctor: '::',
-						_0: _user$project$Shopify$selfCall(_user$project$Shopify$Work),
-						_1: {ctor: '[]'}
-					});
-			case 'ReceivedInternalProducts':
-				return A2(
-					_NoRedInk$rocket_update$Rocket_ops['=>'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{
-							internalProducts: _elm_lang$core$Maybe$Just(_p1._0)
-						}),
-					{
-						ctor: '::',
-						_0: _user$project$Shopify$selfCall(_user$project$Shopify$Work),
-						_1: {ctor: '[]'}
-					});
-			case 'ReceivedNormalizedProduct':
-				return A2(
-					_NoRedInk$rocket_update$Rocket_ops['=>'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{
-							externalProducts: _elm_lang$core$Maybe$Just(_p1._0)
-						}),
-					{
-						ctor: '::',
-						_0: _user$project$Shopify$selfCall(_user$project$Shopify$Work),
-						_1: {ctor: '[]'}
-					});
-			case 'ReceivedShopifyCollects':
-				return A2(
-					_NoRedInk$rocket_update$Rocket_ops['=>'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{
-							shopifyCollects: _elm_lang$core$Maybe$Just(_p1._0)
-						}),
-					{
-						ctor: '::',
-						_0: _user$project$Shopify$selfCall(_user$project$Shopify$Work),
-						_1: {ctor: '[]'}
-					});
-			case 'Work':
-				return A2(
-					_elm_lang$core$Maybe$withDefault,
-					A2(
-						_NoRedInk$rocket_update$Rocket_ops['=>'],
-						model,
-						{ctor: '[]'}),
-					A6(
-						_elm_lang$core$Maybe$map5,
-						F5(
-							function (settings, internalCategories, internalProducts, externalProducts, shopifyCollects) {
-								var _p4 = A2(
-									_elm_lang$core$Debug$log,
-									'stuff: ',
-									{ctor: '_Tuple5', _0: settings, _1: internalCategories, _2: internalProducts, _3: externalProducts, _4: shopifyCollects});
-								return A2(
-									_NoRedInk$rocket_update$Rocket_ops['=>'],
-									model,
-									{ctor: '[]'});
-							}),
-						model.settings,
-						model.internalCategories,
-						model.internalProducts,
-						model.externalProducts,
-						model.shopifyCollects));
-			default:
-				return A2(
-					_elm_lang$core$Debug$log,
-					A2(_elm_lang$core$Basics_ops['++'], 'errr: ', _p1._0),
-					A2(
-						_NoRedInk$rocket_update$Rocket_ops['=>'],
-						model,
-						{ctor: '[]'}));
-		}
+								_NoRedInk$rocket_update$Rocket_ops['=>'],
+								model,
+								{ctor: '[]'}),
+							A6(
+								_elm_lang$core$Maybe$map5,
+								F5(
+									function (settings, internalCategories, internalProducts, externalProducts, shopifyCollects) {
+										return A2(
+											_NoRedInk$rocket_update$Rocket_ops['=>'],
+											model,
+											{ctor: '[]'});
+									}),
+								model.settings,
+								model.internalCategories,
+								model.internalProducts,
+								model.externalProducts,
+								model.shopifyCollects));
+					default:
+						return A2(
+							_elm_lang$core$Debug$log,
+							A2(_elm_lang$core$Basics_ops['++'], 'DecodingError errr: ', _p5._0),
+							A2(
+								_NoRedInk$rocket_update$Rocket_ops['=>'],
+								model,
+								{ctor: '[]'}));
+				}
+			}());
 	});
 var _user$project$Shopify$Start = {ctor: 'Start'};
 var _user$project$Shopify$subscriptions = function (model) {
@@ -7958,54 +7957,62 @@ var _user$project$Shopify$subscriptions = function (model) {
 		{
 			ctor: '::',
 			_0: _user$project$Ports$start(
-				function (_p5) {
+				function (_p8) {
 					return _user$project$Shopify$Start;
 				}),
 			_1: {
 				ctor: '::',
-				_0: _user$project$Ports$received_settings(_user$project$Shopify$ReceivedSettings),
+				_0: _user$project$Ports$received_settings(
+					function (value) {
+						var _p9 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$settingsDecoder, value);
+						if (_p9.ctor === 'Ok') {
+							return _user$project$Shopify$ReceivedSettings(_p9._0);
+						} else {
+							return _user$project$Shopify$DecodingError(_p9._0);
+						}
+					}),
 				_1: {
 					ctor: '::',
 					_0: _user$project$Ports$received_internalCategories(
 						function (value) {
-							var _p6 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$internalCategoriesDecoder, value);
-							if (_p6.ctor === 'Ok') {
-								return _user$project$Shopify$ReceivedInternalCategories(_p6._0);
+							var _p10 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$internalCategoriesDecoder, value);
+							if (_p10.ctor === 'Ok') {
+								return _user$project$Shopify$ReceivedInternalCategories(_p10._0);
 							} else {
-								return _user$project$Shopify$DecodingError(_p6._0);
+								return _user$project$Shopify$DecodingError(_p10._0);
 							}
 						}),
 					_1: {
 						ctor: '::',
 						_0: _user$project$Ports$received_InternalProducts(
 							function (value) {
-								var _p7 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$internalProductsDecoder, value);
-								if (_p7.ctor === 'Ok') {
-									return _user$project$Shopify$ReceivedInternalProducts(_p7._0);
+								var _p11 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$internalProductsDecoder, value);
+								if (_p11.ctor === 'Ok') {
+									return _user$project$Shopify$ReceivedInternalProducts(_p11._0);
 								} else {
-									return _user$project$Shopify$DecodingError(_p7._0);
+									return _user$project$Shopify$DecodingError(_p11._0);
 								}
 							}),
 						_1: {
 							ctor: '::',
 							_0: _user$project$Ports$received_ExternalProducts(
 								function (value) {
-									var _p8 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$normalizedProductsDecoder, value);
-									if (_p8.ctor === 'Ok') {
-										return _user$project$Shopify$ReceivedNormalizedProduct(_p8._0);
+									var _p12 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$normalizedProductsDecoder, value);
+									if (_p12.ctor === 'Ok') {
+										return _user$project$Shopify$ReceivedNormalizedProduct(_p12._0);
 									} else {
-										return _user$project$Shopify$DecodingError(_p8._0);
+										return _user$project$Shopify$DecodingError(_p12._0);
 									}
 								}),
 							_1: {
 								ctor: '::',
 								_0: _user$project$Ports$received_Collects(
 									function (value) {
-										var _p9 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$shopifyCollectsDecoder, value);
-										if (_p9.ctor === 'Ok') {
-											return _user$project$Shopify$ReceivedShopifyCollects(_p9._0);
+										var _p13 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$shopifyCollectsDecoder, value);
+										if (_p13.ctor === 'Ok') {
+											return _user$project$Shopify$ReceivedShopifyCollects(_p13._0);
 										} else {
-											return _user$project$Shopify$DecodingError(_p9._0);
+											return _user$project$Shopify$DecodingError(_p13._0);
 										}
 									}),
 								_1: {ctor: '[]'}
@@ -8019,9 +8026,9 @@ var _user$project$Shopify$subscriptions = function (model) {
 var _user$project$Shopify$main = _elm_lang$core$Platform$program(
 	{
 		init: _NoRedInk$rocket_update$Rocket$batchInit(_user$project$Shopify$init),
-		update: function (_p10) {
+		update: function (_p14) {
 			return _NoRedInk$rocket_update$Rocket$batchUpdate(
-				_user$project$Shopify$update(_p10));
+				_user$project$Shopify$update(_p14));
 		},
 		subscriptions: _user$project$Shopify$subscriptions
 	})();

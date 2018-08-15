@@ -7400,6 +7400,33 @@ var _elm_lang$core$Process$kill = _elm_lang$core$Native_Scheduler.kill;
 var _elm_lang$core$Process$sleep = _elm_lang$core$Native_Scheduler.sleep;
 var _elm_lang$core$Process$spawn = _elm_lang$core$Native_Scheduler.spawn;
 
+var _user$project$Data$settingsDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (shopify, prestashop) {
+			return {shopify: shopify, prestashop: prestashop};
+		}),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'shopify',
+		A4(
+			_elm_lang$core$Json_Decode$map3,
+			F3(
+				function (apiKey, apiSecret, shopName) {
+					return {apiKey: apiKey, apiSecret: apiSecret, shopName: shopName};
+				}),
+			A2(_elm_lang$core$Json_Decode$field, 'apiKey', _elm_lang$core$Json_Decode$string),
+			A2(_elm_lang$core$Json_Decode$field, 'apiSecret', _elm_lang$core$Json_Decode$string),
+			A2(_elm_lang$core$Json_Decode$field, 'shopName', _elm_lang$core$Json_Decode$string))),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'prestashop',
+		A2(
+			_elm_lang$core$Json_Decode$map,
+			function (apiKey) {
+				return {apiKey: apiKey};
+			},
+			A2(_elm_lang$core$Json_Decode$field, 'apiKey', _elm_lang$core$Json_Decode$string))));
 var _user$project$Data$prestashopProductDecoder = _elm_lang$core$Json_Decode$fail('not implemented');
 var _user$project$Data$InternalProduct = function (a) {
 	return function (b) {
@@ -7454,7 +7481,7 @@ var _user$project$Data$shopifyProductDecoder = A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 			'variants',
 			_elm_lang$core$Json_Decode$list(
-				A2(_elm_lang$core$Json_Decode$field, 'price', _elm_lang$core$Json_Decode$float)),
+				A2(_elm_lang$core$Json_Decode$field, 'price', _elm_lang$core$Json_Decode$string)),
 			A4(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalAt,
 				{
@@ -7475,20 +7502,29 @@ var _user$project$Data$shopifyProductDecoder = A3(
 					A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 						'id',
-						_elm_lang$core$Json_Decode$string,
+						_elm_lang$core$Json_Decode$int,
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(
 							F6(
 								function (id, title, maybe_mainImgSrc, variants, body_html, images) {
 									return {
-										externalId: _user$project$Data$ExternalProductId(id),
+										externalId: _user$project$Data$ExternalProductId(
+											_elm_lang$core$Basics$toString(id)),
 										name: title,
 										mainImage: maybe_mainImgSrc,
 										price: A2(
 											_elm_lang$core$Maybe$withDefault,
 											0,
-											_elm_lang$core$List$head(variants)),
+											A2(
+												_elm_lang$core$Maybe$map,
+												function (string) {
+													return A2(
+														_elm_lang$core$Result$withDefault,
+														0,
+														_elm_lang$core$String$toFloat(string));
+												},
+												_elm_lang$core$List$head(variants))),
 										description: body_html,
-										media: images
+										media: {ctor: '[]'}
 									};
 								}))))))));
 var _user$project$Data$normalizedProductDecoder = _elm_lang$core$Json_Decode$oneOf(
@@ -7725,48 +7761,7 @@ var _user$project$Ports$start = _elm_lang$core$Native_Platform.incomingPort(
 	'start',
 	_elm_lang$core$Json_Decode$null(
 		{ctor: '_Tuple0'}));
-var _user$project$Ports$received_settings = _elm_lang$core$Native_Platform.incomingPort(
-	'received_settings',
-	A2(
-		_elm_lang$core$Json_Decode$andThen,
-		function (shopify) {
-			return A2(
-				_elm_lang$core$Json_Decode$andThen,
-				function (prestashop) {
-					return _elm_lang$core$Json_Decode$succeed(
-						{shopify: shopify, prestashop: prestashop});
-				},
-				A2(
-					_elm_lang$core$Json_Decode$field,
-					'prestashop',
-					A2(
-						_elm_lang$core$Json_Decode$andThen,
-						function (apiKey) {
-							return _elm_lang$core$Json_Decode$succeed(
-								{apiKey: apiKey});
-						},
-						A2(_elm_lang$core$Json_Decode$field, 'apiKey', _elm_lang$core$Json_Decode$string))));
-		},
-		A2(
-			_elm_lang$core$Json_Decode$field,
-			'shopify',
-			A2(
-				_elm_lang$core$Json_Decode$andThen,
-				function (apiKey) {
-					return A2(
-						_elm_lang$core$Json_Decode$andThen,
-						function (apiSecret) {
-							return A2(
-								_elm_lang$core$Json_Decode$andThen,
-								function (shopName) {
-									return _elm_lang$core$Json_Decode$succeed(
-										{apiKey: apiKey, apiSecret: apiSecret, shopName: shopName});
-								},
-								A2(_elm_lang$core$Json_Decode$field, 'shopName', _elm_lang$core$Json_Decode$string));
-						},
-						A2(_elm_lang$core$Json_Decode$field, 'apiSecret', _elm_lang$core$Json_Decode$string));
-				},
-				A2(_elm_lang$core$Json_Decode$field, 'apiKey', _elm_lang$core$Json_Decode$string)))));
+var _user$project$Ports$received_settings = _elm_lang$core$Native_Platform.incomingPort('received_settings', _elm_lang$core$Json_Decode$value);
 var _user$project$Ports$received_internalCategories = _elm_lang$core$Native_Platform.incomingPort('received_internalCategories', _elm_lang$core$Json_Decode$value);
 var _user$project$Ports$received_InternalProducts = _elm_lang$core$Native_Platform.incomingPort('received_InternalProducts', _elm_lang$core$Json_Decode$value);
 var _user$project$Ports$received_ExternalProducts = _elm_lang$core$Native_Platform.incomingPort('received_ExternalProducts', _elm_lang$core$Json_Decode$value);

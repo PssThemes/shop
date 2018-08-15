@@ -76,7 +76,7 @@ selfCall msg =
 
 update : Msg -> Model -> ( Model, List (Cmd Msg) )
 update msg model =
-    case msg of
+    (case msg of
         Start ->
             [ Process.sleep 6000
                 |> Task.andThen (\_ -> Task.succeed ())
@@ -89,7 +89,8 @@ update msg model =
                 |> (,) model
 
         ReceivedSettings settings ->
-            { model | settings = Just settings } => [ selfCall Work ]
+            { model | settings = Just settings }
+                => [ selfCall Work ]
 
         ReceivedInternalCategories intCats ->
             { model | internalCategories = Just intCats } => [ selfCall Work ]
@@ -98,7 +99,8 @@ update msg model =
             { model | internalProducts = Just internalProducts } => [ selfCall Work ]
 
         ReceivedNormalizedProduct normalizedProducts ->
-            { model | externalProducts = Just normalizedProducts } => [ selfCall Work ]
+            { model | externalProducts = Just normalizedProducts }
+                => [ selfCall Work ]
 
         ReceivedShopifyCollects collects ->
             { model | shopifyCollects = Just collects } => [ selfCall Work ]
@@ -106,12 +108,12 @@ update msg model =
         Work ->
             Maybe.map5
                 (\settings internalCategories internalProducts externalProducts shopifyCollects ->
-                    let
-                        _ =
-                            Debug.log "stuff: " ( settings, internalCategories, internalProducts, externalProducts, shopifyCollects )
-                    in
-                        model
-                            => []
+                    -- let
+                    --     _ =
+                    --         Debug.log "stuff: " ( settings, internalCategories, internalProducts, externalProducts, shopifyCollects )
+                    -- in
+                    model
+                        => []
                 )
                 model.settings
                 model.internalCategories
@@ -123,13 +125,29 @@ update msg model =
         DecodingError error ->
             model
                 => []
-                |> Debug.log ("errr: " ++ error)
+                |> Debug.log ("DecodingError errr: " ++ error)
+    )
+        |> (\( model, cmds ) ->
+                let
+                    _ =
+                        Debug.log "new model: " model.internalCategories
+                in
+                    ( model, cmds )
+           )
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     [ Ports.start (\_ -> Start)
-    , Ports.received_settings ReceivedSettings
+    , Ports.received_settings
+        (\value ->
+            case JD.decodeValue settingsDecoder value of
+                Ok settings ->
+                    ReceivedSettings settings
+
+                Err error ->
+                    DecodingError error
+        )
     , Ports.received_internalCategories
         (\value ->
             case JD.decodeValue internalCategoriesDecoder value of

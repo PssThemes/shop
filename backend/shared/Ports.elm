@@ -21,7 +21,7 @@ port finish : () -> Cmd msg
 port start : (() -> msg) -> Sub msg
 
 
-port received_settings : (Settings -> msg) -> Sub msg
+port received_settings : (JD.Value -> msg) -> Sub msg
 
 
 port received_internalCategories : (JD.Value -> msg) -> Sub msg
