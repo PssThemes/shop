@@ -7633,9 +7633,9 @@ var _user$project$Data$shopNameDecoder = A2(
 	function (string) {
 		var _p0 = string;
 		switch (_p0) {
-			case 'Shopify':
+			case 'shopify':
 				return _elm_lang$core$Json_Decode$succeed(_user$project$Data$Shopify);
-			case 'Prestashop':
+			case 'prestashop':
 				return _elm_lang$core$Json_Decode$succeed(_user$project$Data$Prestashop);
 			default:
 				return _elm_lang$core$Json_Decode$fail(
@@ -7676,7 +7676,7 @@ var _user$project$Data$internalProductDecoder = A3(
 						A3(
 							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 							'price',
-							_elm_lang$core$Json_Decode$float,
+							_elm_lang$core$Json_Decode$string,
 							A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 								'short_description',
@@ -7716,7 +7716,10 @@ var _user$project$Data$internalProductDecoder = A3(
 																										externalId: _user$project$Data$ExternalProductId(externalId),
 																										name: name,
 																										short_description: short_description,
-																										price: price,
+																										price: A2(
+																											_elm_lang$core$Result$withDefault,
+																											0,
+																											_elm_lang$core$String$toFloat(price)),
 																										externalCatIds: _Gizra$elm_all_set$EverySet$fromList(
 																											A2(_elm_lang$core$List$map, _user$project$Data$ExternalCatId, externalCatIds)),
 																										internalCatIds: _Gizra$elm_all_set$EverySet$fromList(

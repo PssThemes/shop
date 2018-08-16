@@ -2,11 +2,36 @@
 ===============================================================================================================================
 ===============================================================================================================================
 ===============================================================================================================================
+16 august 2018
+
+Next time i will build the data structure and im gonna start with core processing logic.
+Then adjust everything after the datastructure.
+
+Shopify core functionality in elm.
+
+
+End golad is to endup with ids of products to remove, products to delete and products to update.
+Then perform this actions.
+
+products to delete are ones that are in firebase but not in shopify.
+to detect this i need to see all ids of products in firebase..
+and all ids of products in shopify.
+but not all shopify products are relevant. i need to remove the ones that are not asociated with any category.
+which means.. i need to ensure at least one external category present on the shopfiy product.. is present in a firebase asociation.
+  - also here i need to get all external categories that are present in firebase. now of course this means ids not categoriy names.
+
+
+
+
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
 12 august 2018
 
 Focus on building the datastructures i need
 - internal product
-- 
+-
 
 
 

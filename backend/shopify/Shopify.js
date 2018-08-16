@@ -7933,6 +7933,10 @@ var _user$project$Shopify$update = F2(
 								_elm_lang$core$Maybe$map5,
 								F5(
 									function (settings, internalCategories, internalProducts, externalProducts, shopifyCollects) {
+										var externalProductIdsFromShopify = {ctor: '[]'};
+										var externalProductIdsFromFirebase = {ctor: '[]'};
+										var relevantProducts = {ctor: '[]'};
+										var asociatedExternalCategories = {ctor: '[]'};
 										return A2(
 											_NoRedInk$rocket_update$Rocket_ops['=>'],
 											model,

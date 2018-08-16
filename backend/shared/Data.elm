@@ -11,6 +11,8 @@ import EveryDict exposing (EveryDict)
 -- import Set exposing (Set)
 
 import Json.Decode.Pipeline as JDP
+import Json.Encode as JE
+import Rocket exposing ((=>))
 
 
 -- import Set exposing (Set)
@@ -97,6 +99,30 @@ type alias NormalizedProduct =
     }
 
 
+normalizedProductEncoder : NormalizedProduct -> JE.Value
+normalizedProductEncoder normalizedProduct =
+    [ "externalId"
+        => (normalizedProduct.externalId
+                |> (\(ExternalProductId externalId) ->
+                        JE.string externalId
+                   )
+           )
+    , "name" => JE.string normalizedProduct.name
+    , normalizedProduct.mainImage
+        |> Maybe.map JE.string
+        |> Maybe.withDefault JE.null
+        |> (,) "mainImage"
+    , "price" => (JE.float normalizedProduct.price)
+    , "description" => (JE.string normalizedProduct.description)
+    , "media"
+        => (normalizedProduct.media
+                |> List.map JE.string
+                |> JE.list
+           )
+    ]
+        |> JE.object
+
+
 normalizedProductsDecoder : JD.Decoder (EveryDict ExternalProductId NormalizedProduct)
 normalizedProductsDecoder =
     JD.list normalizedProductDecoder
@@ -139,27 +165,6 @@ shopifyProductDecoder =
         |> JDP.required "variants" (JD.list (JD.field "price" JD.string))
         |> JDP.required "body_html" JD.string
         |> JDP.required "images" (JD.list (JD.field "src" JD.string))
-
-
-
--- JD.field "id" JD.int
---     |> JD.andThen
---         (\stuff ->
---             let
---                 what : Int
---                 what =
---                     stuff
---             in
---                 JD.fail "crap./. "
---         )
--- {
---   externalProductId: rawProduct.id + '',
---   name: rawProduct.title || "",
---   mainProductImage: (rawProduct.image || {}).src || "",
---   price: rawProduct.variants[0].price || 0,
---   description: rawProduct.body_html || "",
---   media: media,
--- };
 
 
 prestashopProductDecoder : JD.Decoder NormalizedProduct

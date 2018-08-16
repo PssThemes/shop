@@ -10,6 +10,11 @@ import Json.Decode as JD
 
 -- Outgoing ports
 
+import Json.Encode as JE
+
+
+port saveToFirebase : { deleted : List String, created : List JE.Value, updated : List { id : String, normalizedProduct : JE.Value } } -> Cmd msg
+
 
 port finish : () -> Cmd msg
 

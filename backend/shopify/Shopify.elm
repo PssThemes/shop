@@ -3,6 +3,7 @@ module Shopify exposing (..)
 -- import AllDict exposing (..)
 
 import Data exposing (..)
+import Logic exposing (..)
 
 
 -- import Dict exposing (Dict)
@@ -108,12 +109,57 @@ update msg model =
         Work ->
             Maybe.map5
                 (\settings internalCategories internalProducts externalProducts shopifyCollects ->
-                    -- let
-                    --     _ =
-                    --         Debug.log "stuff: " ( settings, internalCategories, internalProducts, externalProducts, shopifyCollects )
-                    -- in
-                    model
-                        => []
+                    let
+                        asociatedExternalCategories : List ExternalCatId
+                        asociatedExternalCategories =
+                            []
+
+                        relevantProducts : EveryDict ExternalProductId NormalizedProduct
+                        relevantProducts =
+                            EveryDict.empty
+
+                        externalProductIdsFromFirebase : List ExternalProductId
+                        externalProductIdsFromFirebase =
+                            []
+
+                        externalProductIdsFromShopify : List ExternalProductId
+                        externalProductIdsFromShopify =
+                            []
+
+                        deletedProductsExternalIds : List ExternalProductId
+                        deletedProductsExternalIds =
+                            Logic.getDeletedProductsIds externalProductIdsFromFirebase externalProductIdsFromShopify
+
+                        deletedProducts : List InternalProductId
+                        deletedProducts =
+                            deletedProductsExternalIds
+                                |> List.map (\externalProductId -> Logic.findAsociatedInternalProductId externalProductId internalProducts)
+                                |> removeNothings
+
+                        createdProductsIds : List ExternalProductId
+                        createdProductsIds =
+                            Logic.getCreatedProductsIds externalProductIdsFromFirebase externalProductIdsFromShopify
+
+                        createdProducts : List NormalizedProduct
+                        createdProducts =
+                            createdProductsIds
+                                |> List.map (\externalProductId -> EveryDict.get externalProductId relevantProducts)
+                                |> removeNothings
+
+                        updatedProducts : List ( InternalProductId, NormalizedProduct )
+                        updatedProducts =
+                            Logic.getPosiblyUpdatedProductsIds createdProductsIds deletedProductsExternalIds externalProductIdsFromShopify
+                                |> List.map
+                                    (\externalProductId ->
+                                        ( EveryDict.get externalProductId relevantProducts, Logic.findAsociatedInternalProductId externalProductId internalProducts )
+                                            |> (\( maybe_NormalizedProduct, maybe_InternalProductId ) -> Maybe.map2 (,) maybe_InternalProductId maybe_NormalizedProduct)
+                                    )
+                                |> removeNothings
+                                |> List.filter (ensureItRelyNeedsUpdating internalProducts)
+                    in
+                        model
+                            => [ Logic.saveToFirebase deletedProducts createdProducts updatedProducts
+                               ]
                 )
                 model.settings
                 model.internalCategories
