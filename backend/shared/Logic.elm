@@ -123,18 +123,44 @@ updateOrInsert key value dict =
             )
 
 
-getRelevantProducts : EveryDict ExternalProductId NormalizedProduct -> EverySet ExternalCatId -> EveryDict ExternalProductId NormalizedProduct
-getRelevantProducts allExternalProducts asociatedExternalCategories =
-    -- allExternalProducts
-    --     |> EveryDict.filter
-    --         (\k normalizedProduct ->
-    --             normalizedProduct
-    --         )
-    --
-    EveryDict.empty
+getRelevantProductsIds :
+    EveryDict ExternalCatId (List ExternalProductId)
+    -> EverySet ExternalCatId
+    -> EverySet ExternalProductId
+getRelevantProductsIds oneExtCatToManyExtProducts externalCategoriesIdsFormFirebase =
+    -- EverySet.empty
+    externalCategoriesIdsFormFirebase
+        |> EverySet.foldl
+            (\catId acc ->
+                case EveryDict.get catId oneExtCatToManyExtProducts of
+                    Nothing ->
+                        acc
+
+                    Just productsIds ->
+                        productsIds
+                            |> List.foldl (\id acc -> EverySet.insert id acc) acc
+            )
+            EverySet.empty
+
+
+getRelevantProducts :
+    EveryDict ExternalCatId (List ExternalProductId)
+    -> EverySet ExternalCatId
+    -> EveryDict ExternalProductId NormalizedProduct
+    -> EveryDict ExternalProductId NormalizedProduct
+getRelevantProducts oneExtCatToManyExtProducts externalCategoriesIdsFormFirebase allExternalProducts =
+    let
+        relevantIds =
+            getRelevantProductsIds oneExtCatToManyExtProducts externalCategoriesIdsFormFirebase
+    in
+        allExternalProducts
+            |> EveryDict.filter (\k v -> EverySet.member k relevantIds)
 
 
 
+--
+--
+-- const relevantProductIdsSet = Shared.getRelevantProductIds(relevantExternalCatsIds, externalProductsGroupedByCategory);
 -- externalCategories
 --   |> EveryDict.foldl  (\ k v acc ->
 --

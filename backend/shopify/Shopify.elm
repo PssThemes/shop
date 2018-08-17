@@ -120,7 +120,7 @@ update msg model =
 
                         relevantProducts : EveryDict ExternalProductId NormalizedProduct
                         relevantProducts =
-                            EveryDict.empty
+                            Logic.getRelevantProducts oneExtCatToManyExtProducts externalCategoriesIdsFormFirebase externalProducts
 
                         externalProductIdsFromFirebase : List ExternalProductId
                         externalProductIdsFromFirebase =
