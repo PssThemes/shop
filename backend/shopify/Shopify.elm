@@ -16,6 +16,7 @@ import Process
 import Rocket exposing ((=>))
 import Task
 import EveryDict exposing (EveryDict)
+import EverySet exposing (EverySet)
 
 
 je1 : JE.Value
@@ -110,9 +111,12 @@ update msg model =
             Maybe.map5
                 (\settings internalCategories internalProducts externalProducts shopifyCollects ->
                     let
-                        asociatedExternalCategories : List ExternalCatId
-                        asociatedExternalCategories =
-                            []
+                        externalCategoriesIdsFormFirebase : EverySet ExternalCatId
+                        externalCategoriesIdsFormFirebase =
+                            Logic.getExternalCategoriesFromFirebase internalCategories Shopify
+
+                        ( oneExtCatToManyExtProducts, oneExtProductToManyExtCats ) =
+                            extractAsociations shopifyCollects
 
                         relevantProducts : EveryDict ExternalProductId NormalizedProduct
                         relevantProducts =
