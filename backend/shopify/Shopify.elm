@@ -3,7 +3,7 @@ module Shopify exposing (..)
 -- import AllDict exposing (..)
 
 import Data exposing (..)
-import Logic exposing (..)
+import Logic
 
 
 -- import Dict exposing (Dict)
@@ -47,18 +47,6 @@ type alias Model =
     }
 
 
-type Msg
-    = Start
-    | Finish
-    | ReceivedSettings Settings
-    | ReceivedInternalCategories (EveryDict InternalCatId InternalCategory)
-    | ReceivedInternalProducts (EveryDict InternalProductId InternalProduct)
-    | ReceivedNormalizedProduct (EveryDict ExternalProductId NormalizedProduct)
-    | ReceivedShopifyCollects (List ( ExternalCatId, ExternalProductId ))
-    | DecodingError String
-    | Work
-
-
 init : ( Model, List (Cmd Msg) )
 init =
     ( { settings = Nothing
@@ -69,6 +57,18 @@ init =
       }
     , []
     )
+
+
+type Msg
+    = Start
+    | Finish
+    | ReceivedSettings Settings
+    | ReceivedInternalCategories (EveryDict InternalCatId InternalCategory)
+    | ReceivedInternalProducts (EveryDict InternalProductId InternalProduct)
+    | ReceivedNormalizedProduct (EveryDict ExternalProductId NormalizedProduct)
+    | ReceivedShopifyCollects (List ( ExternalCatId, ExternalProductId ))
+    | DecodingError String
+    | Work
 
 
 selfCall : Msg -> Cmd Msg
@@ -116,7 +116,7 @@ update msg model =
                             Logic.getExternalCategoriesFromFirebase internalCategories Shopify
 
                         ( oneExtCatToManyExtProducts, oneExtProductToManyExtCats ) =
-                            extractAsociations shopifyCollects
+                            Logic.extractAsociations shopifyCollects
 
                         relevantProducts : EveryDict ExternalProductId NormalizedProduct
                         relevantProducts =
@@ -138,7 +138,7 @@ update msg model =
                         deletedProducts =
                             deletedProductsExternalIds
                                 |> List.map (\externalProductId -> Logic.findAsociatedInternalProductId externalProductId internalProducts)
-                                |> removeNothings
+                                |> Logic.removeNothings
 
                         createdProductsIds : List ExternalProductId
                         createdProductsIds =
@@ -148,7 +148,7 @@ update msg model =
                         createdProducts =
                             createdProductsIds
                                 |> List.map (\externalProductId -> EveryDict.get externalProductId relevantProducts)
-                                |> removeNothings
+                                |> Logic.removeNothings
 
                         updatedProducts : List ( InternalProductId, NormalizedProduct )
                         updatedProducts =
@@ -158,8 +158,8 @@ update msg model =
                                         ( EveryDict.get externalProductId relevantProducts, Logic.findAsociatedInternalProductId externalProductId internalProducts )
                                             |> (\( maybe_NormalizedProduct, maybe_InternalProductId ) -> Maybe.map2 (,) maybe_InternalProductId maybe_NormalizedProduct)
                                     )
-                                |> removeNothings
-                                |> List.filter (ensureItRelyNeedsUpdating internalProducts)
+                                |> Logic.removeNothings
+                                |> List.filter (Logic.ensureItRelyNeedsUpdating internalProducts)
                     in
                         model
                             => [ Logic.saveToFirebase deletedProducts createdProducts updatedProducts

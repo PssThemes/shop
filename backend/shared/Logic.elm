@@ -119,17 +119,30 @@ updateOrInsert key value dict =
                         Just [ value ]
 
                     Just list ->
-                        Just (list ++ [ value ])
+                        if listContains value list then
+                            Just list
+                        else
+                            Just (list ++ [ value ])
             )
+
+
+listContains : a -> List a -> Bool
+listContains a list =
+    List.filter (\item -> item == a) list
+        |> (\list -> list == [] |> not)
 
 
 getRelevantProductsIds :
     EveryDict ExternalCatId (List ExternalProductId)
     -> EverySet ExternalCatId
     -> EverySet ExternalProductId
-getRelevantProductsIds oneExtCatToManyExtProducts externalCategoriesIdsFormFirebase =
-    -- EverySet.empty
-    externalCategoriesIdsFormFirebase
+getRelevantProductsIds oneExtCatToManyExtProducts externalCategoriesIdsFromFirebase =
+    -- relevant products means products that contain an external category on them.. which is present in firebase .
+    -- any external cateogy presnent in firebase is included here.
+    -- we use the accumultors : oneExtCatToManyExtProducts
+    -- which is constructed from external products..
+    -- the ids are automatically deduplicated this beeing a set and all.
+    externalCategoriesIdsFromFirebase
         |> EverySet.foldl
             (\catId acc ->
                 case EveryDict.get catId oneExtCatToManyExtProducts of

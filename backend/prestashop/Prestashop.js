@@ -7428,6 +7428,62 @@ var _user$project$Data$settingsDecoder = A3(
 			},
 			A2(_elm_lang$core$Json_Decode$field, 'apiKey', _elm_lang$core$Json_Decode$string))));
 var _user$project$Data$prestashopProductDecoder = _elm_lang$core$Json_Decode$fail('not implemented');
+var _user$project$Data$normalizedProductEncoder = function (normalizedProduct) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: A2(
+				_NoRedInk$rocket_update$Rocket_ops['=>'],
+				'externalId',
+				function (_p0) {
+					var _p1 = _p0;
+					return _elm_lang$core$Json_Encode$string(_p1._0);
+				}(normalizedProduct.externalId)),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_NoRedInk$rocket_update$Rocket_ops['=>'],
+					'name',
+					_elm_lang$core$Json_Encode$string(normalizedProduct.name)),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						F2(
+							function (v0, v1) {
+								return {ctor: '_Tuple2', _0: v0, _1: v1};
+							}),
+						'mainImage',
+						A2(
+							_elm_lang$core$Maybe$withDefault,
+							_elm_lang$core$Json_Encode$null,
+							A2(_elm_lang$core$Maybe$map, _elm_lang$core$Json_Encode$string, normalizedProduct.mainImage))),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_NoRedInk$rocket_update$Rocket_ops['=>'],
+							'price',
+							_elm_lang$core$Json_Encode$float(normalizedProduct.price)),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_NoRedInk$rocket_update$Rocket_ops['=>'],
+								'description',
+								_elm_lang$core$Json_Encode$string(normalizedProduct.description)),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_NoRedInk$rocket_update$Rocket_ops['=>'],
+									'media',
+									_elm_lang$core$Json_Encode$list(
+										A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, normalizedProduct.media))),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			}
+		});
+};
 var _user$project$Data$InternalProduct = function (a) {
 	return function (b) {
 		return function (c) {
@@ -7631,15 +7687,15 @@ var _user$project$Data$Shopify = {ctor: 'Shopify'};
 var _user$project$Data$shopNameDecoder = A2(
 	_elm_lang$core$Json_Decode$andThen,
 	function (string) {
-		var _p0 = string;
-		switch (_p0) {
+		var _p2 = string;
+		switch (_p2) {
 			case 'shopify':
 				return _elm_lang$core$Json_Decode$succeed(_user$project$Data$Shopify);
 			case 'prestashop':
 				return _elm_lang$core$Json_Decode$succeed(_user$project$Data$Prestashop);
 			default:
 				return _elm_lang$core$Json_Decode$fail(
-					A2(_elm_lang$core$Basics_ops['++'], 'invalid shop name :  ', _p0));
+					A2(_elm_lang$core$Basics_ops['++'], 'invalid shop name :  ', _p2));
 		}
 	},
 	_elm_lang$core$Json_Decode$string);
@@ -7755,6 +7811,24 @@ var _user$project$Data$internalProductsDecoder = A2(
 	},
 	_elm_lang$core$Json_Decode$list(_user$project$Data$internalProductDecoder));
 
+var _user$project$Ports$saveToFirebase = _elm_lang$core$Native_Platform.outgoingPort(
+	'saveToFirebase',
+	function (v) {
+		return {
+			deleted: _elm_lang$core$Native_List.toArray(v.deleted).map(
+				function (v) {
+					return v;
+				}),
+			created: _elm_lang$core$Native_List.toArray(v.created).map(
+				function (v) {
+					return v;
+				}),
+			updated: _elm_lang$core$Native_List.toArray(v.updated).map(
+				function (v) {
+					return {id: v.id, normalizedProduct: v.normalizedProduct};
+				})
+		};
+	});
 var _user$project$Ports$finish = _elm_lang$core$Native_Platform.outgoingPort(
 	'finish',
 	function (v) {
