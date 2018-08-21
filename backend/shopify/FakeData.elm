@@ -78,50 +78,51 @@ internalProducts =
            , isHidden = False
            , howManyTimesWasOrdered = 0
            }
-    , InternalProductId "internalProductId|3"
-        => { selfId = InternalProductId "internalProductId|3"
 
-           -- external identification.
-           , shopName = Shopify
-           , externalId = ExternalProductId "externalProductId|3"
-           , name = "Product 3"
-           , short_description = "desciption for product 3"
-           , price = 0
-
-           --
-           , externalCatIds = EverySet.empty
-           , internalCatIds = EverySet.empty
-
-           --
-           , mainImage = Nothing
-           , media = []
-
-           --
-           , isHidden = False
-           , howManyTimesWasOrdered = 0
-           }
-    , InternalProductId "internalProductId|4"
-        => { selfId = InternalProductId "internalProductId|4"
-
-           -- external identification.
-           , shopName = Shopify
-           , externalId = ExternalProductId "externalProductId|4"
-           , name = "Product 4"
-           , short_description = "desciption for product 4"
-           , price = 0
-
-           --
-           , externalCatIds = EverySet.empty
-           , internalCatIds = EverySet.empty
-
-           --
-           , mainImage = Nothing
-           , media = []
-
-           --
-           , isHidden = False
-           , howManyTimesWasOrdered = 0
-           }
+    -- , InternalProductId "internalProductId|3"
+    --     => { selfId = InternalProductId "internalProductId|3"
+    --
+    --        -- external identification.
+    --        , shopName = Shopify
+    --        , externalId = ExternalProductId "externalProductId|3"
+    --        , name = "Product 3"
+    --        , short_description = "desciption for product 3"
+    --        , price = 0
+    --
+    --        --
+    --        , externalCatIds = EverySet.empty
+    --        , internalCatIds = EverySet.empty
+    --
+    --        --
+    --        , mainImage = Nothing
+    --        , media = []
+    --
+    --        --
+    --        , isHidden = False
+    --        , howManyTimesWasOrdered = 0
+    --        }
+    -- , InternalProductId "internalProductId|4"
+    --     => { selfId = InternalProductId "internalProductId|4"
+    --
+    --        -- external identification.
+    --        , shopName = Shopify
+    --        , externalId = ExternalProductId "externalProductId|4"
+    --        , name = "Product 4"
+    --        , short_description = "desciption for product 4"
+    --        , price = 0
+    --
+    --        --
+    --        , externalCatIds = EverySet.empty
+    --        , internalCatIds = EverySet.empty
+    --
+    --        --
+    --        , mainImage = Nothing
+    --        , media = []
+    --
+    --        --
+    --        , isHidden = False
+    --        , howManyTimesWasOrdered = 0
+    --        }
     ]
         |> EveryDict.fromList
 
@@ -136,15 +137,14 @@ externalProducts =
            , description = ""
            , media = []
            }
-
-    -- , ExternalProductId "externalProductId|2"
-    --     => { externalId = ExternalProductId "externalProductId|2"
-    --        , name = "external poduct 2"
-    --        , mainImage = Nothing
-    --        , price = 0
-    --        , description = ""
-    --        , media = []
-    --        }
+    , ExternalProductId "externalProductId|2"
+        => { externalId = ExternalProductId "externalProductId|2"
+           , name = "external poduct 2"
+           , mainImage = Nothing
+           , price = 0
+           , description = ""
+           , media = []
+           }
     , ExternalProductId "externalProductId|3"
         => { externalId = ExternalProductId "externalProductId|3"
            , name = "external poduct 3"
@@ -187,8 +187,19 @@ stuff =
         externalProductIdsFromShopify : EverySet ExternalProductId
         externalProductIdsFromShopify =
             Logic.getExternalProductsIdsFromShopify externalProducts
+
+        createdProductsIds : EverySet ExternalProductId
+        createdProductsIds =
+            Logic.getCreatedProductsIds externalProductIdsFromFirebase externalProductIdsFromShopify
+
+        deletedProductsExternalIds : EverySet ExternalProductId
+        deletedProductsExternalIds =
+            Logic.getDeletedProductsIds externalProductIdsFromFirebase externalProductIdsFromShopify
     in
-        Logic.getDeletedProductsIds externalProductIdsFromFirebase externalProductIdsFromShopify
+        Logic.getPosiblyUpdatedProductsIds
+            createdProductsIds
+            deletedProductsExternalIds
+            externalProductIdsFromShopify
 
 
 
