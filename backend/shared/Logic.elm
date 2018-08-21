@@ -16,16 +16,18 @@ getDeletedProductsIds firebaseProductsIds shopProductsIds =
     -- means products that are in firebase but not on shop.
     -- accumulate over ids in firebase and check if the id is in shopifyu also.
     -- if is not it means it was deleted.. added to accumulator.
-    firebaseProductsIds
-        |> EverySet.foldl
-            (\firebaseId acc ->
-                if EverySet.member firebaseId shopProductsIds then
-                    acc
-                else
-                    -- // does not contain.. is deleted.
-                    EverySet.insert firebaseId acc
-            )
-            EverySet.empty
+    -- firebaseProductsIds
+    --     |> EverySet.foldl
+    --         (\firebaseId acc ->
+    --             if EverySet.member firebaseId shopProductsIds then
+    --                 acc
+    --             else
+    --                 -- // does not contain.. is deleted.
+    --                 EverySet.insert firebaseId acc
+    --         )
+    --         EverySet.empty
+    -- or we can use set differtence
+    EverySet.diff firebaseProductsIds shopProductsIds
 
 
 getCreatedProductsIds : EverySet ExternalProductId -> EverySet ExternalProductId -> EverySet ExternalProductId
@@ -34,20 +36,25 @@ getCreatedProductsIds firebaseProductsIds shopProductsIds =
     -- accumulating over the shop ids..
     -- we check if exist in firebase..
     -- if it doesnt.. it means is a new product  -wchich means we add it to accumulator.
-    shopProductsIds
-        |> EverySet.foldl
-            (\shopId acc ->
-                if EverySet.member shopId firebaseProductsIds then
-                    acc
-                else
-                    EverySet.insert shopId acc
-            )
-            EverySet.empty
+    -- shopProductsIds
+    --     |> EverySet.foldl
+    --         (\shopId acc ->
+    --             if EverySet.member shopId firebaseProductsIds then
+    --                 acc
+    --             else
+    --                 EverySet.insert shopId acc
+    --         )
+    --         EverySet.empty
+    EverySet.diff shopProductsIds firebaseProductsIds
 
 
 findAsociatedInternalProductId : ExternalProductId -> EveryDict InternalProductId InternalProduct -> Maybe InternalProductId
 findAsociatedInternalProductId externalProductId internalProducts =
-    Nothing
+    internalProducts
+        |> EveryDict.filter (\_ product -> product.externalId == externalProductId)
+        |> EveryDict.toList
+        |> List.head
+        |> Maybe.map Tuple.first
 
 
 removeNothings : List (Maybe a) -> List a
@@ -67,7 +74,13 @@ removeNothings list =
 
 getPosiblyUpdatedProductsIds : EverySet ExternalProductId -> EverySet ExternalProductId -> EverySet ExternalProductId -> EverySet ExternalProductId
 getPosiblyUpdatedProductsIds createdProductsIds deletedProductsExternalIds externalProductIdsFromShopify =
-    EverySet.empty
+    -- whatever external product id which is not created or deleted.. must be updated.
+    -- so its everything in the big set except the createdOrDeleted
+    let
+        createdOrDeleted =
+            EverySet.union createdProductsIds deletedProductsExternalIds
+    in
+        EverySet.diff createdOrDeleted externalProductIdsFromShopify
 
 
 ensureItRelyNeedsUpdating : EveryDict InternalProductId InternalProduct -> ( InternalProductId, NormalizedProduct ) -> Bool
