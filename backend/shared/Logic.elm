@@ -60,7 +60,35 @@ getPosiblyUpdatedProductsIds createdProductsIds deletedProductsExternalIds exter
 
 ensureItRelyNeedsUpdating : EveryDict InternalProductId InternalProduct -> ( InternalProductId, NormalizedProduct ) -> Bool
 ensureItRelyNeedsUpdating internalProducts ( internalProductId, normalizedProduct ) =
-    True
+    case EveryDict.get internalProductId internalProducts of
+        Nothing ->
+            -- dont update since this id is not even existend in the internal products dict.
+            False
+
+        Just internalProduct ->
+            let
+                short_descriptionForNormalizedProduct =
+                    getShopifyShortDescription normalizedProduct.description
+
+                areTheSame =
+                    -- TODO: Dont forget to compare the external categories since a product can be
+                    -- added in the background to an external category.
+                    (internalProduct.externalId == normalizedProduct.externalId)
+                        && (internalProduct.name == normalizedProduct.name)
+                        && (internalProduct.mainImage == normalizedProduct.mainImage)
+                        && (internalProduct.price == normalizedProduct.price)
+                        && (internalProduct.short_description == short_descriptionForNormalizedProduct)
+                        && (internalProduct.media == normalizedProduct.media)
+            in
+                -- it needs updating if products are NOT the same.
+                not areTheSame
+
+
+getShopifyShortDescription : String -> String
+getShopifyShortDescription longDescription =
+    -- TODO: create a proper function for  getting the short description out of the long descripotion
+    -- since shopify does not have the notion of short_description by default.
+    String.left 300 longDescription
 
 
 saveToFirebase : List InternalProductId -> List NormalizedProduct -> List ( InternalProductId, NormalizedProduct ) -> Cmd msg
