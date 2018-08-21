@@ -60,7 +60,7 @@ ports.finish.subscribe(() => {
 //
 //     ports.received_internalCategories.send(categoriesAsArray);
 //
-//   }else {
+//   }else if (categories == null) {
 
 //     ports.received_internalCategories.send([]);
 
@@ -86,7 +86,7 @@ ports.finish.subscribe(() => {
 //   if(products){
 //     const productsAsArray = transformObjectInArray(products);
 //     ports.received_InternalProducts.send(productsAsArray);
-//   } else {
+//   } else if(products == null) {
 //     ports.received_InternalProducts.send([]);
 //   }
 // })
@@ -109,7 +109,7 @@ shopify.product.list()
       // console.log("proudctus: ", products[0].images);
       console.log("____________________________________");
       ports.received_ExternalProducts.send(products);
-    }else {
+    }else if (products == null){
       ports.received_ExternalProducts.send([]);
     }
   })
