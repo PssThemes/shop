@@ -96,6 +96,8 @@ type alias NormalizedProduct =
     , price : Float
     , description : String
     , media : List String
+
+    -- , internalCatIds : EverySet InternalCatId
     }
 
 
@@ -157,6 +159,10 @@ shopifyProductDecoder =
                     |> Maybe.withDefault 0
             , description = body_html
             , media = []
+
+            -- , internalCatIds =
+            --     internalCatIds
+            --         |> List.map (toString >> InternalCatId)
             }
         )
         |> JDP.required "id" JD.int
@@ -165,6 +171,10 @@ shopifyProductDecoder =
         |> JDP.required "variants" (JD.list (JD.field "price" JD.string))
         |> JDP.required "body_html" JD.string
         |> JDP.required "images" (JD.list (JD.field "src" JD.string))
+
+
+
+-- |> JDP.required
 
 
 prestashopProductDecoder : JD.Decoder NormalizedProduct

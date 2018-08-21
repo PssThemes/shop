@@ -162,7 +162,7 @@ update msg model =
                                     )
                                 |> EverySet.toList
                                 |> Logic.removeNothings
-                                |> List.filter (Logic.ensureItRelyNeedsUpdating internalProducts)
+                                |> List.filter (Logic.ensureItRelyNeedsUpdating internalProducts oneExtProductToManyExtCats)
                     in
                         model
                             => [ Logic.saveToFirebase deletedProducts createdProducts updatedProducts

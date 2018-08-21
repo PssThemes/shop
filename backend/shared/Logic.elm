@@ -58,30 +58,32 @@ getPosiblyUpdatedProductsIds createdProductsIds deletedProductsExternalIds exter
         EverySet.diff externalProductIdsFromShopify createdOrDeleted
 
 
-ensureItRelyNeedsUpdating : EveryDict InternalProductId InternalProduct -> ( InternalProductId, NormalizedProduct ) -> Bool
-ensureItRelyNeedsUpdating internalProducts ( internalProductId, normalizedProduct ) =
-    case EveryDict.get internalProductId internalProducts of
-        Nothing ->
-            -- dont update since this id is not even existend in the internal products dict.
-            False
+ensureItRelyNeedsUpdating : EveryDict InternalProductId InternalProduct -> EveryDict ExternalProductId (EverySet ExternalCatId) -> ( InternalProductId, NormalizedProduct ) -> Bool
+ensureItRelyNeedsUpdating internalProducts oneExtProductToManyExtCats ( internalProductId, normalizedProduct ) =
+    EveryDict.get internalProductId internalProducts
+        |> Maybe.andThen
+            (\internalProduct ->
+                EveryDict.get internalProduct.externalId oneExtProductToManyExtCats
+                    |> Maybe.andThen
+                        (\externalCats ->
+                            let
+                                short_descriptionForNormalizedProduct =
+                                    getShopifyShortDescription normalizedProduct.description
 
-        Just internalProduct ->
-            let
-                short_descriptionForNormalizedProduct =
-                    getShopifyShortDescription normalizedProduct.description
-
-                areTheSame =
-                    -- TODO: Dont forget to compare the external categories since a product can be
-                    -- added in the background to an external category.
-                    (internalProduct.externalId == normalizedProduct.externalId)
-                        && (internalProduct.name == normalizedProduct.name)
-                        && (internalProduct.mainImage == normalizedProduct.mainImage)
-                        && (internalProduct.price == normalizedProduct.price)
-                        && (internalProduct.short_description == short_descriptionForNormalizedProduct)
-                        && (internalProduct.media == normalizedProduct.media)
-            in
-                -- it needs updating if products are NOT the same.
-                not areTheSame
+                                areTheSame =
+                                    (internalProduct.externalCatIds == externalCats)
+                                        && (internalProduct.externalId == normalizedProduct.externalId)
+                                        && (internalProduct.name == normalizedProduct.name)
+                                        && (internalProduct.mainImage == normalizedProduct.mainImage)
+                                        && (internalProduct.price == normalizedProduct.price)
+                                        && (internalProduct.short_description == short_descriptionForNormalizedProduct)
+                                        && (internalProduct.media == normalizedProduct.media)
+                            in
+                                -- it needs updating if products are NOT the same.
+                                Just (not areTheSame)
+                        )
+            )
+        |> Maybe.withDefault False
 
 
 getShopifyShortDescription : String -> String
@@ -137,7 +139,7 @@ getExternalCategoriesFromFirebase internalCategories shopName =
 
 extractAsociations :
     List ( ExternalCatId, ExternalProductId )
-    -> ( EveryDict ExternalCatId (List ExternalProductId), EveryDict ExternalProductId (List ExternalCatId) )
+    -> ( EveryDict ExternalCatId (EverySet ExternalProductId), EveryDict ExternalProductId (EverySet ExternalCatId) )
 extractAsociations mappings =
     mappings
         |> List.foldl
@@ -149,20 +151,20 @@ extractAsociations mappings =
             ( EveryDict.empty, EveryDict.empty )
 
 
-updateOrInsert : key -> value -> EveryDict key (List value) -> EveryDict key (List value)
+updateOrInsert : key -> value -> EveryDict key (EverySet value) -> EveryDict key (EverySet value)
 updateOrInsert key value dict =
     dict
         |> EveryDict.update key
             (\maybe_value ->
                 case maybe_value of
                     Nothing ->
-                        Just [ value ]
+                        Just (EverySet.fromList [ value ])
 
-                    Just list ->
-                        if listContains value list then
-                            Just list
+                    Just set ->
+                        if EverySet.member value set then
+                            Just set
                         else
-                            Just (list ++ [ value ])
+                            Just (EverySet.insert value set)
             )
 
 
@@ -173,7 +175,7 @@ listContains a list =
 
 
 getRelevantProductsIds :
-    EveryDict ExternalCatId (List ExternalProductId)
+    EveryDict ExternalCatId (EverySet ExternalProductId)
     -> EverySet ExternalCatId
     -> EverySet ExternalProductId
 getRelevantProductsIds oneExtCatToManyExtProducts externalCategoriesIdsFromFirebase =
@@ -190,14 +192,13 @@ getRelevantProductsIds oneExtCatToManyExtProducts externalCategoriesIdsFromFireb
                         acc
 
                     Just productsIds ->
-                        productsIds
-                            |> List.foldl (\id acc -> EverySet.insert id acc) acc
+                        EverySet.union productsIds acc
             )
             EverySet.empty
 
 
 getRelevantProducts :
-    EveryDict ExternalCatId (List ExternalProductId)
+    EveryDict ExternalCatId (EverySet ExternalProductId)
     -> EverySet ExternalCatId
     -> EveryDict ExternalProductId NormalizedProduct
     -> EveryDict ExternalProductId NormalizedProduct
