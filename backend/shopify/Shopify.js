@@ -7844,8 +7844,18 @@ var _user$project$Ports$received_InternalProducts = _elm_lang$core$Native_Platfo
 var _user$project$Ports$received_ExternalProducts = _elm_lang$core$Native_Platform.incomingPort('received_ExternalProducts', _elm_lang$core$Json_Decode$value);
 var _user$project$Ports$received_Collects = _elm_lang$core$Native_Platform.incomingPort('received_Collects', _elm_lang$core$Json_Decode$value);
 
+var _user$project$Logic$getExternalProductIdsFromFirebase = function (internalProducts) {
+	return A3(
+		_eeue56$elm_all_dict$EveryDict$foldl,
+		F3(
+			function (id, internalProduct, acc) {
+				return {ctor: '::', _0: internalProduct.externalId, _1: acc};
+			}),
+		{ctor: '[]'},
+		internalProducts);
+};
 var _user$project$Logic$getRelevantProductsIds = F2(
-	function (oneExtCatToManyExtProducts, externalCategoriesIdsFormFirebase) {
+	function (oneExtCatToManyExtProducts, externalCategoriesIdsFromFirebase) {
 		return A3(
 			_Gizra$elm_all_set$EverySet$foldl,
 			F2(
@@ -7865,7 +7875,7 @@ var _user$project$Logic$getRelevantProductsIds = F2(
 					}
 				}),
 			_Gizra$elm_all_set$EverySet$empty,
-			externalCategoriesIdsFormFirebase);
+			externalCategoriesIdsFromFirebase);
 	});
 var _user$project$Logic$getRelevantProducts = F3(
 	function (oneExtCatToManyExtProducts, externalCategoriesIdsFormFirebase, allExternalProducts) {
@@ -7881,7 +7891,7 @@ var _user$project$Logic$getRelevantProducts = F3(
 var _user$project$Logic$listContains = F2(
 	function (a, list) {
 		return function (list) {
-			return _elm_lang$core$Native_Utils.eq(
+			return !_elm_lang$core$Native_Utils.eq(
 				list,
 				{ctor: '[]'});
 		}(
@@ -7907,10 +7917,11 @@ var _user$project$Logic$updateOrInsert = F3(
 							_1: {ctor: '[]'}
 						});
 				} else {
-					return _elm_lang$core$Maybe$Just(
+					var _p2 = _p1._0;
+					return A2(_user$project$Logic$listContains, value, _p2) ? _elm_lang$core$Maybe$Just(_p2) : _elm_lang$core$Maybe$Just(
 						A2(
 							_elm_lang$core$Basics_ops['++'],
-							_p1._0,
+							_p2,
 							{
 								ctor: '::',
 								_0: value,
@@ -7924,15 +7935,15 @@ var _user$project$Logic$extractAsociations = function (mappings) {
 	return A3(
 		_elm_lang$core$List$foldl,
 		F2(
-			function (_p3, _p2) {
-				var _p4 = _p3;
-				var _p7 = _p4._1;
-				var _p6 = _p4._0;
-				var _p5 = _p2;
+			function (_p4, _p3) {
+				var _p5 = _p4;
+				var _p8 = _p5._1;
+				var _p7 = _p5._0;
+				var _p6 = _p3;
 				return {
 					ctor: '_Tuple2',
-					_0: A3(_user$project$Logic$updateOrInsert, _p6, _p7, _p5._0),
-					_1: A3(_user$project$Logic$updateOrInsert, _p7, _p6, _p5._1)
+					_0: A3(_user$project$Logic$updateOrInsert, _p7, _p8, _p6._0),
+					_1: A3(_user$project$Logic$updateOrInsert, _p8, _p7, _p6._1)
 				};
 			}),
 		{ctor: '_Tuple2', _0: _eeue56$elm_all_dict$EveryDict$empty, _1: _eeue56$elm_all_dict$EveryDict$empty},
@@ -7947,9 +7958,9 @@ var _user$project$Logic$getExternalCategoriesFromFirebase = F2(
 					return A3(
 						_elm_lang$core$List$foldl,
 						F2(
-							function (_p8, acc) {
-								var _p9 = _p8;
-								return A2(_Gizra$elm_all_set$EverySet$insert, _p9._0, acc);
+							function (_p9, acc) {
+								var _p10 = _p9;
+								return A2(_Gizra$elm_all_set$EverySet$insert, _p10._0, acc);
 							}),
 						acc,
 						list);
@@ -7959,8 +7970,8 @@ var _user$project$Logic$getExternalCategoriesFromFirebase = F2(
 				_eeue56$elm_all_dict$EveryDict$map,
 				F2(
 					function (k, cat) {
-						var _p10 = shopName;
-						if (_p10.ctor === 'Shopify') {
+						var _p11 = shopName;
+						if (_p11.ctor === 'Shopify') {
 							return cat.shopify;
 						} else {
 							return cat.prestashop;
@@ -7974,27 +7985,27 @@ var _user$project$Logic$saveToFirebase = F3(
 			{
 				deleted: A2(
 					_elm_lang$core$List$map,
-					function (_p11) {
-						var _p12 = _p11;
-						return _p12._0;
+					function (_p12) {
+						var _p13 = _p12;
+						return _p13._0;
 					},
 					deleted),
 				created: A2(_elm_lang$core$List$map, _user$project$Data$normalizedProductEncoder, created),
 				updated: A2(
 					_elm_lang$core$List$map,
-					function (_p13) {
-						var _p14 = _p13;
+					function (_p14) {
+						var _p15 = _p14;
 						return {
-							id: _p14._0._0,
-							normalizedProduct: _user$project$Data$normalizedProductEncoder(_p14._1)
+							id: _p15._0._0,
+							normalizedProduct: _user$project$Data$normalizedProductEncoder(_p15._1)
 						};
 					},
 					updated)
 			});
 	});
 var _user$project$Logic$ensureItRelyNeedsUpdating = F2(
-	function (internalProducts, _p15) {
-		var _p16 = _p15;
+	function (internalProducts, _p16) {
+		var _p17 = _p16;
 		return true;
 	});
 var _user$project$Logic$getPosiblyUpdatedProductsIds = F3(
@@ -8004,21 +8015,21 @@ var _user$project$Logic$getPosiblyUpdatedProductsIds = F3(
 var _user$project$Logic$removeNothings = function (list) {
 	removeNothings:
 	while (true) {
-		var _p17 = list;
-		if (_p17.ctor === '[]') {
+		var _p18 = list;
+		if (_p18.ctor === '[]') {
 			return {ctor: '[]'};
 		} else {
-			var _p19 = _p17._1;
-			var _p18 = _p17._0;
-			if (_p18.ctor === 'Nothing') {
-				var _v11 = _p19;
+			var _p20 = _p18._1;
+			var _p19 = _p18._0;
+			if (_p19.ctor === 'Nothing') {
+				var _v11 = _p20;
 				list = _v11;
 				continue removeNothings;
 			} else {
 				return {
 					ctor: '::',
-					_0: _p18._0,
-					_1: _user$project$Logic$removeNothings(_p19)
+					_0: _p19._0,
+					_1: _user$project$Logic$removeNothings(_p20)
 				};
 			}
 		}

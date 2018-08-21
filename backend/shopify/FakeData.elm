@@ -136,14 +136,15 @@ externalProducts =
            , description = ""
            , media = []
            }
-    , ExternalProductId "externalProductId|2"
-        => { externalId = ExternalProductId "externalProductId|2"
-           , name = "external poduct 2"
-           , mainImage = Nothing
-           , price = 0
-           , description = ""
-           , media = []
-           }
+
+    -- , ExternalProductId "externalProductId|2"
+    --     => { externalId = ExternalProductId "externalProductId|2"
+    --        , name = "external poduct 2"
+    --        , mainImage = Nothing
+    --        , price = 0
+    --        , description = ""
+    --        , media = []
+    --        }
     , ExternalProductId "externalProductId|3"
         => { externalId = ExternalProductId "externalProductId|3"
            , name = "external poduct 3"
@@ -152,14 +153,15 @@ externalProducts =
            , description = ""
            , media = []
            }
-    , ExternalProductId "externalProductId|4"
-        => { externalId = ExternalProductId "externalProductId|4"
-           , name = "external poduct 4"
-           , mainImage = Nothing
-           , price = 0
-           , description = ""
-           , media = []
-           }
+
+    -- , ExternalProductId "externalProductId|4"
+    --     => { externalId = ExternalProductId "externalProductId|4"
+    --        , name = "external poduct 4"
+    --        , mainImage = Nothing
+    --        , price = 0
+    --        , description = ""
+    --        , media = []
+    --        }
     ]
         |> EveryDict.fromList
 
@@ -167,25 +169,30 @@ externalProducts =
 shopifyCollects : List ( ExternalCatId, ExternalProductId )
 shopifyCollects =
     [ ExternalCatId "externalCatId|1" => ExternalProductId "externalProductId|1"
-    , ExternalCatId "externalCatId|1" => ExternalProductId "externalProductId|1"
 
-    -- , ExternalCatId "externalCatId|3" => ExternalProductId "externalProductId|3"
-    -- , ExternalCatId "externalCatId|4" => ExternalProductId "externalProductId|4"
+    -- , ExternalCatId "externalCatId|1" => ExternalProductId "externalProductId|2"
+    -- , ExternalCatId "externalCatId|1" => ExternalProductId "externalProductId|3"
+    , ExternalCatId "externalCatId|2" => ExternalProductId "externalProductId|4"
+    , ExternalCatId "externalCatId|3" => ExternalProductId "externalProductId|3"
+    , ExternalCatId "externalCatId|4" => ExternalProductId "externalProductId|4"
     ]
 
 
 stuff =
     let
-        ( oneExtCatToManyExtProducts, oneExtProductToManyExtCats ) =
-            Logic.extractAsociations shopifyCollects
+        externalProductIdsFromFirebase : EverySet ExternalProductId
+        externalProductIdsFromFirebase =
+            Logic.getExternalProductIdsFromFirebase internalProducts
 
-        externalCategoriesIdsFromFirebase : EverySet ExternalCatId
-        externalCategoriesIdsFromFirebase =
-            Logic.getExternalCategoriesFromFirebase internalCategories Shopify
-                |> Debug.log "externalCategoriesIdsFromFirebase: "
+        externalProductIdsFromShopify : EverySet ExternalProductId
+        externalProductIdsFromShopify =
+            Logic.getExternalProductsIdsFromShopify externalProducts
     in
-        Logic.getRelevantProducts
-            oneExtCatToManyExtProducts
-            externalCategoriesIdsFromFirebase
-            externalProducts
-            |> Debug.log "stuff: "
+        Logic.getDeletedProductsIds externalProductIdsFromFirebase externalProductIdsFromShopify
+
+
+
+-- oneExtCatToManyExtProducts
+-- externalCategoriesIdsFromFirebase
+-- externalProducts
+-- |> Debug.log "stuff: "
