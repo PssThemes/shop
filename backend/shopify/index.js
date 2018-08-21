@@ -60,52 +60,62 @@ ports.finish.subscribe(() => {
 //
 //     ports.received_internalCategories.send(categoriesAsArray);
 //
+//   }else {
+
+//     ports.received_internalCategories.send([]);
+
 //   }
 // })
 // .catch(err => {
 //   console.log("error in loading internalCategories: ", err);
 // });
 //
-function transformObjectInArray(obj){
-  const array = [];
-  Object.keys(obj).map(key => {
-    array.push(obj[key]);
-  });
-  return array;
-}
+// function transformObjectInArray(obj){
+//   const array = [];
+//   Object.keys(obj).map(key => {
+//     array.push(obj[key]);
+//   });
+//   return array;
+// }
 
-// Load InternalProducts..
-db.ref("products").once("value").then(snap => {
-  const products = snap.val();
-  if(products){
-    const productsAsArray = transformObjectInArray(products);
-    ports.received_InternalProducts.send(productsAsArray);
-  }
-})
-.catch(err => {
-  console.log("error in loading InternalProducts: ", err);
+// // Load InternalProducts..
+// db.ref("products").once("value").then(snap => {
+//
+//   const products = snap.val();
+//   console.log(":products:", products);
+//   if(products){
+//     const productsAsArray = transformObjectInArray(products);
+//     ports.received_InternalProducts.send(productsAsArray);
+//   } else {
+//     ports.received_InternalProducts.send([]);
+//   }
+// })
+// .catch(err => {
+//   console.log("error in loading InternalProducts: ", err);
+// });
+
+
+// Extenral products..
+const shopify = new Shopify({
+  shopName: "aion-shop1.myshopify.com",
+  apiKey: "6899818a3b21c823434c02a71605067b",
+  password: "fc0f0ed27ec9a3448eeddc871151f290",
 });
 
-
-// // Extenral products..
-// const shopify = new Shopify({
-//   shopName: "aion-shop1.myshopify.com",
-//   apiKey: "6899818a3b21c823434c02a71605067b",
-//   password: "fc0f0ed27ec9a3448eeddc871151f290",
-// });
-//
-// shopify.product.list()
-//   .then(result => {
-//     products = result;
-//     if(products){
-//       // console.log("proudctus: ", products[0].images);
-//       console.log("____________________________________");
-//       ports.received_ExternalProducts.send(products);
-//     }
-//   })
-//   .catch(err => {
-//     console.log("error in loading shopify products..: ", err);
-//   });
+shopify.product.list()
+  .then(result => {
+    products = result;
+    if(products){
+      // console.log("proudctus: ", products[0].images);
+      console.log("____________________________________");
+      ports.received_ExternalProducts.send(products);
+    }else {
+      ports.received_ExternalProducts.send([]);
+    }
+  })
+  .catch(err => {
+    console.log("error in loading shopify products..: ", err);
+  });
 
 ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////

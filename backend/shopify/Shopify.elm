@@ -98,7 +98,11 @@ update msg model =
             { model | internalCategories = Just intCats } => [ selfCall Work ]
 
         ReceivedInternalProducts internalProducts ->
-            { model | internalProducts = Just internalProducts } => [ selfCall Work ]
+            let
+                _ =
+                    Debug.log "internalProducts: " internalProducts
+            in
+                { model | internalProducts = Just internalProducts } => [ selfCall Work ]
 
         ReceivedNormalizedProduct normalizedProducts ->
             { model | externalProducts = Just normalizedProducts }
