@@ -7428,61 +7428,80 @@ var _user$project$Data$settingsDecoder = A3(
 			},
 			A2(_elm_lang$core$Json_Decode$field, 'apiKey', _elm_lang$core$Json_Decode$string))));
 var _user$project$Data$prestashopProductDecoder = _elm_lang$core$Json_Decode$fail('not implemented');
-var _user$project$Data$normalizedProductEncoder = function (normalizedProduct) {
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: A2(
-				_NoRedInk$rocket_update$Rocket_ops['=>'],
-				'externalId',
-				function (_p0) {
-					var _p1 = _p0;
-					return _elm_lang$core$Json_Encode$string(_p1._0);
-				}(normalizedProduct.externalId)),
-			_1: {
+var _user$project$Data$updatableProductDataEncoder = F2(
+	function (normalizedProduct, externalCatIds) {
+		return _elm_lang$core$Json_Encode$object(
+			{
 				ctor: '::',
 				_0: A2(
 					_NoRedInk$rocket_update$Rocket_ops['=>'],
-					'name',
-					_elm_lang$core$Json_Encode$string(normalizedProduct.name)),
+					'externalId',
+					function (_p0) {
+						var _p1 = _p0;
+						return _elm_lang$core$Json_Encode$string(_p1._0);
+					}(normalizedProduct.externalId)),
 				_1: {
 					ctor: '::',
 					_0: A2(
-						F2(
-							function (v0, v1) {
-								return {ctor: '_Tuple2', _0: v0, _1: v1};
-							}),
-						'mainImage',
-						A2(
-							_elm_lang$core$Maybe$withDefault,
-							_elm_lang$core$Json_Encode$null,
-							A2(_elm_lang$core$Maybe$map, _elm_lang$core$Json_Encode$string, normalizedProduct.mainImage))),
+						_NoRedInk$rocket_update$Rocket_ops['=>'],
+						'name',
+						_elm_lang$core$Json_Encode$string(normalizedProduct.name)),
 					_1: {
 						ctor: '::',
 						_0: A2(
-							_NoRedInk$rocket_update$Rocket_ops['=>'],
-							'price',
-							_elm_lang$core$Json_Encode$float(normalizedProduct.price)),
+							F2(
+								function (v0, v1) {
+									return {ctor: '_Tuple2', _0: v0, _1: v1};
+								}),
+							'mainImage',
+							A2(
+								_elm_lang$core$Maybe$withDefault,
+								_elm_lang$core$Json_Encode$null,
+								A2(_elm_lang$core$Maybe$map, _elm_lang$core$Json_Encode$string, normalizedProduct.mainImage))),
 						_1: {
 							ctor: '::',
 							_0: A2(
 								_NoRedInk$rocket_update$Rocket_ops['=>'],
-								'description',
-								_elm_lang$core$Json_Encode$string(normalizedProduct.description)),
+								'price',
+								_elm_lang$core$Json_Encode$float(normalizedProduct.price)),
 							_1: {
 								ctor: '::',
 								_0: A2(
 									_NoRedInk$rocket_update$Rocket_ops['=>'],
-									'media',
-									_elm_lang$core$Json_Encode$list(
-										A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, normalizedProduct.media))),
-								_1: {ctor: '[]'}
+									'description',
+									_elm_lang$core$Json_Encode$string(normalizedProduct.description)),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_NoRedInk$rocket_update$Rocket_ops['=>'],
+										'media',
+										_elm_lang$core$Json_Encode$list(
+											A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, normalizedProduct.media))),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_NoRedInk$rocket_update$Rocket_ops['=>'],
+											'externalCatIds',
+											_elm_lang$core$Json_Encode$list(
+												_Gizra$elm_all_set$EverySet$toList(
+													A2(
+														_Gizra$elm_all_set$EverySet$map,
+														function (_p2) {
+															var _p3 = _p2;
+															return _elm_lang$core$Json_Encode$string(_p3._0);
+														},
+														externalCatIds)))),
+										_1: {ctor: '[]'}
+									}
+								}
 							}
 						}
 					}
 				}
-			}
-		});
+			});
+	});
+var _user$project$Data$newlyCreatedProductEncoder = function (normalizedProduct) {
+	return _elm_lang$core$Json_Encode$null;
 };
 var _user$project$Data$InternalProduct = function (a) {
 	return function (b) {
@@ -7628,12 +7647,14 @@ var _user$project$Data$shopifyCollectsDecoder = _elm_lang$core$Json_Decode$list(
 			function (catId, prodId) {
 				return {
 					ctor: '_Tuple2',
-					_0: _user$project$Data$ExternalCatId(catId),
-					_1: _user$project$Data$ExternalProductId(prodId)
+					_0: _user$project$Data$ExternalCatId(
+						_elm_lang$core$Basics$toString(catId)),
+					_1: _user$project$Data$ExternalProductId(
+						_elm_lang$core$Basics$toString(prodId))
 				};
 			}),
-		A2(_elm_lang$core$Json_Decode$field, 'category_id', _elm_lang$core$Json_Decode$string),
-		A2(_elm_lang$core$Json_Decode$field, 'product_id', _elm_lang$core$Json_Decode$string)));
+		A2(_elm_lang$core$Json_Decode$field, 'collection_id', _elm_lang$core$Json_Decode$int),
+		A2(_elm_lang$core$Json_Decode$field, 'product_id', _elm_lang$core$Json_Decode$int)));
 var _user$project$Data$InternalCatId = function (a) {
 	return {ctor: 'InternalCatId', _0: a};
 };
@@ -7687,15 +7708,15 @@ var _user$project$Data$Shopify = {ctor: 'Shopify'};
 var _user$project$Data$shopNameDecoder = A2(
 	_elm_lang$core$Json_Decode$andThen,
 	function (string) {
-		var _p2 = string;
-		switch (_p2) {
+		var _p4 = string;
+		switch (_p4) {
 			case 'shopify':
 				return _elm_lang$core$Json_Decode$succeed(_user$project$Data$Shopify);
 			case 'prestashop':
 				return _elm_lang$core$Json_Decode$succeed(_user$project$Data$Prestashop);
 			default:
 				return _elm_lang$core$Json_Decode$fail(
-					A2(_elm_lang$core$Basics_ops['++'], 'invalid shop name :  ', _p2));
+					A2(_elm_lang$core$Basics_ops['++'], 'invalid shop name :  ', _p4));
 		}
 	},
 	_elm_lang$core$Json_Decode$string);
@@ -7825,7 +7846,7 @@ var _user$project$Ports$saveToFirebase = _elm_lang$core$Native_Platform.outgoing
 				}),
 			updated: _elm_lang$core$Native_List.toArray(v.updated).map(
 				function (v) {
-					return {id: v.id, normalizedProduct: v.normalizedProduct};
+					return {id: v.id, fieldsToUpdate: v.fieldsToUpdate};
 				})
 		};
 	});

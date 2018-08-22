@@ -105,11 +105,19 @@ update msg model =
                 { model | internalProducts = Just internalProducts } => [ selfCall Work ]
 
         ReceivedNormalizedProduct normalizedProducts ->
-            { model | externalProducts = Just normalizedProducts }
-                => [ selfCall Work ]
+            let
+                _ =
+                    Debug.log "ReceivedNormalizedProduct: " normalizedProducts
+            in
+                { model | externalProducts = Just normalizedProducts }
+                    => [ selfCall Work ]
 
         ReceivedShopifyCollects collects ->
-            { model | shopifyCollects = Just collects } => [ selfCall Work ]
+            let
+                _ =
+                    Debug.log "ReceivedShopifyCollects: " collects
+            in
+                { model | shopifyCollects = Just collects } => [ selfCall Work ]
 
         Work ->
             Maybe.map5
@@ -144,10 +152,12 @@ update msg model =
                                 |> EverySet.map (\externalProductId -> Logic.findAsociatedInternalProductId externalProductId internalProducts)
                                 |> EverySet.toList
                                 |> Logic.removeNothings
+                                |> Debug.log "deletedProducts: "
 
                         createdProductsIds : EverySet ExternalProductId
                         createdProductsIds =
                             Logic.getCreatedProductsIds externalProductIdsFromFirebase externalProductIdsFromShopify
+                                |> Debug.log "createdProductsIds: "
 
                         createdProducts : List NormalizedProduct
                         createdProducts =
@@ -167,9 +177,10 @@ update msg model =
                                 |> EverySet.toList
                                 |> Logic.removeNothings
                                 |> List.filter (Logic.ensureItRelyNeedsUpdating internalProducts oneExtProductToManyExtCats)
+                                |> Debug.log "updatedProducts: "
                     in
                         model
-                            => [ Logic.saveToFirebase deletedProducts createdProducts updatedProducts
+                            => [ Logic.saveToFirebase deletedProducts createdProducts updatedProducts oneExtProductToManyExtCats
                                ]
                 )
                 model.settings
@@ -177,7 +188,13 @@ update msg model =
                 model.internalProducts
                 model.externalProducts
                 model.shopifyCollects
-                |> Maybe.withDefault (model => [])
+                |> Maybe.withDefault
+                    (-- let
+                     --     _ =
+                     --         Debug.log "with default.. " model
+                     --  in
+                     model => []
+                    )
 
         DecodingError error ->
             model
@@ -185,11 +202,11 @@ update msg model =
                 |> Debug.log ("DecodingError errr: " ++ error)
     )
         |> (\( model, cmds ) ->
-                let
-                    _ =
-                        Debug.log "new model: " model.internalCategories
-                in
-                    ( model, cmds )
+                -- let
+                --     _ =
+                --         Debug.log "new model: " model.internalCategories
+                -- in
+                ( model, cmds )
            )
 
 

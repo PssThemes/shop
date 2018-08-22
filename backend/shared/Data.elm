@@ -101,8 +101,14 @@ type alias NormalizedProduct =
     }
 
 
-normalizedProductEncoder : NormalizedProduct -> JE.Value
-normalizedProductEncoder normalizedProduct =
+newlyCreatedProductEncoder : NormalizedProduct -> JE.Value
+newlyCreatedProductEncoder normalizedProduct =
+    -- TODO: finish the create product encoder.
+    JE.null
+
+
+updatableProductDataEncoder : NormalizedProduct -> EverySet ExternalCatId -> JE.Value
+updatableProductDataEncoder normalizedProduct externalCatIds =
     [ "externalId"
         => (normalizedProduct.externalId
                 |> (\(ExternalProductId externalId) ->
@@ -121,6 +127,12 @@ normalizedProductEncoder normalizedProduct =
                 |> List.map JE.string
                 |> JE.list
            )
+    , "externalCatIds"
+        => (externalCatIds
+                |> EverySet.map (\(ExternalCatId id) -> JE.string id)
+                |> EverySet.toList
+                |> JE.list
+           )
     ]
         |> JE.object
 
@@ -131,7 +143,11 @@ normalizedProductsDecoder =
         |> JD.map
             (\list ->
                 list
-                    |> List.foldl (\normalizedProduct acc -> EveryDict.insert normalizedProduct.externalId normalizedProduct acc) EveryDict.empty
+                    |> List.foldl
+                        (\normalizedProduct acc ->
+                            EveryDict.insert normalizedProduct.externalId normalizedProduct acc
+                        )
+                        EveryDict.empty
             )
 
 
@@ -275,9 +291,9 @@ shopNameDecoder =
 
 shopifyCollectsDecoder : JD.Decoder (List ( ExternalCatId, ExternalProductId ))
 shopifyCollectsDecoder =
-    (JD.map2 (\catId prodId -> ( ExternalCatId catId, ExternalProductId prodId ))
-        (JD.field "category_id" JD.string)
-        (JD.field "product_id" JD.string)
+    (JD.map2 (\catId prodId -> ( ExternalCatId (toString catId), ExternalProductId (toString prodId) ))
+        (JD.field "collection_id" JD.int)
+        (JD.field "product_id" JD.int)
     )
         |> JD.list
 

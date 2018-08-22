@@ -5,25 +5,38 @@ import EveryDict exposing (..)
 
 
 -- import Json.Encode as JE
+
+import EveryDict exposing (EveryDict)
+
+
 -- import Rocket exposing ((=>))
 
 import Ports
 import EverySet exposing (EverySet)
 
 
-getDeletedProductsIds : EverySet ExternalProductId -> EverySet ExternalProductId -> EverySet ExternalProductId
+getDeletedProductsIds :
+    EverySet ExternalProductId
+    -> EverySet ExternalProductId
+    -> EverySet ExternalProductId
 getDeletedProductsIds firebaseProductsIds shopProductsIds =
     -- means products that are in firebase but not on shop.
     EverySet.diff firebaseProductsIds shopProductsIds
 
 
-getCreatedProductsIds : EverySet ExternalProductId -> EverySet ExternalProductId -> EverySet ExternalProductId
+getCreatedProductsIds :
+    EverySet ExternalProductId
+    -> EverySet ExternalProductId
+    -> EverySet ExternalProductId
 getCreatedProductsIds firebaseProductsIds shopProductsIds =
     -- created products means they are in the shop but not in firebase.
     EverySet.diff shopProductsIds firebaseProductsIds
 
 
-findAsociatedInternalProductId : ExternalProductId -> EveryDict InternalProductId InternalProduct -> Maybe InternalProductId
+findAsociatedInternalProductId :
+    ExternalProductId
+    -> EveryDict InternalProductId InternalProduct
+    -> Maybe InternalProductId
 findAsociatedInternalProductId externalProductId internalProducts =
     internalProducts
         |> EveryDict.filter (\_ product -> product.externalId == externalProductId)
@@ -47,7 +60,11 @@ removeNothings list =
                     a :: removeNothings xs
 
 
-getPosiblyUpdatedProductsIds : EverySet ExternalProductId -> EverySet ExternalProductId -> EverySet ExternalProductId -> EverySet ExternalProductId
+getPosiblyUpdatedProductsIds :
+    EverySet ExternalProductId
+    -> EverySet ExternalProductId
+    -> EverySet ExternalProductId
+    -> EverySet ExternalProductId
 getPosiblyUpdatedProductsIds createdProductsIds deletedProductsExternalIds externalProductIdsFromShopify =
     -- whatever external product id which is not created or deleted.. must be updated.
     -- so its everything in the big set except the createdOrDeleted
@@ -58,32 +75,37 @@ getPosiblyUpdatedProductsIds createdProductsIds deletedProductsExternalIds exter
         EverySet.diff externalProductIdsFromShopify createdOrDeleted
 
 
-ensureItRelyNeedsUpdating : EveryDict InternalProductId InternalProduct -> EveryDict ExternalProductId (EverySet ExternalCatId) -> ( InternalProductId, NormalizedProduct ) -> Bool
+ensureItRelyNeedsUpdating :
+    EveryDict InternalProductId InternalProduct
+    -> EveryDict ExternalProductId (EverySet ExternalCatId)
+    -> ( InternalProductId, NormalizedProduct )
+    -> Bool
 ensureItRelyNeedsUpdating internalProducts oneExtProductToManyExtCats ( internalProductId, normalizedProduct ) =
-    EveryDict.get internalProductId internalProducts
-        |> Maybe.andThen
-            (\internalProduct ->
-                EveryDict.get internalProduct.externalId oneExtProductToManyExtCats
-                    |> Maybe.andThen
-                        (\externalCats ->
-                            let
-                                short_descriptionForNormalizedProduct =
-                                    getShopifyShortDescription normalizedProduct.description
-
-                                areTheSame =
-                                    (internalProduct.externalCatIds == externalCats)
-                                        && (internalProduct.externalId == normalizedProduct.externalId)
-                                        && (internalProduct.name == normalizedProduct.name)
-                                        && (internalProduct.mainImage == normalizedProduct.mainImage)
-                                        && (internalProduct.price == normalizedProduct.price)
-                                        && (internalProduct.short_description == short_descriptionForNormalizedProduct)
-                                        && (internalProduct.media == normalizedProduct.media)
-                            in
-                                -- it needs updating if products are NOT the same.
-                                Just (not areTheSame)
-                        )
-            )
-        |> Maybe.withDefault False
+    -- EveryDict.get internalProductId internalProducts
+    --     |> Maybe.andThen
+    --         (\internalProduct ->
+    --             EveryDict.get internalProduct.externalId oneExtProductToManyExtCats
+    --                 |> Maybe.andThen
+    --                     (\externalCats ->
+    --                         let
+    --                             short_descriptionForNormalizedProduct =
+    --                                 getShopifyShortDescription normalizedProduct.description
+    --
+    --                             areTheSame =
+    --                                 (internalProduct.externalCatIds == externalCats)
+    --                                     && (internalProduct.externalId == normalizedProduct.externalId)
+    --                                     && (internalProduct.name == normalizedProduct.name)
+    --                                     && (internalProduct.mainImage == normalizedProduct.mainImage)
+    --                                     && (internalProduct.price == normalizedProduct.price)
+    --                                     && (internalProduct.short_description == short_descriptionForNormalizedProduct)
+    --                                     && (internalProduct.media == normalizedProduct.media)
+    --                         in
+    --                             -- it needs updating if products are NOT the same.
+    --                             Just (not areTheSame)
+    --                     )
+    --         )
+    --     |> Maybe.withDefault False
+    True
 
 
 getShopifyShortDescription : String -> String
@@ -93,27 +115,48 @@ getShopifyShortDescription longDescription =
     String.left 300 longDescription
 
 
-saveToFirebase : List InternalProductId -> List NormalizedProduct -> List ( InternalProductId, NormalizedProduct ) -> Cmd msg
-saveToFirebase deleted created updated =
-    { deleted =
-        deleted
-            |> List.map (\(InternalProductId id) -> id)
-    , created =
-        created
-            |> List.map normalizedProductEncoder
-    , updated =
-        updated
-            |> List.map
-                (\( InternalProductId id, normalizedProduct ) ->
-                    { id = id
-                    , normalizedProduct = normalizedProductEncoder normalizedProduct
-                    }
-                )
-    }
-        |> Ports.saveToFirebase
+saveToFirebase :
+    List InternalProductId
+    -> List NormalizedProduct
+    -> List ( InternalProductId, NormalizedProduct )
+    -> EveryDict ExternalProductId (EverySet ExternalCatId)
+    -> Cmd msg
+saveToFirebase deleted created updated oneExtProductToManyExtCats =
+    let
+        _ =
+            Debug.log "saveToFirebase: " saveToFirebase
+    in
+        { deleted =
+            deleted
+                |> List.map (\(InternalProductId id) -> id)
+        , created =
+            created
+                |> List.map newlyCreatedProductEncoder
+        , updated =
+            updated
+                |> List.map
+                    (\( InternalProductId id, normalizedProduct ) ->
+                        let
+                            externalCatIds =
+                                case EveryDict.get normalizedProduct.externalId oneExtProductToManyExtCats of
+                                    Nothing ->
+                                        EverySet.empty
+
+                                    Just set ->
+                                        set
+                        in
+                            { id = id
+                            , fieldsToUpdate = updatableProductDataEncoder normalizedProduct externalCatIds
+                            }
+                    )
+        }
+            |> Ports.saveToFirebase
 
 
-getExternalCategoriesFromFirebase : EveryDict InternalCatId InternalCategory -> ShopName -> EverySet ExternalCatId
+getExternalCategoriesFromFirebase :
+    EveryDict InternalCatId InternalCategory
+    -> ShopName
+    -> EverySet ExternalCatId
 getExternalCategoriesFromFirebase internalCategories shopName =
     internalCategories
         |> EveryDict.map
@@ -151,7 +194,11 @@ extractAsociations mappings =
             ( EveryDict.empty, EveryDict.empty )
 
 
-updateOrInsert : key -> value -> EveryDict key (EverySet value) -> EveryDict key (EverySet value)
+updateOrInsert :
+    key
+    -> value
+    -> EveryDict key (EverySet value)
+    -> EveryDict key (EverySet value)
 updateOrInsert key value dict =
     dict
         |> EveryDict.update key

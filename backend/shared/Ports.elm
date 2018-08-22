@@ -13,7 +13,7 @@ import Json.Decode as JD
 import Json.Encode as JE
 
 
-port saveToFirebase : { deleted : List String, created : List JE.Value, updated : List { id : String, normalizedProduct : JE.Value } } -> Cmd msg
+port saveToFirebase : { deleted : List String, created : List JE.Value, updated : List { id : String, fieldsToUpdate : JE.Value } } -> Cmd msg
 
 
 port finish : () -> Cmd msg
