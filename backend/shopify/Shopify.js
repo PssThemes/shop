@@ -8118,8 +8118,8 @@ var _user$project$Shopify$DecodingError = function (a) {
 var _user$project$Shopify$ReceivedShopifyCollects = function (a) {
 	return {ctor: 'ReceivedShopifyCollects', _0: a};
 };
-var _user$project$Shopify$ReceivedNormalizedProduct = function (a) {
-	return {ctor: 'ReceivedNormalizedProduct', _0: a};
+var _user$project$Shopify$ReceivedNormalizedProducts = function (a) {
+	return {ctor: 'ReceivedNormalizedProducts', _0: a};
 };
 var _user$project$Shopify$ReceivedInternalProducts = function (a) {
 	return {ctor: 'ReceivedInternalProducts', _0: a};
@@ -8203,29 +8203,28 @@ var _user$project$Shopify$update = F2(
 								_1: {ctor: '[]'}
 							});
 					case 'ReceivedInternalProducts':
-						var _p7 = _p3._0;
-						var _p6 = A2(_elm_lang$core$Debug$log, 'internalProducts: ', _p7);
+						var _p8 = _p3._0;
+						var _p6 = A2(_elm_lang$core$Debug$log, '', '----------------------------------------------');
+						var _p7 = A2(_elm_lang$core$Debug$log, 'internalProducts: ', _p8);
 						return A2(
 							_NoRedInk$rocket_update$Rocket_ops['=>'],
 							_elm_lang$core$Native_Utils.update(
 								model,
 								{
-									internalProducts: _elm_lang$core$Maybe$Just(_p7)
+									internalProducts: _elm_lang$core$Maybe$Just(_p8)
 								}),
 							{
 								ctor: '::',
 								_0: _user$project$Shopify$selfCall(_user$project$Shopify$Work),
 								_1: {ctor: '[]'}
 							});
-					case 'ReceivedNormalizedProduct':
-						var _p9 = _p3._0;
-						var _p8 = A2(_elm_lang$core$Debug$log, 'ReceivedNormalizedProduct: ', _p9);
+					case 'ReceivedNormalizedProducts':
 						return A2(
 							_NoRedInk$rocket_update$Rocket_ops['=>'],
 							_elm_lang$core$Native_Utils.update(
 								model,
 								{
-									externalProducts: _elm_lang$core$Maybe$Just(_p9)
+									externalProducts: _elm_lang$core$Maybe$Just(_p3._0)
 								}),
 							{
 								ctor: '::',
@@ -8233,14 +8232,12 @@ var _user$project$Shopify$update = F2(
 								_1: {ctor: '[]'}
 							});
 					case 'ReceivedShopifyCollects':
-						var _p11 = _p3._0;
-						var _p10 = A2(_elm_lang$core$Debug$log, 'ReceivedShopifyCollects: ', _p11);
 						return A2(
 							_NoRedInk$rocket_update$Rocket_ops['=>'],
 							_elm_lang$core$Native_Utils.update(
 								model,
 								{
-									shopifyCollects: _elm_lang$core$Maybe$Just(_p11)
+									shopifyCollects: _elm_lang$core$Maybe$Just(_p3._0)
 								}),
 							{
 								ctor: '::',
@@ -8260,10 +8257,13 @@ var _user$project$Shopify$update = F2(
 									function (settings, internalCategories, internalProducts, externalProducts, shopifyCollects) {
 										var externalProductIdsFromShopify = _user$project$Logic$getExternalProductsIdsFromShopify(externalProducts);
 										var externalProductIdsFromFirebase = _user$project$Logic$getExternalProductIdsFromFirebase(internalProducts);
-										var deletedProductsExternalIds = A2(_user$project$Logic$getDeletedProductsIds, externalProductIdsFromFirebase, externalProductIdsFromShopify);
+										var deletedProductsExternalIds = A2(
+											_elm_lang$core$Debug$log,
+											'deletedProductsExternalIds: ',
+											A2(_user$project$Logic$getDeletedProductsIds, externalProductIdsFromFirebase, externalProductIdsFromShopify));
 										var deletedProducts = A2(
 											_elm_lang$core$Debug$log,
-											'deletedProducts: ',
+											'deletedProducts Firebase Ids: ',
 											_user$project$Logic$removeNothings(
 												_Gizra$elm_all_set$EverySet$toList(
 													A2(
@@ -8272,15 +8272,18 @@ var _user$project$Shopify$update = F2(
 															return A2(_user$project$Logic$findAsociatedInternalProductId, externalProductId, internalProducts);
 														},
 														deletedProductsExternalIds))));
-										var createdProductsIds = A2(
+										var createdProductsIds = A2(_user$project$Logic$getCreatedProductsIds, externalProductIdsFromFirebase, externalProductIdsFromShopify);
+										var _p9 = _user$project$Logic$extractAsociations(shopifyCollects);
+										var oneExtCatToManyExtProducts = _p9._0;
+										var oneExtProductToManyExtCats = _p9._1;
+										var externalCategoriesIdsFormFirebase = A2(
 											_elm_lang$core$Debug$log,
-											'createdProductsIds: ',
-											A2(_user$project$Logic$getCreatedProductsIds, externalProductIdsFromFirebase, externalProductIdsFromShopify));
-										var _p12 = _user$project$Logic$extractAsociations(shopifyCollects);
-										var oneExtCatToManyExtProducts = _p12._0;
-										var oneExtProductToManyExtCats = _p12._1;
-										var externalCategoriesIdsFormFirebase = A2(_user$project$Logic$getExternalCategoriesFromFirebase, internalCategories, _user$project$Data$Shopify);
-										var relevantProducts = A3(_user$project$Logic$getRelevantProducts, oneExtCatToManyExtProducts, externalCategoriesIdsFormFirebase, externalProducts);
+											'externalCategoriesIdsFormFirebase: ',
+											A2(_user$project$Logic$getExternalCategoriesFromFirebase, internalCategories, _user$project$Data$Shopify));
+										var relevantProducts = A2(
+											_elm_lang$core$Debug$log,
+											'relevantProducts: ',
+											A3(_user$project$Logic$getRelevantProducts, oneExtCatToManyExtProducts, externalCategoriesIdsFormFirebase, externalProducts));
 										var createdProducts = _user$project$Logic$removeNothings(
 											_Gizra$elm_all_set$EverySet$toList(
 												A2(
@@ -8300,16 +8303,16 @@ var _user$project$Shopify$update = F2(
 														A2(
 															_Gizra$elm_all_set$EverySet$map,
 															function (externalProductId) {
-																return function (_p13) {
-																	var _p14 = _p13;
+																return function (_p10) {
+																	var _p11 = _p10;
 																	return A3(
 																		_elm_lang$core$Maybe$map2,
 																		F2(
 																			function (v0, v1) {
 																				return {ctor: '_Tuple2', _0: v0, _1: v1};
 																			}),
-																		_p14._1,
-																		_p14._0);
+																		_p11._1,
+																		_p11._0);
 																}(
 																	{
 																		ctor: '_Tuple2',
@@ -8349,62 +8352,62 @@ var _user$project$Shopify$subscriptions = function (model) {
 		{
 			ctor: '::',
 			_0: _user$project$Ports$start(
-				function (_p15) {
+				function (_p12) {
 					return _user$project$Shopify$Start;
 				}),
 			_1: {
 				ctor: '::',
 				_0: _user$project$Ports$received_settings(
 					function (value) {
-						var _p16 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$settingsDecoder, value);
-						if (_p16.ctor === 'Ok') {
-							return _user$project$Shopify$ReceivedSettings(_p16._0);
+						var _p13 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$settingsDecoder, value);
+						if (_p13.ctor === 'Ok') {
+							return _user$project$Shopify$ReceivedSettings(_p13._0);
 						} else {
-							return _user$project$Shopify$DecodingError(_p16._0);
+							return _user$project$Shopify$DecodingError(_p13._0);
 						}
 					}),
 				_1: {
 					ctor: '::',
 					_0: _user$project$Ports$received_internalCategories(
 						function (value) {
-							var _p17 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$internalCategoriesDecoder, value);
-							if (_p17.ctor === 'Ok') {
-								return _user$project$Shopify$ReceivedInternalCategories(_p17._0);
+							var _p14 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$internalCategoriesDecoder, value);
+							if (_p14.ctor === 'Ok') {
+								return _user$project$Shopify$ReceivedInternalCategories(_p14._0);
 							} else {
-								return _user$project$Shopify$DecodingError(_p17._0);
+								return _user$project$Shopify$DecodingError(_p14._0);
 							}
 						}),
 					_1: {
 						ctor: '::',
 						_0: _user$project$Ports$received_InternalProducts(
 							function (value) {
-								var _p18 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$internalProductsDecoder, value);
-								if (_p18.ctor === 'Ok') {
-									return _user$project$Shopify$ReceivedInternalProducts(_p18._0);
+								var _p15 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$internalProductsDecoder, value);
+								if (_p15.ctor === 'Ok') {
+									return _user$project$Shopify$ReceivedInternalProducts(_p15._0);
 								} else {
-									return _user$project$Shopify$DecodingError(_p18._0);
+									return _user$project$Shopify$DecodingError(_p15._0);
 								}
 							}),
 						_1: {
 							ctor: '::',
 							_0: _user$project$Ports$received_ExternalProducts(
 								function (value) {
-									var _p19 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$normalizedProductsDecoder, value);
-									if (_p19.ctor === 'Ok') {
-										return _user$project$Shopify$ReceivedNormalizedProduct(_p19._0);
+									var _p16 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$normalizedProductsDecoder, value);
+									if (_p16.ctor === 'Ok') {
+										return _user$project$Shopify$ReceivedNormalizedProducts(_p16._0);
 									} else {
-										return _user$project$Shopify$DecodingError(_p19._0);
+										return _user$project$Shopify$DecodingError(_p16._0);
 									}
 								}),
 							_1: {
 								ctor: '::',
 								_0: _user$project$Ports$received_Collects(
 									function (value) {
-										var _p20 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$shopifyCollectsDecoder, value);
-										if (_p20.ctor === 'Ok') {
-											return _user$project$Shopify$ReceivedShopifyCollects(_p20._0);
+										var _p17 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$shopifyCollectsDecoder, value);
+										if (_p17.ctor === 'Ok') {
+											return _user$project$Shopify$ReceivedShopifyCollects(_p17._0);
 										} else {
-											return _user$project$Shopify$DecodingError(_p20._0);
+											return _user$project$Shopify$DecodingError(_p17._0);
 										}
 									}),
 								_1: {ctor: '[]'}
@@ -8418,9 +8421,9 @@ var _user$project$Shopify$subscriptions = function (model) {
 var _user$project$Shopify$main = _elm_lang$core$Platform$program(
 	{
 		init: _NoRedInk$rocket_update$Rocket$batchInit(_user$project$Shopify$init),
-		update: function (_p21) {
+		update: function (_p18) {
 			return _NoRedInk$rocket_update$Rocket$batchUpdate(
-				_user$project$Shopify$update(_p21));
+				_user$project$Shopify$update(_p18));
 		},
 		subscriptions: _user$project$Shopify$subscriptions
 	})();

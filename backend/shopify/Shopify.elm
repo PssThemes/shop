@@ -65,7 +65,7 @@ type Msg
     | ReceivedSettings Settings
     | ReceivedInternalCategories (EveryDict InternalCatId InternalCategory)
     | ReceivedInternalProducts (EveryDict InternalProductId InternalProduct)
-    | ReceivedNormalizedProduct (EveryDict ExternalProductId NormalizedProduct)
+    | ReceivedNormalizedProducts (EveryDict ExternalProductId NormalizedProduct)
     | ReceivedShopifyCollects (List ( ExternalCatId, ExternalProductId ))
     | DecodingError String
     | Work
@@ -101,23 +101,18 @@ update msg model =
             let
                 _ =
                     Debug.log "internalProducts: " internalProducts
+
+                _ =
+                    Debug.log "" "----------------------------------------------"
             in
                 { model | internalProducts = Just internalProducts } => [ selfCall Work ]
 
-        ReceivedNormalizedProduct normalizedProducts ->
-            let
-                _ =
-                    Debug.log "ReceivedNormalizedProduct: " normalizedProducts
-            in
-                { model | externalProducts = Just normalizedProducts }
-                    => [ selfCall Work ]
+        ReceivedNormalizedProducts normalizedProducts ->
+            { model | externalProducts = Just normalizedProducts }
+                => [ selfCall Work ]
 
         ReceivedShopifyCollects collects ->
-            let
-                _ =
-                    Debug.log "ReceivedShopifyCollects: " collects
-            in
-                { model | shopifyCollects = Just collects } => [ selfCall Work ]
+            { model | shopifyCollects = Just collects } => [ selfCall Work ]
 
         Work ->
             Maybe.map5
@@ -126,6 +121,7 @@ update msg model =
                         externalCategoriesIdsFormFirebase : EverySet ExternalCatId
                         externalCategoriesIdsFormFirebase =
                             Logic.getExternalCategoriesFromFirebase internalCategories Shopify
+                                |> Debug.log "externalCategoriesIdsFormFirebase: "
 
                         ( oneExtCatToManyExtProducts, oneExtProductToManyExtCats ) =
                             Logic.extractAsociations shopifyCollects
@@ -133,18 +129,32 @@ update msg model =
                         relevantProducts : EveryDict ExternalProductId NormalizedProduct
                         relevantProducts =
                             Logic.getRelevantProducts oneExtCatToManyExtProducts externalCategoriesIdsFormFirebase externalProducts
+                                |> (\x ->
+                                        let
+                                            howMany =
+                                                x
+                                                    |> EveryDict.foldl (\k v acc -> acc + 1) 0
+
+                                            _ =
+                                                Debug.log "relevantProducts: " howMany
+                                        in
+                                            x
+                                   )
 
                         externalProductIdsFromFirebase : EverySet ExternalProductId
                         externalProductIdsFromFirebase =
                             Logic.getExternalProductIdsFromFirebase internalProducts
 
+                        -- |> Debug.log "externalProductIdsFromFirebase: "
                         externalProductIdsFromShopify : EverySet ExternalProductId
                         externalProductIdsFromShopify =
                             Logic.getExternalProductsIdsFromShopify externalProducts
 
+                        -- |> Debug.log "externalProductIdsFromShopify: "
                         deletedProductsExternalIds : EverySet ExternalProductId
                         deletedProductsExternalIds =
                             Logic.getDeletedProductsIds externalProductIdsFromFirebase externalProductIdsFromShopify
+                                |> Debug.log "deletedProductsExternalIds: "
 
                         deletedProducts : List InternalProductId
                         deletedProducts =
@@ -152,13 +162,13 @@ update msg model =
                                 |> EverySet.map (\externalProductId -> Logic.findAsociatedInternalProductId externalProductId internalProducts)
                                 |> EverySet.toList
                                 |> Logic.removeNothings
-                                |> Debug.log "deletedProducts: "
+                                |> Debug.log "deletedProducts Firebase Ids: "
 
                         createdProductsIds : EverySet ExternalProductId
                         createdProductsIds =
                             Logic.getCreatedProductsIds externalProductIdsFromFirebase externalProductIdsFromShopify
-                                |> Debug.log "createdProductsIds: "
 
+                        -- |> Debug.log "createdProductsIds: "
                         createdProducts : List NormalizedProduct
                         createdProducts =
                             createdProductsIds
@@ -244,7 +254,7 @@ subscriptions model =
         (\value ->
             case JD.decodeValue normalizedProductsDecoder value of
                 Ok normalizedProducts ->
-                    ReceivedNormalizedProduct normalizedProducts
+                    ReceivedNormalizedProducts normalizedProducts
 
                 Err error ->
                     DecodingError error
