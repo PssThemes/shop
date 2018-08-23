@@ -121,26 +121,26 @@ update msg model =
                         externalCategoriesIdsFormFirebase : EverySet ExternalCatId
                         externalCategoriesIdsFormFirebase =
                             Logic.getExternalCategoriesFromFirebase internalCategories Shopify
-                                |> Debug.log "externalCategoriesIdsFormFirebase: "
 
+                        -- |> Debug.log "externalCategoriesIdsFormFirebase: "
                         ( oneExtCatToManyExtProducts, oneExtProductToManyExtCats ) =
                             Logic.extractAsociations shopifyCollects
 
                         relevantProducts : EveryDict ExternalProductId NormalizedProduct
                         relevantProducts =
                             Logic.getRelevantProducts oneExtCatToManyExtProducts externalCategoriesIdsFormFirebase externalProducts
-                                |> (\x ->
-                                        let
-                                            howMany =
-                                                x
-                                                    |> EveryDict.foldl (\k v acc -> acc + 1) 0
 
-                                            _ =
-                                                Debug.log "relevantProducts: " howMany
-                                        in
-                                            x
-                                   )
-
+                        -- |> (\x ->
+                        --         let
+                        --             howMany =
+                        --                 x
+                        --                     |> EveryDict.foldl (\k v acc -> acc + 1) 0
+                        --
+                        --             _ =
+                        --                 Debug.log "relevantProducts: " howMany
+                        --         in
+                        --             x
+                        --    )
                         externalProductIdsFromFirebase : EverySet ExternalProductId
                         externalProductIdsFromFirebase =
                             Logic.getExternalProductIdsFromFirebase internalProducts
@@ -167,8 +167,8 @@ update msg model =
                         createdProductsIds : EverySet ExternalProductId
                         createdProductsIds =
                             Logic.getCreatedProductsIds externalProductIdsFromFirebase externalProductIdsFromShopify
+                                |> Debug.log "createdProductsIds: "
 
-                        -- |> Debug.log "createdProductsIds: "
                         createdProducts : List NormalizedProduct
                         createdProducts =
                             createdProductsIds

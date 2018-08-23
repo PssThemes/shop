@@ -94,6 +94,7 @@ type alias NormalizedProduct =
     , name : String
     , mainImage : Maybe String
     , price : Float
+    , short_description : String
     , description : String
     , media : List String
 
@@ -101,10 +102,33 @@ type alias NormalizedProduct =
     }
 
 
-newlyCreatedProductEncoder : NormalizedProduct -> JE.Value
-newlyCreatedProductEncoder normalizedProduct =
-    -- TODO: finish the create product encoder.
-    JE.null
+shopEncoder : ShopName -> JE.Value
+shopEncoder shopName =
+    case shopName of
+        Shopify ->
+            "shopify" |> JE.string
+
+        Prestashop ->
+            "prestashop" |> JE.string
+
+
+newlyCreatedProductEncoder : ShopName -> NormalizedProduct -> JE.Value
+newlyCreatedProductEncoder shopName normalizedProduct =
+    [ "shopName" => (shopName |> shopEncoder)
+    , "externalId" => (normalizedProduct.externalId |> (\(ExternalProductId id) -> id) |> JE.string)
+    , "name" => (normalizedProduct.name |> JE.string)
+    , "short_description" => (normalizedProduct.short_description |> JE.string)
+    , "price" => (normalizedProduct.price |> JE.float)
+    , "externalCatIds" => ([] |> JE.list)
+    , "internalCatIds" => ([] |> JE.list)
+
+    -- TODO: check what is better.. a null for main image or an empty string? since null in firbase means the filed does not exist.
+    , "mainImage" => (normalizedProduct.mainImage |> Maybe.map JE.string |> Maybe.withDefault JE.null)
+    , "media" => (normalizedProduct.media |> List.map JE.string |> JE.list)
+    , "isHidden" => (False |> JE.bool)
+    , "howManyTimesWasOrdered" => (0 |> JE.int)
+    ]
+        |> JE.object
 
 
 updatableProductDataEncoder : NormalizedProduct -> EverySet ExternalCatId -> JE.Value
@@ -158,35 +182,39 @@ normalizedProductDecoder =
 
 shopifyProductDecoder : JD.Decoder NormalizedProduct
 shopifyProductDecoder =
-    JDP.decode
-        (\id title maybe_mainImgSrc variants body_html images ->
-            { externalId = ExternalProductId (toString id)
-            , name = title
-            , mainImage = maybe_mainImgSrc
-            , price =
-                variants
-                    |> List.head
-                    |> Maybe.map
-                        (\string ->
-                            string
-                                |> String.toFloat
-                                |> Result.withDefault 0
-                        )
-                    |> Maybe.withDefault 0
-            , description = body_html
-            , media = []
-
-            -- , internalCatIds =
-            --     internalCatIds
-            --         |> List.map (toString >> InternalCatId)
-            }
-        )
-        |> JDP.required "id" JD.int
-        |> JDP.required "title" JD.string
-        |> JDP.optionalAt [ "image", "src" ] (JD.string |> JD.map Just) Nothing
-        |> JDP.required "variants" (JD.list (JD.field "price" JD.string))
-        |> JDP.required "body_html" JD.string
-        |> JDP.required "images" (JD.list (JD.field "src" JD.string))
+    let
+        getShopifyShortDescription : String -> String
+        getShopifyShortDescription longDescription =
+            -- TODO: create a proper function for  getting the short description out of the long descripotion
+            -- since shopify does not have the notion of short_description by default.
+            String.left 300 longDescription
+    in
+        JDP.decode
+            (\id title maybe_mainImgSrc variants body_html images ->
+                { externalId = ExternalProductId (toString id)
+                , name = title
+                , mainImage = maybe_mainImgSrc
+                , price =
+                    variants
+                        |> List.head
+                        |> Maybe.map
+                            (\string ->
+                                string
+                                    |> String.toFloat
+                                    |> Result.withDefault 0
+                            )
+                        |> Maybe.withDefault 0
+                , short_description = getShopifyShortDescription body_html
+                , description = body_html
+                , media = []
+                }
+            )
+            |> JDP.required "id" JD.int
+            |> JDP.required "title" JD.string
+            |> JDP.optionalAt [ "image", "src" ] (JD.string |> JD.map Just) Nothing
+            |> JDP.required "variants" (JD.list (JD.field "price" JD.string))
+            |> JDP.required "body_html" JD.string
+            |> JDP.required "images" (JD.list (JD.field "src" JD.string))
 
 
 

@@ -8272,18 +8272,15 @@ var _user$project$Shopify$update = F2(
 															return A2(_user$project$Logic$findAsociatedInternalProductId, externalProductId, internalProducts);
 														},
 														deletedProductsExternalIds))));
-										var createdProductsIds = A2(_user$project$Logic$getCreatedProductsIds, externalProductIdsFromFirebase, externalProductIdsFromShopify);
+										var createdProductsIds = A2(
+											_elm_lang$core$Debug$log,
+											'createdProductsIds: ',
+											A2(_user$project$Logic$getCreatedProductsIds, externalProductIdsFromFirebase, externalProductIdsFromShopify));
 										var _p9 = _user$project$Logic$extractAsociations(shopifyCollects);
 										var oneExtCatToManyExtProducts = _p9._0;
 										var oneExtProductToManyExtCats = _p9._1;
-										var externalCategoriesIdsFormFirebase = A2(
-											_elm_lang$core$Debug$log,
-											'externalCategoriesIdsFormFirebase: ',
-											A2(_user$project$Logic$getExternalCategoriesFromFirebase, internalCategories, _user$project$Data$Shopify));
-										var relevantProducts = A2(
-											_elm_lang$core$Debug$log,
-											'relevantProducts: ',
-											A3(_user$project$Logic$getRelevantProducts, oneExtCatToManyExtProducts, externalCategoriesIdsFormFirebase, externalProducts));
+										var externalCategoriesIdsFormFirebase = A2(_user$project$Logic$getExternalCategoriesFromFirebase, internalCategories, _user$project$Data$Shopify);
+										var relevantProducts = A3(_user$project$Logic$getRelevantProducts, oneExtCatToManyExtProducts, externalCategoriesIdsFormFirebase, externalProducts);
 										var createdProducts = _user$project$Logic$removeNothings(
 											_Gizra$elm_all_set$EverySet$toList(
 												A2(

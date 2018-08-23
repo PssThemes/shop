@@ -108,20 +108,14 @@ ensureItRelyNeedsUpdating internalProducts oneExtProductToManyExtCats ( internal
     True
 
 
-getShopifyShortDescription : String -> String
-getShopifyShortDescription longDescription =
-    -- TODO: create a proper function for  getting the short description out of the long descripotion
-    -- since shopify does not have the notion of short_description by default.
-    String.left 300 longDescription
-
-
 saveToFirebase :
-    List InternalProductId
+    ShopName
+    -> List InternalProductId
     -> List NormalizedProduct
     -> List ( InternalProductId, NormalizedProduct )
     -> EveryDict ExternalProductId (EverySet ExternalCatId)
     -> Cmd msg
-saveToFirebase deleted created updated oneExtProductToManyExtCats =
+saveToFirebase shopName deleted created updated oneExtProductToManyExtCats =
     let
         _ =
             Debug.log "saveToFirebase: " saveToFirebase
@@ -131,7 +125,7 @@ saveToFirebase deleted created updated oneExtProductToManyExtCats =
                 |> List.map (\(InternalProductId id) -> id)
         , created =
             created
-                |> List.map newlyCreatedProductEncoder
+                |> List.map (newlyCreatedProductEncoder shopName)
         , updated =
             updated
                 |> List.map

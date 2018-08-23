@@ -2,6 +2,37 @@
 ===============================================================================================================================
 ===============================================================================================================================
 ===============================================================================================================================
+23 august 2018
+
+So much of this is how you approach it.
+I need to take out all important json objects for Shopify.
+I need to take out all important json objects for Preshashop.
+
+Reason beeing.. i constantly need to recheck if some json field is there or not..
+The correct approach would be to just interogate the api.. take by copy paste whaty the json structure is..
+what is expectedf for me to get in different situations..
+
+Make fake data based on that.
+
+And then use this fake data to make architecutre driven decisions. Not what im doing here. pff..
+
+For shopify i need:
+- external product.
+- the collect.
+
+For prestashop i need
+- the product.
+- the categories..  not sure if they are included directly in the rpoduct for example.
+- the image
+
+All this data is first dumped in a json object.. let js intelisense to format everything.. in a .json file or in a .js file..
+
+then i reuse this later every time i need to check out something.
+Knowing what do do in each particular situation that i get overwelmed in my bigest problem. I get decision overload..
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
 22 august 2018
 
 Take products form shopify and push them in firebase.
