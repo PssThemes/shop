@@ -82,6 +82,7 @@ async function prestashop_getProductIds(){
   const targetUrl = 'https://ecom.pssthemes.com/prestashop/api/products/?output_format=JSON';
   let ids = [];
   let result;
+
   try{
     result  = await request.get(targetUrl, {}).auth(apiPrestashopKey);
   }catch(err){
@@ -92,6 +93,7 @@ async function prestashop_getProductIds(){
     ids = result.products.map(x => x.id);
     return ids;
   }
+
 }
 
 
