@@ -38,7 +38,7 @@ And using that i can later load externalCatIds form inside the collects.
 The aboive is for shopify..
 
 But for prestashop is different.
-I can have the external cat ids directly form the first call into the products.. whihc means i can use the decoder to do that.
+I can have the external cat ids directly form the first call into the products.. which means i can use the decoder to do that.
 Which is good since i dont need to do a specialized step later.
 
 Problem with this approach is that im using a shared interface.. called a normalized product... but in reality i need 2.
