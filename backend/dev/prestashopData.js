@@ -26,6 +26,8 @@ const targetUrl = 'https://ecom.pssthemes.com/prestashop/api/categories/?display
 
 request.get(targetUrl, {}).auth(apiPrestashopKey)
   .then(result => {
+
+    // TODO:  Make sure to include .categories since the object returned is a werapper around the categories..
     console.log("categories: ", JSON.parse(result));
 
   })
@@ -57,25 +59,46 @@ const exampleCategory =
        meta_title: '',
        meta_description: '',
        meta_keywords: '',
-       associations: [Object]
+
+       // Not sure whats up with this asoications..
+       associations: [ { id: '2' } ]
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // // Products.
 ////////////////////////////////////////////////////////////////////////////////////////////////
+// NOT USED JUST FOR REFERENCE>>
+// async function prestashop_getProductIds(){
+//   const request = require("request-promise-native");
+//   const apiPrestashopKey = "R21PLEPZI2H4KAXQ4RPG1FELYEI17GYI";
+//   const targetUrl = 'https://ecom.pssthemes.com/prestashop/api/products/?output_format=JSON';
+//   let ids = [];
+//   let result;
+//   try{
+//     result  = await request.get(targetUrl, {}).auth(apiPrestashopKey);
+//   }catch(err){
+//     console.log("seems we have an error with loading the products, eror is: ");
+//     console.log(err);
+//   }finally{
+//     result = JSON.parse(result);
+//     ids = result.products.map(x => x.id);
+//     return ids;
+//   }
+// }
 
-// const request = require("request-promise-native");
-// const apiPrestashopKey = "R21PLEPZI2H4KAXQ4RPG1FELYEI17GYI";
-// const targetUrl = 'https://ecom.pssthemes.com/prestashop/api/products/?display=full&output_format=JSON';
-//
-// request.get(targetUrl, {}).auth(apiPrestashopKey)
-//   .then(result => {
-//     console.log("products: ", JSON.parse(result));
-//   })
-//   .catch(err => {
-//     console.log("error: ", err);
-//   })
-//
+
+const request = require("request-promise-native");
+const apiPrestashopKey = "R21PLEPZI2H4KAXQ4RPG1FELYEI17GYI";
+const targetUrl = 'https://ecom.pssthemes.com/prestashop/api/products/?display=full&output_format=JSON';
+
+request.get(targetUrl, {}).auth(apiPrestashopKey)
+  .then(result => {
+    console.log("products: ", JSON.parse(result));
+  })
+  .catch(err => {
+    console.log("error: ", err);
+  })
+
 
 
 // // Normalized product..
