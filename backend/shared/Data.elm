@@ -20,8 +20,9 @@ import Json.Encode as JE
 import EverySet exposing (EverySet)
 
 
+-- #region Settings
 -----------------------------------------------------------------
--- Settings
+--  Settings
 -----------------------------------------------------------------
 
 
@@ -71,6 +72,9 @@ settingsDecoder =
 
 
 
+-- #endregion Settings
+--
+-- #region Internal Categories
 -----------------------------------------------------------------
 -- Internal Categories
 -----------------------------------------------------------------
@@ -125,6 +129,9 @@ asociationDecoder =
 
 
 
+-- #endregion Internal Categories
+--
+-- #region External Categories
 -----------------------------------------------------------------
 -- External Categories
 -----------------------------------------------------------------
@@ -150,6 +157,9 @@ shopifyCollectsDecoder =
 
 
 
+-- #endregion External Categories
+--
+-- #region Shop name
 -----------------------------------------------------------------
 -- Shop name
 -----------------------------------------------------------------
@@ -188,6 +198,9 @@ shopNameEncoder shopName =
 
 
 
+-- #endregion External Categories
+--
+-- #region Internal Products
 -----------------------------------------------------------------
 -- Internal Products
 -----------------------------------------------------------------
@@ -222,6 +235,9 @@ type alias InternalProduct =
 
 
 
+-- #endregion Internal Products
+--
+-- #region External Product Id
 -----------------------------------------------------------------
 -- External Products
 -----------------------------------------------------------------
@@ -236,7 +252,7 @@ type alias RawShopifyProduct =
     , title : String
     , body_html : String
     , images : List { src : String }
-    , image : { src : String }
+    , image : Maybe { src : String }
     , variants : List { price : String }
     }
 
@@ -256,7 +272,7 @@ type alias RawPrestashopProduct =
 
 type alias NormalizedProduct =
     { externalId : ExternalProductId
-    , internalCatIds : EverySet InternalCatId
+    , externalCatIds : EverySet ExternalCatId
 
     --
     , name : String
@@ -280,12 +296,12 @@ rawRawShopifyProductsDecoder =
 rawRawShopifyProductDecoder : JD.Decoder RawShopifyProduct
 rawRawShopifyProductDecoder =
     JDP.decode
-        (\id title body_html images image variants ->
+        (\id title body_html images maybe_image variants ->
             { id = id
             , title = title
             , body_html = body_html
             , images = images
-            , image = image
+            , image = maybe_image
             , variants = variants
             }
         )
@@ -293,7 +309,7 @@ rawRawShopifyProductDecoder =
         |> JDP.required "title" (JD.string)
         |> JDP.required "body_html" (JD.string)
         |> JDP.required "images" (JD.list (JD.field "src" JD.string |> JD.map (\src -> { src = src })))
-        |> JDP.required "image" ((JD.field "src" JD.string |> JD.map (\src -> { src = src })))
+        |> JDP.optional "image" ((JD.field "src" JD.string |> JD.map (\src -> Just { src = src }))) Nothing
         |> JDP.required "variants" (JD.list (JD.field "price" JD.string |> JD.map (\price -> { price = price })))
 
 
@@ -325,10 +341,74 @@ rawPrestashopProductDecoder =
         |> JDP.requiredAt [ "associations", "categories" ] (JD.list (JD.field "id" JD.string |> JD.map (\id -> { id = id })))
         |> JDP.requiredAt [ "associations", "images" ] (JD.list (JD.field "id" JD.string |> JD.map (\id -> { id = id })))
 
+
+
+-- #endregion External Product Id
+--
+-- #region Transformer constructs
 -----------------------------------------------------------------
 -- Transformer constructs
 -----------------------------------------------------------------
+--
+--
+-- EverySet InternalCatId
 
-transformRawShopifyProduct: RawShopifyProduct -> List ExternalCatId ->  NormalizedProduct
+
+transformRawShopifyProduct : RawShopifyProduct -> List ExternalCatId -> NormalizedProduct
 transformRawShopifyProduct rawProduct externalCats =
-  
+    let
+        getShortDescription : String -> String
+        getShortDescription description =
+            String.left 300 description
+    in
+        { externalId = ExternalProductId (toString rawProduct.id)
+        , externalCatIds = EverySet.fromList externalCats
+
+        --
+        , name = rawProduct.title
+        , price =
+            rawProduct.variants
+                |> List.head
+                |> Maybe.map (\obj -> obj |> .price >> String.toFloat)
+                |> Maybe.map (Result.withDefault 0)
+                |> Maybe.withDefault 0
+
+        --
+        , short_description = getShortDescription rawProduct.body_html
+        , description = rawProduct.body_html
+
+        --
+        , mainImage = rawProduct.image |> Maybe.map (\obj -> .src obj)
+        , media = List.map .src rawProduct.images
+        }
+
+
+
+-- rawProduct
+-- type alias RawShopifyProduct =
+--     { id : Int
+--     , title : String
+--     , body_html : String
+--     , images : List { src : String }
+--     , image : { src : String }
+--     , variants : List { price : String }
+--     }
+--
+--
+--
+-- { externalId : ExternalProductId
+-- , internalCatIds : EverySet InternalCatId
+--
+-- --
+-- , name : String
+-- , price : Float
+--
+-- --
+-- , short_description : String
+-- , description : String
+--
+-- --
+-- , mainImage : Maybe String
+-- , media : List String
+-- }
+-- #endregion Transformer constructs
