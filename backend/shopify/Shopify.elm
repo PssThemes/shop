@@ -42,7 +42,7 @@ type alias Model =
     { settings : Maybe Settings
     , internalCategories : Maybe (EveryDict InternalCatId InternalCategory)
     , internalProducts : Maybe (EveryDict InternalProductId InternalProduct)
-    , externalProducts : Maybe (EveryDict ExternalProductId NormalizedProduct)
+    , rawShopifyProducts : Maybe (List RawShopifyProduct)
     , shopifyCollects : Maybe (List ( ExternalCatId, ExternalProductId ))
     }
 
@@ -52,7 +52,7 @@ init =
     ( { settings = Nothing
       , internalCategories = Nothing
       , internalProducts = Nothing
-      , externalProducts = Nothing
+      , rawShopifyProducts = Nothing
       , shopifyCollects = Nothing
       }
     , []
@@ -65,7 +65,7 @@ type Msg
     | ReceivedSettings Settings
     | ReceivedInternalCategories (EveryDict InternalCatId InternalCategory)
     | ReceivedInternalProducts (EveryDict InternalProductId InternalProduct)
-    | ReceivedNormalizedProducts (EveryDict ExternalProductId NormalizedProduct)
+    | ReceivedRawProducts (List RawShopifyProduct)
     | ReceivedShopifyCollects (List ( ExternalCatId, ExternalProductId ))
     | DecodingError String
     | Work
@@ -107,7 +107,7 @@ update msg model =
             in
                 { model | internalProducts = Just internalProducts } => [ selfCall Work ]
 
-        ReceivedNormalizedProducts normalizedProducts ->
+        ReceivedRawProducts normalizedProducts ->
             { model | externalProducts = Just normalizedProducts }
                 => [ selfCall Work ]
 
@@ -190,7 +190,7 @@ update msg model =
                                 |> Debug.log "updatedProducts: "
                     in
                         model
-                            => [ Logic.saveToFirebase deletedProducts createdProducts updatedProducts oneExtProductToManyExtCats
+                            => [-- Logic.saveToFirebase deletedProducts createdProducts updatedProducts oneExtProductToManyExtCats
                                ]
                 )
                 model.settings
@@ -252,9 +252,9 @@ subscriptions model =
         )
     , Ports.received_ExternalProducts
         (\value ->
-            case JD.decodeValue normalizedProductsDecoder value of
-                Ok normalizedProducts ->
-                    ReceivedNormalizedProducts normalizedProducts
+            case JD.decodeValue rawRawShopifyProductsDecoder value of
+                Ok rawShopifyProducts ->
+                    ReceivedRawProducts rawShopifyProducts
 
                 Err error ->
                     DecodingError error

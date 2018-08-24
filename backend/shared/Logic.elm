@@ -2,10 +2,7 @@ module Logic exposing (..)
 
 import Data exposing (..)
 import EveryDict exposing (..)
-
-
--- import Json.Encode as JE
-
+import Json.Encode as JE
 import EveryDict exposing (EveryDict)
 
 
@@ -108,43 +105,89 @@ ensureItRelyNeedsUpdating internalProducts oneExtProductToManyExtCats ( internal
     True
 
 
+
+-- #region Prepare Data for Firebase
+
+
 saveToFirebase :
     ShopName
     -> List InternalProductId
     -> List NormalizedProduct
     -> List ( InternalProductId, NormalizedProduct )
     -> EveryDict ExternalProductId (EverySet ExternalCatId)
+    -> EveryDict ExternalCatId (EverySet InternalCatId)
     -> Cmd msg
-saveToFirebase shopName deleted created updated oneExtProductToManyExtCats =
+saveToFirebase shopName deleted created updated oneExtProductToManyExtCats oneExternalCatIdToManyInternalCatIds =
     let
         _ =
             Debug.log "saveToFirebase: " saveToFirebase
-    in
-        { deleted =
+
+        deleted_ =
             deleted
                 |> List.map (\(InternalProductId id) -> id)
-        , created =
-            created
-                |> List.map (newlyCreatedProductEncoder shopName)
-        , updated =
-            updated
-                |> List.map
-                    (\( InternalProductId id, normalizedProduct ) ->
-                        let
-                            externalCatIds =
-                                case EveryDict.get normalizedProduct.externalId oneExtProductToManyExtCats of
-                                    Nothing ->
-                                        EverySet.empty
 
-                                    Just set ->
-                                        set
-                        in
-                            { id = id
-                            , fieldsToUpdate = updatableProductDataEncoder normalizedProduct externalCatIds
-                            }
+        created_ =
+            created
+                |> List.map (createNewProduct shopName oneExternalCatIdToManyInternalCatIds)
+                |> removeNothings
+                |> List.map newlyCreatedProductEncoder
+
+        updated_ =
+            updated
+                |> List.map (Tuple.mapSecond extractFieldsToUpdate)
+                |> List.map (Tuple.mapSecond fieldsToUpdateEncoder)
+                |> List.map
+                    (\( InternalProductId id, fieldsToUpdate ) ->
+                        { firebaseKey = id
+                        , fieldsToUpdate = fieldsToUpdate
+                        }
                     )
+    in
+        { deleted = deleted_
+        , created = created_
+        , updated = updated_
         }
             |> Ports.saveToFirebase
+
+
+createNewProduct : ShopName -> EveryDict ExternalCatId (EverySet InternalCatId) -> NormalizedProduct -> Maybe NewlyCreatedProduct
+createNewProduct shopName oneExternalCatIdToManyInternalCatIds nProduct =
+    nProduct.externalCatIds
+        |> EverySet.map (\catId -> EveryDict.get catId oneExternalCatIdToManyInternalCatIds)
+        |> EverySet.toList
+        |> removeNothings
+        |> EverySet.fromList
+        |> EverySet.foldl (\item acc -> EverySet.union acc item) EverySet.empty
+        |> (\internalCatIds ->
+                Just
+                    { shopName = shopName
+                    , externalId = nProduct.externalId
+                    , name = nProduct.name
+                    , short_description = nProduct.short_description
+                    , price = nProduct.price
+                    , externalCatIds = nProduct.externalCatIds
+                    , internalCatIds = internalCatIds
+                    , mainImage = nProduct.mainImage
+                    , media = nProduct.media
+                    , isHidden = False
+                    , howManyTimesWasOrdered = 0
+                    }
+           )
+
+
+extractFieldsToUpdate : NormalizedProduct -> FieldsToUpdate
+extractFieldsToUpdate nProduct =
+    { name = nProduct.name
+    , short_description = nProduct.short_description
+    , price = nProduct.price
+    , externalCatIds = nProduct.externalCatIds
+    , mainImage = nProduct.mainImage
+    , media = nProduct.media
+    }
+
+
+
+-- #endregion Prepare Data for Firebase
 
 
 getExternalCategoriesFromFirebase :

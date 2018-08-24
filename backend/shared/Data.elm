@@ -1,10 +1,7 @@
 module Data exposing (..)
 
 import Json.Decode as JD
-
-
--- import Dict exposing (Dict)
-
+import Dict exposing (Dict)
 import EveryDict exposing (EveryDict)
 
 
@@ -12,9 +9,9 @@ import EveryDict exposing (EveryDict)
 
 import Json.Decode.Pipeline as JDP
 import Json.Encode as JE
+import Rocket exposing ((=>))
 
 
--- import Rocket exposing ((=>))
 -- import Set exposing (Set)
 
 import EverySet exposing (EverySet)
@@ -234,10 +231,152 @@ type alias InternalProduct =
     }
 
 
+internalProductDecoder : JD.Decoder InternalProduct
+internalProductDecoder =
+    JDP.decode
+        (\selfId shopName externalId name short_description price externalCatIds internalCatIds mainImage media isHidden howManyTimesWasOrdered ->
+            { selfId = InternalProductId selfId
+
+            -- external identification.
+            , shopName = shopName
+            , externalId = ExternalProductId externalId
+            , name = name
+            , short_description = short_description
+            , price = price
+
+            --
+            , externalCatIds =
+                externalCatIds
+                    |> Dict.toList
+                    |> List.map (Tuple.second >> ExternalCatId)
+                    |> EverySet.fromList
+            , internalCatIds =
+                internalCatIds
+                    |> Dict.toList
+                    |> List.map (Tuple.second >> InternalCatId)
+                    |> EverySet.fromList
+
+            --
+            , mainImage = mainImage
+            , media = media
+
+            --
+            , isHidden = isHidden
+            , howManyTimesWasOrdered = howManyTimesWasOrdered
+            }
+        )
+        |> JDP.required "selfId" JD.string
+        |> JDP.required "shopName" shopNameDecoder
+        |> JDP.required "externalId" JD.string
+        |> JDP.required "name" JD.string
+        |> JDP.required "short_description" JD.string
+        |> JDP.required "price" JD.float
+        |> JDP.required "externalCatIds" (JD.dict JD.string)
+        |> JDP.required "internalCatIds" (JD.dict JD.string)
+        |> JDP.optional "mainImage" (JD.string |> JD.map Just) Nothing
+        |> JDP.required "media" (JD.list JD.string)
+        |> JDP.required "isHidden" (JD.bool)
+        |> JDP.required "howManyTimesWasOrdered" (JD.int)
+
+
 
 -- #endregion Internal Products
 --
--- #region External Product Id
+-- #region Data we send in firebase
+
+
+type alias NewlyCreatedProduct =
+    { -- external identification.
+      shopName : ShopName
+    , externalId : ExternalProductId
+    , name : String
+    , short_description : String
+    , price : Float
+
+    --
+    , externalCatIds : EverySet ExternalCatId
+    , internalCatIds : EverySet InternalCatId
+
+    --
+    , mainImage : Maybe String
+    , media : List String
+
+    --
+    , isHidden : Bool
+    , howManyTimesWasOrdered : Int
+    }
+
+
+newlyCreatedProductEncoder : NewlyCreatedProduct -> JE.Value
+newlyCreatedProductEncoder newlyCreatedProduct =
+    [ "shopName" => (shopNameEncoder newlyCreatedProduct.shopName)
+    , "externalId" => (newlyCreatedProduct.externalId |> (\(ExternalProductId id) -> JE.string id))
+    , "name" => (newlyCreatedProduct.name |> JE.string)
+    , "short_description" => (newlyCreatedProduct.short_description |> JE.string)
+    , "price" => (newlyCreatedProduct.price |> JE.float)
+    , "externalCatIds"
+        => (newlyCreatedProduct.externalCatIds
+                |> EverySet.map (\(ExternalCatId id) -> JE.string id)
+                |> EverySet.toList
+                |> JE.list
+           )
+    , "internalCatIds"
+        => (newlyCreatedProduct.internalCatIds
+                |> EverySet.map (\(InternalCatId id) -> JE.string id)
+                |> EverySet.toList
+                |> JE.list
+           )
+    , "mainImage" => (newlyCreatedProduct.mainImage |> Maybe.map JE.string |> Maybe.withDefault JE.null)
+    , "media"
+        => (newlyCreatedProduct.media
+                |> List.map JE.string
+                |> JE.list
+           )
+    , "isHidden" => (JE.bool newlyCreatedProduct.isHidden)
+    , "howManyTimesWasOrdered" => (JE.int newlyCreatedProduct.howManyTimesWasOrdered)
+    ]
+        |> JE.object
+
+
+type alias FieldsToUpdate =
+    { name : String
+    , short_description : String
+    , price : Float
+
+    --
+    , externalCatIds : EverySet ExternalCatId
+
+    --
+    , mainImage : Maybe String
+    , media : List String
+    }
+
+
+fieldsToUpdateEncoder : FieldsToUpdate -> JE.Value
+fieldsToUpdateEncoder fieldsToUpdate =
+    [ "name" => (fieldsToUpdate.name |> JE.string)
+    , "short_description" => (fieldsToUpdate.short_description |> JE.string)
+    , "price" => (fieldsToUpdate.price |> JE.float)
+    , "externalCatIds"
+        => (fieldsToUpdate.externalCatIds
+                |> EverySet.map (\(ExternalCatId id) -> JE.string id)
+                |> EverySet.toList
+                |> JE.list
+           )
+    , "mainImage" => (fieldsToUpdate.mainImage |> Maybe.map JE.string |> Maybe.withDefault JE.null)
+    , "media"
+        => (fieldsToUpdate.media
+                |> List.map JE.string
+                |> JE.list
+           )
+    ]
+        |> JE.object
+
+
+
+-- #endregion Data we send in firebase
+--
+-- #region External Products
 -----------------------------------------------------------------
 -- External Products
 -----------------------------------------------------------------
@@ -286,6 +425,10 @@ type alias NormalizedProduct =
     , mainImage : Maybe String
     , media : List String
     }
+
+
+
+-- Decoders
 
 
 rawRawShopifyProductsDecoder : JD.Decoder (List RawShopifyProduct)
@@ -343,7 +486,7 @@ rawPrestashopProductDecoder =
 
 
 
--- #endregion External Product Id
+-- #endregion External Products
 --
 -- #region Transformer constructs
 -----------------------------------------------------------------
