@@ -383,32 +383,27 @@ transformRawShopifyProduct rawProduct externalCats =
         }
 
 
+transformRawPrestashopProduct : RawPrestashopProduct -> NormalizedProduct
+transformRawPrestashopProduct rawProduct =
+    { externalId = rawProduct.id |> toString >> ExternalProductId
+    , externalCatIds =
+        rawProduct.associations.categories
+            |> List.map (.id >> ExternalCatId)
+            |> EverySet.fromList
 
--- rawProduct
--- type alias RawShopifyProduct =
---     { id : Int
---     , title : String
---     , body_html : String
---     , images : List { src : String }
---     , image : { src : String }
---     , variants : List { price : String }
---     }
---
---
---
--- { externalId : ExternalProductId
--- , internalCatIds : EverySet InternalCatId
---
--- --
--- , name : String
--- , price : Float
---
--- --
--- , short_description : String
--- , description : String
---
--- --
--- , mainImage : Maybe String
--- , media : List String
--- }
+    --
+    , name = rawProduct.name
+    , price = rawProduct.price |> String.toFloat |> Result.withDefault 0
+
+    --
+    , short_description = rawProduct.description_short
+    , description = rawProduct.description
+
+    --
+    , mainImage = rawProduct.associations.images |> List.head |> Maybe.map .id
+    , media = rawProduct.associations.images |> List.map .id
+    }
+
+
+
 -- #endregion Transformer constructs
