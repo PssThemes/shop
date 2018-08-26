@@ -8280,9 +8280,18 @@ var _user$project$Shopify$update = F2(
 											_elm_lang$core$Debug$log,
 											'externalCategoriesIdsFormFirebase: ',
 											A2(_user$project$Logic$getExternalCategoriesFromFirebase, internalCategories, _user$project$Data$Shopify));
-										var relevantProducts = A2(
-											_elm_lang$core$Debug$log,
-											'relevantProducts: ',
+										var relevantProducts = function (x) {
+											var howMany = A3(
+												_eeue56$elm_all_dict$EveryDict$foldl,
+												F3(
+													function (k, v, acc) {
+														return acc + 1;
+													}),
+												0,
+												x);
+											var _p10 = A2(_elm_lang$core$Debug$log, 'relevantProducts: ', howMany);
+											return x;
+										}(
 											A3(_user$project$Logic$getRelevantProducts, oneExtCatToManyExtProducts, externalCategoriesIdsFormFirebase, externalProducts));
 										var createdProducts = _user$project$Logic$removeNothings(
 											_Gizra$elm_all_set$EverySet$toList(
@@ -8303,16 +8312,16 @@ var _user$project$Shopify$update = F2(
 														A2(
 															_Gizra$elm_all_set$EverySet$map,
 															function (externalProductId) {
-																return function (_p10) {
-																	var _p11 = _p10;
+																return function (_p11) {
+																	var _p12 = _p11;
 																	return A3(
 																		_elm_lang$core$Maybe$map2,
 																		F2(
 																			function (v0, v1) {
 																				return {ctor: '_Tuple2', _0: v0, _1: v1};
 																			}),
-																		_p11._1,
-																		_p11._0);
+																		_p12._1,
+																		_p12._0);
 																}(
 																	{
 																		ctor: '_Tuple2',
@@ -8352,62 +8361,62 @@ var _user$project$Shopify$subscriptions = function (model) {
 		{
 			ctor: '::',
 			_0: _user$project$Ports$start(
-				function (_p12) {
+				function (_p13) {
 					return _user$project$Shopify$Start;
 				}),
 			_1: {
 				ctor: '::',
 				_0: _user$project$Ports$received_settings(
 					function (value) {
-						var _p13 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$settingsDecoder, value);
-						if (_p13.ctor === 'Ok') {
-							return _user$project$Shopify$ReceivedSettings(_p13._0);
+						var _p14 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$settingsDecoder, value);
+						if (_p14.ctor === 'Ok') {
+							return _user$project$Shopify$ReceivedSettings(_p14._0);
 						} else {
-							return _user$project$Shopify$DecodingError(_p13._0);
+							return _user$project$Shopify$DecodingError(_p14._0);
 						}
 					}),
 				_1: {
 					ctor: '::',
 					_0: _user$project$Ports$received_internalCategories(
 						function (value) {
-							var _p14 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$internalCategoriesDecoder, value);
-							if (_p14.ctor === 'Ok') {
-								return _user$project$Shopify$ReceivedInternalCategories(_p14._0);
+							var _p15 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$internalCategoriesDecoder, value);
+							if (_p15.ctor === 'Ok') {
+								return _user$project$Shopify$ReceivedInternalCategories(_p15._0);
 							} else {
-								return _user$project$Shopify$DecodingError(_p14._0);
+								return _user$project$Shopify$DecodingError(_p15._0);
 							}
 						}),
 					_1: {
 						ctor: '::',
 						_0: _user$project$Ports$received_InternalProducts(
 							function (value) {
-								var _p15 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$internalProductsDecoder, value);
-								if (_p15.ctor === 'Ok') {
-									return _user$project$Shopify$ReceivedInternalProducts(_p15._0);
+								var _p16 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$internalProductsDecoder, value);
+								if (_p16.ctor === 'Ok') {
+									return _user$project$Shopify$ReceivedInternalProducts(_p16._0);
 								} else {
-									return _user$project$Shopify$DecodingError(_p15._0);
+									return _user$project$Shopify$DecodingError(_p16._0);
 								}
 							}),
 						_1: {
 							ctor: '::',
 							_0: _user$project$Ports$received_ExternalProducts(
 								function (value) {
-									var _p16 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$normalizedProductsDecoder, value);
-									if (_p16.ctor === 'Ok') {
-										return _user$project$Shopify$ReceivedNormalizedProducts(_p16._0);
+									var _p17 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$normalizedProductsDecoder, value);
+									if (_p17.ctor === 'Ok') {
+										return _user$project$Shopify$ReceivedNormalizedProducts(_p17._0);
 									} else {
-										return _user$project$Shopify$DecodingError(_p16._0);
+										return _user$project$Shopify$DecodingError(_p17._0);
 									}
 								}),
 							_1: {
 								ctor: '::',
 								_0: _user$project$Ports$received_Collects(
 									function (value) {
-										var _p17 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$shopifyCollectsDecoder, value);
-										if (_p17.ctor === 'Ok') {
-											return _user$project$Shopify$ReceivedShopifyCollects(_p17._0);
+										var _p18 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$shopifyCollectsDecoder, value);
+										if (_p18.ctor === 'Ok') {
+											return _user$project$Shopify$ReceivedShopifyCollects(_p18._0);
 										} else {
-											return _user$project$Shopify$DecodingError(_p17._0);
+											return _user$project$Shopify$DecodingError(_p18._0);
 										}
 									}),
 								_1: {ctor: '[]'}
@@ -8421,9 +8430,9 @@ var _user$project$Shopify$subscriptions = function (model) {
 var _user$project$Shopify$main = _elm_lang$core$Platform$program(
 	{
 		init: _NoRedInk$rocket_update$Rocket$batchInit(_user$project$Shopify$init),
-		update: function (_p18) {
+		update: function (_p19) {
 			return _NoRedInk$rocket_update$Rocket$batchUpdate(
-				_user$project$Shopify$update(_p18));
+				_user$project$Shopify$update(_p19));
 		},
 		subscriptions: _user$project$Shopify$subscriptions
 	})();
