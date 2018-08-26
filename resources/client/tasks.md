@@ -2,6 +2,102 @@
 ===============================================================================================================================
 ===============================================================================================================================
 ===============================================================================================================================
+24 august 2018
+
+Shopify.
+- update the ports. DONE.
+- need to ensure i get raw products in subscriptions..
+- need to update the messages to include raw products instead of normalized products.
+- once the collects are in.. transform the raw products in normalzied products.
+- then vefiy that all the rest of the code is working.
+
+
+
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+23 august 2018
+
+So much of this is how you approach it.
+I need to take out all important json objects for Shopify.
+I need to take out all important json objects for Preshashop.
+
+Reason beeing.. i constantly need to recheck if some json field is there or not..
+The correct approach would be to just interogate the api.. take by copy paste whaty the json structure is..
+what is expectedf for me to get in different situations..
+
+Make fake data based on that.
+
+And then use this fake data to make architecutre driven decisions. Not what im doing here. pff..
+
+For shopify i need:
+- external product.
+- the collect.
+
+For prestashop i need
+- the product.
+- the categories..  not sure if they are included directly in the rpoduct for example.
+- the image
+
+All this data is first dumped in a json object.. let js intelisense to format everything.. in a .json file or in a .js file..
+
+then i reuse this later every time i need to check out something.
+Knowing what do do in each particular situation that i get overwelmed in my bigest problem. I get decision overload..
+
+DONE.
+
+Need to thing if to include externalCatIds as a field on normalized product.. given that shopify does not provide the ids of categories in the request of product..
+So what i can do is to createa na empty list..
+And using that i can later load externalCatIds form inside the collects.
+The aboive is for shopify..
+
+But for prestashop is different.
+I can have the external cat ids directly form the first call into the products.. which means i can use the decoder to do that.
+Which is good since i dont need to do a specialized step later.
+
+Problem with this approach is that im using a shared interface.. called a normalized product... but in reality i need 2.
+One for raw shopify product.
+And one for normalized Shopify product.
+
+Which means.. all data that i can exteract from the first call.. is a raw thing..
+All subsequent stuff .. like more async calls.. are done in some temporary struct in the model..
+SO that at the end i get the proper normalized product.
+
+
+For prestashop i can do it in 1 go..
+But also if later we add more shops.. if i dont clearly .. or cleanly separate this 2.. i will get a bunch of problems..
+
+From a cs perspective.. i rely need a clean separation .. an interface between the api call and the end normalized product struct..
+
+But this means another specialized step for converting from raw in normalzied.
+But fortunately this step is syncronic..since by the time we have the collects.. we also have the raw prodcuts..
+SO the normalized product can easily be obtained.
+
+
+This way the processing logic trapped in the decoder disappears..
+The raw product will map very closely the same structure the json has in the api call..
+
+Problem here can be the fact that objects can contain ids as keys.. but we have dic decoders which work wonders for that specific purpose.
+I did not use a dict decoder until now...
+
+this step of converting the raw in normalized product.. will take as agruments all the required stuff..
+
+
+By the time we have normalzied products..
+All functionality for all fucntions is the same.
+Since it operates on the same datastructure.
+Long description will be included there also.
+
+This way our decoders are light.. and you can easily change the code in case the api for shopify changes in the background.. or you need more fields or something..
+Separation of concerns.. and this loose coupling will enable me to add things later more easily..
+
+But indeed is more work to create this extra step.
+
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
 22 august 2018
 
 Take products form shopify and push them in firebase.

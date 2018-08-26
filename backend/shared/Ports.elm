@@ -1,8 +1,6 @@
 port module Ports exposing (..)
 
-import Data exposing (..)
-
-
+-- import Data exposing (..)
 -- import Dict exposing (Dict)
 
 import Json.Decode as JD
@@ -13,7 +11,20 @@ import Json.Decode as JD
 import Json.Encode as JE
 
 
-port saveToFirebase : { deleted : List String, created : List JE.Value, updated : List { id : String, fieldsToUpdate : JE.Value } } -> Cmd msg
+type alias FirebasePushKey =
+    String
+
+
+port saveToFirebase :
+    { deleted : List FirebasePushKey
+    , created : List JE.Value
+    , updated :
+        List
+            { firebaseKey : FirebasePushKey
+            , fieldsToUpdate : JE.Value
+            }
+    }
+    -> Cmd msg
 
 
 port finish : () -> Cmd msg
