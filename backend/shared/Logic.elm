@@ -2,7 +2,10 @@ module Logic exposing (..)
 
 import Data exposing (..)
 import EveryDict exposing (..)
-import Json.Encode as JE
+
+
+-- import Json.Encode as JE
+
 import EveryDict exposing (EveryDict)
 
 
@@ -205,22 +208,16 @@ getExternalCategoriesFromFirebase internalCategories shopName =
                     Prestashop ->
                         cat.prestashop
             )
-        |> EveryDict.foldl
-            (\k list acc ->
-                list
-                    |> List.foldl
-                        (\( externalCatId, _ ) acc ->
-                            EverySet.insert externalCatId acc
-                        )
-                        acc
-            )
-            EverySet.empty
+        |> EveryDict.toList
+        |> EverySet.fromList
+        |> EverySet.map (Tuple.second >> (List.map Tuple.first) >> EverySet.fromList)
+        |> EverySet.foldl (\externalCatIds acc -> EverySet.union externalCatIds acc) EverySet.empty
 
 
-extractAsociations :
+extractCategoryProductAsociations :
     List ( ExternalCatId, ExternalProductId )
     -> ( EveryDict ExternalCatId (EverySet ExternalProductId), EveryDict ExternalProductId (EverySet ExternalCatId) )
-extractAsociations mappings =
+extractCategoryProductAsociations mappings =
     mappings
         |> List.foldl
             (\( externalCatId, externalProductId ) ( acc1, acc2 ) ->
@@ -229,6 +226,56 @@ extractAsociations mappings =
                 )
             )
             ( EveryDict.empty, EveryDict.empty )
+
+
+extractCateogoryToCategoryAssociations :
+    ShopName
+    -> EveryDict InternalCatId InternalCategory
+    -> ( EveryDict ExternalCatId (EverySet InternalCatId), EveryDict InternalCatId (EverySet ExternalCatId) )
+extractCateogoryToCategoryAssociations shopName internalCats =
+    let
+        getExtCatIds : InternalCategory -> EverySet ExternalCatId
+        getExtCatIds internalCat =
+            (case shopName of
+                Shopify ->
+                    internalCat.shopify
+
+                Prestashop ->
+                    internalCat.prestashop
+            )
+                |> List.map Tuple.first
+                |> EverySet.fromList
+    in
+        internalCats
+            |> EveryDict.foldl
+                (\internalCatId internalCat (( oneExtCatToManyIntCats, oneIntToManyExtCats ) as totalAcc) ->
+                    let
+                        externalCatIds =
+                            getExtCatIds internalCat
+
+                        acc1 : EveryDict ExternalCatId (EverySet InternalCatId)
+                        acc1 =
+                            externalCatIds
+                                |> EverySet.foldl
+                                    (\extCatId acc ->
+                                        acc
+                                            |> updateOrInsert extCatId internalCat.selfId
+                                    )
+                                    oneExtCatToManyIntCats
+
+                        acc2 : EveryDict InternalCatId (EverySet ExternalCatId)
+                        acc2 =
+                            externalCatIds
+                                |> EverySet.foldl
+                                    (\extCatId acc ->
+                                        acc
+                                            |> updateOrInsert internalCatId extCatId
+                                    )
+                                    oneIntToManyExtCats
+                    in
+                        ( acc1, acc2 )
+                )
+                ( EveryDict.empty, EveryDict.empty )
 
 
 updateOrInsert :
@@ -298,15 +345,13 @@ getRelevantProducts oneExtCatToManyExtProducts externalCategoriesIdsFormFirebase
 getExternalProductIdsFromFirebase : EveryDict InternalProductId InternalProduct -> EverySet ExternalProductId
 getExternalProductIdsFromFirebase internalProducts =
     internalProducts
-        |> EveryDict.foldl
-            (\id internalProduct acc ->
-                EverySet.insert internalProduct.externalId acc
-            )
-            EverySet.empty
+        |> EveryDict.toList
+        |> List.map (Tuple.second >> .externalId)
+        |> EverySet.fromList
 
 
-getExternalProductsIdsFromShopify : EveryDict ExternalProductId NormalizedProduct -> EverySet ExternalProductId
-getExternalProductsIdsFromShopify externalProducts =
+getExternalProductsIdsFromShop : EveryDict ExternalProductId NormalizedProduct -> EverySet ExternalProductId
+getExternalProductsIdsFromShop externalProducts =
     externalProducts
         |> EveryDict.foldl (\id product acc -> EverySet.insert product.externalId acc) EverySet.empty
 

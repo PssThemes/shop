@@ -497,7 +497,7 @@ rawPrestashopProductDecoder =
 -- EverySet InternalCatId
 
 
-transformRawShopifyProduct : RawShopifyProduct -> List ExternalCatId -> NormalizedProduct
+transformRawShopifyProduct : RawShopifyProduct -> EverySet ExternalCatId -> NormalizedProduct
 transformRawShopifyProduct rawProduct externalCats =
     let
         getShortDescription : String -> String
@@ -505,7 +505,7 @@ transformRawShopifyProduct rawProduct externalCats =
             String.left 300 description
     in
         { externalId = ExternalProductId (toString rawProduct.id)
-        , externalCatIds = EverySet.fromList externalCats
+        , externalCatIds = externalCats
 
         --
         , name = rawProduct.title

@@ -129,39 +129,39 @@ internalProducts =
 
 externalProducts : EveryDict ExternalProductId NormalizedProduct
 externalProducts =
-    [ ExternalProductId "externalProductId|1"
-        => { externalId = ExternalProductId "externalProductId|1"
-           , name = "external poduct 1"
-           , mainImage = Nothing
-           , price = 0
-           , description = ""
-           , media = []
-           }
-    , ExternalProductId "externalProductId|2"
-        => { externalId = ExternalProductId "externalProductId|2"
-           , name = "external poduct 2"
-           , mainImage = Nothing
-           , price = 0
-           , description = ""
-           , media = []
-           }
-    , ExternalProductId "externalProductId|3"
-        => { externalId = ExternalProductId "externalProductId|3"
-           , name = "external poduct 3"
-           , mainImage = Nothing
-           , price = 0
-           , description = ""
-           , media = []
-           }
-
-    -- , ExternalProductId "externalProductId|4"
-    --     => { externalId = ExternalProductId "externalProductId|4"
-    --        , name = "external poduct 4"
-    --        , mainImage = Nothing
-    --        , price = 0
-    --        , description = ""
-    --        , media = []
-    --        }
+    [-- ExternalProductId "externalProductId|1"
+     --     => { externalId = ExternalProductId "externalProductId|1"
+     --        , name = "external poduct 1"
+     --        , mainImage = Nothing
+     --        , price = 0
+     --        , description = ""
+     --        , media = []
+     --        }
+     -- , ExternalProductId "externalProductId|2"
+     --     => { externalId = ExternalProductId "externalProductId|2"
+     --        , name = "external poduct 2"
+     --        , mainImage = Nothing
+     --        , price = 0
+     --        , description = ""
+     --        , media = []
+     --        }
+     -- , ExternalProductId "externalProductId|3"
+     --     => { externalId = ExternalProductId "externalProductId|3"
+     --        , name = "external poduct 3"
+     --        , mainImage = Nothing
+     --        , price = 0
+     --        , description = ""
+     --        , media = []
+     --        }
+     --
+     -- -- , ExternalProductId "externalProductId|4"
+     --     => { externalId = ExternalProductId "externalProductId|4"
+     --        , name = "external poduct 4"
+     --        , mainImage = Nothing
+     --        , price = 0
+     --        , description = ""
+     --        , media = []
+     --        }
     ]
         |> EveryDict.fromList
 
@@ -184,22 +184,24 @@ stuff =
         externalProductIdsFromFirebase =
             Logic.getExternalProductIdsFromFirebase internalProducts
 
-        externalProductIdsFromShopify : EverySet ExternalProductId
-        externalProductIdsFromShopify =
-            Logic.getExternalProductsIdsFromShopify externalProducts
-
-        createdProductsIds : EverySet ExternalProductId
-        createdProductsIds =
-            Logic.getCreatedProductsIds externalProductIdsFromFirebase externalProductIdsFromShopify
-
-        deletedProductsExternalIds : EverySet ExternalProductId
-        deletedProductsExternalIds =
-            Logic.getDeletedProductsIds externalProductIdsFromFirebase externalProductIdsFromShopify
+        --
+        -- externalProductIdsFromShopify : EverySet ExternalProductId
+        -- externalProductIdsFromShopify =
+        --     Logic.getExternalProductsIdsFromShop externalProducts
+        --
+        -- createdProductsIds : EverySet ExternalProductId
+        -- createdProductsIds =
+        --     Logic.getCreatedProductsIds externalProductIdsFromFirebase externalProductIdsFromShopify
+        --
+        -- deletedProductsExternalIds : EverySet ExternalProductId
+        -- deletedProductsExternalIds =
+        --     Logic.getDeletedProductsIds externalProductIdsFromFirebase externalProductIdsFromShopify
     in
-        Logic.getPosiblyUpdatedProductsIds
-            createdProductsIds
-            deletedProductsExternalIds
-            externalProductIdsFromShopify
+        -- Logic.getPosiblyUpdatedProductsIds
+        --     createdProductsIds
+        --     deletedProductsExternalIds
+        --     externalProductIdsFromShopify
+        Logic.extractCategoryProductAsociations shopifyCollects
 
 
 
