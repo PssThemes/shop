@@ -122,9 +122,6 @@ saveToFirebase :
     -> Cmd msg
 saveToFirebase shopName deleted created updated oneExtProductToManyExtCats oneExternalCatIdToManyInternalCatIds =
     let
-        _ =
-            Debug.log "saveToFirebase: " saveToFirebase
-
         deleted_ =
             deleted
                 |> List.map (\(InternalProductId id) -> id)

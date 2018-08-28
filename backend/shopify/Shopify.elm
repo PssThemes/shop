@@ -126,7 +126,7 @@ update msg model =
                 (\settings internalCategories internalProducts rawShopifyProducts shopifyCollects ->
                     let
                         _ =
-                            Debug.log "hmm." "yes.."
+                            Debug.log "Work................................." "yes.."
 
                         externalCategoriesIdsFormFirebase : EverySet ExternalCatId
                         externalCategoriesIdsFormFirebase =
@@ -192,6 +192,7 @@ update msg model =
                         updatedProducts : List ( InternalProductId, NormalizedProduct )
                         updatedProducts =
                             Logic.getPosiblyUpdatedProductsIds createdProductsIds deletedProductsExternalIds externalProductIdsFromShop
+                                |> Debug.log "updatedProducts IDs: "
                                 |> EverySet.map
                                     (\externalProductId ->
                                         ( EveryDict.get externalProductId relevantShopProducts, Logic.findAsociatedInternalProductId externalProductId internalProducts )
@@ -200,10 +201,16 @@ update msg model =
                                 |> EverySet.toList
                                 |> Logic.removeNothings
                                 |> List.filter (Logic.ensureItRelyNeedsUpdating internalProducts oneExtProductToManyExtCats)
-                                |> Debug.log "updatedProducts: "
                     in
+                        -- saveToFirebase shopName deleted created updated oneExtProductToManyExtCats oneExternalCatIdToManyInternalCatIds
                         model
-                            => [-- Logic.saveToFirebase deletedProductsInternalIds createdProducts updatedProducts oneExtProductToManyExtCats
+                            => [ Logic.saveToFirebase
+                                    Shopify
+                                    deletedProductsInternalIds
+                                    createdProducts
+                                    updatedProducts
+                                    oneExtProductToManyExtCats
+                                    oneExtCatToManyIntCats
                                ]
                 )
                 model.settings

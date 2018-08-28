@@ -258,7 +258,7 @@ internalProductDecoder =
 
             --
             , mainImage = mainImage
-            , media = media
+            , media = media |> Maybe.withDefault []
 
             --
             , isHidden = isHidden
@@ -274,7 +274,7 @@ internalProductDecoder =
         |> JDP.required "externalCatIds" (JD.dict JD.string)
         |> JDP.required "internalCatIds" (JD.dict JD.string)
         |> JDP.optional "mainImage" (JD.string |> JD.map Just) Nothing
-        |> JDP.required "media" (JD.list JD.string)
+        |> JDP.optional "media" (JD.list JD.string |> JD.map Just) Nothing
         |> JDP.required "isHidden" (JD.bool)
         |> JDP.required "howManyTimesWasOrdered" (JD.int)
 
@@ -316,15 +316,15 @@ newlyCreatedProductEncoder newlyCreatedProduct =
     , "price" => (newlyCreatedProduct.price |> JE.float)
     , "externalCatIds"
         => (newlyCreatedProduct.externalCatIds
-                |> EverySet.map (\(ExternalCatId id) -> JE.string id)
+                |> EverySet.map (\(ExternalCatId id) -> (id => JE.string id))
                 |> EverySet.toList
-                |> JE.list
+                |> JE.object
            )
     , "internalCatIds"
         => (newlyCreatedProduct.internalCatIds
-                |> EverySet.map (\(InternalCatId id) -> JE.string id)
+                |> EverySet.map (\(InternalCatId id) -> (id => JE.string id))
                 |> EverySet.toList
-                |> JE.list
+                |> JE.object
            )
     , "mainImage" => (newlyCreatedProduct.mainImage |> Maybe.map JE.string |> Maybe.withDefault JE.null)
     , "media"

@@ -144,9 +144,20 @@ shopify.collect.list()
 // From Elm in js..
 ////////////////////////////////////////////////////////////////////////////////////
 
-ports.saveToFirebase.subscribe(stuff => {
-  console.log("saveToFirebase stuff: ", stuff);
-})
+ports.saveToFirebase.subscribe(elmData => {
+
+
+  elmData.created.map(product => {
+
+    const pushKey = db.ref("products").push().key;
+    product.selfId = pushKey;
+
+    db.ref("products").child(pushKey).set(product);  
+
+  })
+
+  console.log("saveToFirebase stuff: ", elmData);
+});
 
 
 ////////////////////////////////////////////////////////////////////////////////////
