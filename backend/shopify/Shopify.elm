@@ -139,12 +139,16 @@ update msg model =
                         ( oneExtCatToManyIntCats, oneIntToManyExtCats ) =
                             Logic.extractCateogoryToCategoryAssociations Shopify internalCategories
 
-                        relevantProducts : EveryDict ExternalProductId NormalizedProduct
-                        relevantProducts =
+                        allShopProducts : EveryDict ExternalProductId NormalizedProduct
+                        allShopProducts =
                             rawShopifyProducts
                                 |> List.map (\rawProduct -> Data.transformRawShopifyProduct rawProduct externalCategoriesIdsFormFirebase)
                                 |> List.map (\p -> ( p.externalId, p ))
                                 |> EveryDict.fromList
+
+                        relevantShopProducts : EveryDict ExternalProductId NormalizedProduct
+                        relevantShopProducts =
+                            allShopProducts
                                 |> Logic.getRelevantProducts oneExtCatToManyExtProducts externalCategoriesIdsFormFirebase
 
                         externalProductIdsFromFirebase : EverySet ExternalProductId
@@ -156,7 +160,7 @@ update msg model =
                         externalProductIdsFromShop : EverySet ExternalProductId
                         externalProductIdsFromShop =
                             -- TODO: think if this is supposed to be relevant producxts or just all Products..????
-                            Logic.getExternalProductsIdsFromShop relevantProducts
+                            Logic.getExternalProductsIdsFromShop allShopProducts
 
                         --
                         -- -- |> Debug.log "externalProductIdsFromShop: "
@@ -165,8 +169,8 @@ update msg model =
                             Logic.getDeletedProductsIds externalProductIdsFromFirebase externalProductIdsFromShop
                                 |> Debug.log "deletedProductsExternalIds: "
 
-                        deletedProducts : List InternalProductId
-                        deletedProducts =
+                        deletedProductsInternalIds : List InternalProductId
+                        deletedProductsInternalIds =
                             deletedProductsExternalIds
                                 |> EverySet.map (\externalProductId -> Logic.findAsociatedInternalProductId externalProductId internalProducts)
                                 |> EverySet.toList
@@ -181,7 +185,7 @@ update msg model =
                         createdProducts : List NormalizedProduct
                         createdProducts =
                             createdProductsIds
-                                |> EverySet.map (\externalProductId -> EveryDict.get externalProductId relevantProducts)
+                                |> EverySet.map (\externalProductId -> EveryDict.get externalProductId relevantShopProducts)
                                 |> EverySet.toList
                                 |> Logic.removeNothings
 
@@ -190,7 +194,7 @@ update msg model =
                             Logic.getPosiblyUpdatedProductsIds createdProductsIds deletedProductsExternalIds externalProductIdsFromShop
                                 |> EverySet.map
                                     (\externalProductId ->
-                                        ( EveryDict.get externalProductId relevantProducts, Logic.findAsociatedInternalProductId externalProductId internalProducts )
+                                        ( EveryDict.get externalProductId relevantShopProducts, Logic.findAsociatedInternalProductId externalProductId internalProducts )
                                             |> (\( maybe_NormalizedProduct, maybe_InternalProductId ) -> Maybe.map2 (,) maybe_InternalProductId maybe_NormalizedProduct)
                                     )
                                 |> EverySet.toList
@@ -199,7 +203,7 @@ update msg model =
                                 |> Debug.log "updatedProducts: "
                     in
                         model
-                            => [-- Logic.saveToFirebase deletedProducts createdProducts updatedProducts oneExtProductToManyExtCats
+                            => [-- Logic.saveToFirebase deletedProductsInternalIds createdProducts updatedProducts oneExtProductToManyExtCats
                                ]
                 )
                 model.settings

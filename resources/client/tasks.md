@@ -2,7 +2,49 @@
 ===============================================================================================================================
 ===============================================================================================================================
 ===============================================================================================================================
-24 august 2018
+28 august 2018
+
+Shopify.
+
+- build a fake model in the fake data folder. DONE.
+- test out if the functions we use give the appropriate results.
+    - getExternalProductIdsFromFirebase DONE.
+    - extractCategoryProductAsociations DONE .
+    - extractCateogoryToCategoryAssociations DONE.
+
+    - getRelevantProducts DONE.
+    - getExternalProductIdsFromFirebase DONE.
+    - getExternalProductsIdsFromShop DONE.
+
+    - getDeletedProductsIds DONE.
+    - findAsociatedInternalProductId DONE.
+    - getCreatedProductsIds DONE.
+
+
+
+- put a work message and use the update function to manually test we get what we want.
+
+- test with real data.
+- test delete product
+- test create product
+- test update product
+
+PrestaShop.
+
+Build the following:
+- model
+- init
+- messages
+- update
+- subscriptions
+
+
+
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+27 august 2018
 
 Shopify .elm
 

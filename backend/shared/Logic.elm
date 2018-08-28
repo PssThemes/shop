@@ -311,6 +311,9 @@ getRelevantProductsIds :
     -> EverySet ExternalProductId
 getRelevantProductsIds oneExtCatToManyExtProducts externalCategoriesIdsFromFirebase =
     -- relevant products means products that contain an external category on them.. which is present in firebase .
+    --
+    -- TODO:  understand what this function does.. i cant focust..
+    --
     -- any external cateogy presnent in firebase is included here.
     -- we use the accumultors : oneExtCatToManyExtProducts
     -- which is constructed from external products..
