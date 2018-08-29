@@ -218,13 +218,6 @@ update msg model =
                 model.internalProducts
                 model.rawShopifyProducts
                 model.shopifyCollects
-                |> Maybe.withDefault
-                    (-- let
-                     --     _ =
-                     --         Debug.log "with default.. " model
-                     --  in
-                     model => []
-                    )
 
         DecodingError error ->
             model
