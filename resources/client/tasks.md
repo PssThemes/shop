@@ -2,6 +2,117 @@
 ===============================================================================================================================
 ===============================================================================================================================
 ===============================================================================================================================
+30 august 2018
+
+Shopify:
+DONE. Figure out why it duplicates the create functionality. WHY? Check our who of the following is right?
+  - work is called multiple times in the same cycle and it actually starts processing.. so js is called multiple times.
+  - there is no proper check that detects if a product needs to be created or not - check if created list is filled or not.
+
+Test out delete functionality.
+  - delete 1 product and see if gets deleted. DONE.
+  - de asociate a product with a category and see if gets deleted.
+    Behaviour: if from shopify i de asociate a product from a relevant category.. that product will not be removed form firebase.
+    Why?
+    Given that relecant categoires still contains that category.. even if is empoty.
+    Given that relevant products is filtered after relevant categoires.
+    Given that the product still exists in shop..
+
+    PROBLEM DETECTED>
+    If a category on shopify has no products.. then that category is excluded form the list of collects.
+    Meaning if i try to delete products i need to know which ones have only one category.. and that is deleted.
+
+
+    So right now i compare only products from fireabse and products from shiop. to detect who is deleted.
+    But also i need alist of emppty cateogries..
+    And i need to map over each shop product. And if that shop product... has only 1 cateogry .. and if that 1 category is in the empty categories list..
+    then that shop product is not included in firebase.
+
+    step 1. get list of empty external categories.
+    step 2. filter the products form shop.. to only the ones with 1 external category.
+        Q: Do i filter with all products or relevant products?
+        Option1: Filtering with all products.. means i get all of tshop products.. and i ensure i dont escape anyone..
+        Option2: Relevant products means only the ones wich have an extenral cateogry on them that is present on firebase.
+
+        So given a relevant product.. with 1 category on him.. this means that category is not empty by design.
+        So we are interestted in products.. that have no categories on them.
+        Aaa ok,.
+
+        So Given that a product has no categories on him.. and given that is included in the list of relevant products... is this something which logically can happen?
+        No. because to be a relevant product .. needs to have at least 1 category.. and that category needs to be present in firebase.
+        Sooo. i means we need to use allProducts since a product with no categories cant posibly be a relevant product.
+
+        So Turns out that any product which has no cateogry.. will be included in this list of de asociated products.
+
+        Is it possible for a product to be in this list.. but not previously in firebase?
+        Yes. since in previous step.. this product might not be relevant. Is just some non asociated prodcut.. that is isolated form what happens in firebase..
+        Ok so still doers not matter..
+        Since deletedProductsExternalIds is what we after.. and there will be a optional mapping between this list and what exists in firebase.
+
+        SOoo.. final decision means :
+        All shop products with no external categories on them.. are considered deleted.
+
+        SO THIS ARE PRODUCTS WITH NO CATEGORIES ON THEM.
+
+    step 3. filter the products form shop to only the the ones that have that 1 category included in the empty category list. this products are considered deleted even if tyhey exist in shop. hey will not exist in firebase since no category in firebase is asociating to them.
+    step 4. extract the ids of this products.
+    step 5. add them to the deleted external products list.
+
+
+    ## What happens when a product is removed form 2 or 3  categories at the same time..(in the same cycle) and remains an orphan product?    
+
+
+    First what is the problem?
+    If you diasociate a product.. then he is only sopposed to be included .. only if the categories still remaining on him .. are present in firebase.
+    So one way to filter products..
+    Si to ensure that at least 1 of the externalCatId present on a shop product..
+    Is present in firebase.
+
+    If it has only 1 external category..
+    That ensure that one is not an empty category.
+
+    Also the problem is.. if the admin deletes and external category.. or empties it..
+    The firebase is supposed to break that association automatically.
+    Since having limping connections around is usless. This means we need to remove links to external categories also.
+
+
+    Sumarry:
+    Deleting a product can happend for two reasons:
+    1. the product is actually deleted.
+    2. the product is disasociated in a way that becomes irelevant to us.
+
+    First case is handled with a simple set difference.
+
+    But for second case we need to detect what it means that a product is disasociated in a way that becomes irelevant.
+
+    Irelevant is any product that:
+    1. has no external cateogryes on it.
+    2. has no external categories..  after we filter out the ones that are deleted or emptied.
+      So for each prodcut.. we take out the external categoires which are present inside the emptyedOrDeletedExternalCategories.
+      After this process.. if the product has no categories left on it .. it means is irelevant to us.
+
+    Reversing this.. it means that if we take all shop products
+    And for each one we take out the emptyedOrDeletedExternalCategories
+    Then we endup with only relevant categories.
+
+    ## How to detect what external categories are empty?
+    IS the same issue with a deleted category.
+    How to detect a deleted category?
+
+    If an external category is in firebase... but not in the collects.. that means is deleted.. or empty.. since shopify behaves the same.
+    So this means filtering over collects.. and extracting all external categories ids as a set..
+    And getting the external categories form firebase..
+    Set difference between what is in firebase and what in shopify.. will give us the categories existent in firebase but not in shopify.
+    Which means this categories were deleted form shopify.
+
+    step1: get all external cat ids form shop. as set. ShopSet
+    step2: get all external cat ids form firebase. as set. FirebaseSet
+    step3: return:  set differecne between FirebaseSet and  ShopSet
+    DONE.
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
 28 august 2018
 
 Shopify.

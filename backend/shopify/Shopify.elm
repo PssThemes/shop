@@ -44,6 +44,7 @@ type alias Model =
     , internalProducts : Maybe (EveryDict InternalProductId InternalProduct)
     , rawShopifyProducts : Maybe (List RawShopifyProduct)
     , shopifyCollects : Maybe (List ( ExternalCatId, ExternalProductId ))
+    , workIsDone : Bool
     }
 
 
@@ -54,6 +55,7 @@ init =
       , internalProducts = Nothing
       , rawShopifyProducts = Nothing
       , shopifyCollects = Nothing
+      , workIsDone = False
       }
     , []
     )
@@ -68,7 +70,7 @@ type Msg
     | ReceivedRawProducts (List RawShopifyProduct)
     | ReceivedShopifyCollects (List ( ExternalCatId, ExternalProductId ))
     | DecodingError String
-    | Work
+    | Work String
 
 
 selfCall : Msg -> Cmd Msg
@@ -92,132 +94,158 @@ update msg model =
 
         ReceivedSettings settings ->
             { model | settings = Just settings }
-                => [ selfCall Work ]
+                => [ selfCall (Work "ReceivedSettings") ]
 
         ReceivedInternalCategories intCats ->
-            { model | internalCategories = Just intCats } => [ selfCall Work ]
+            { model | internalCategories = Just intCats } => [ selfCall (Work "ReceivedInternalCategories") ]
 
         ReceivedInternalProducts internalProducts ->
-            let
-                _ =
-                    Debug.log "internalProducts: " internalProducts
-
-                _ =
-                    Debug.log "" "----------------------------------------------"
-            in
-                { model
-                    | internalProducts =
-                        internalProducts
-                            |> List.map (\product -> ( product.selfId, product ))
-                            |> EveryDict.fromList
-                            |> Just
-                }
-                    => [ selfCall Work ]
+            -- let
+            --     -- _ =
+            --     --     Debug.log "internalProducts: " internalProducts
+            --     -- _ =
+            --     --     Debug.log "" "----------------------------------------------"
+            -- in
+            { model
+                | internalProducts =
+                    internalProducts
+                        |> List.map (\product -> ( product.selfId, product ))
+                        |> EveryDict.fromList
+                        |> Just
+            }
+                => [ selfCall (Work "ReceivedInternalProducts") ]
 
         ReceivedRawProducts rawShopifyProducts ->
             { model | rawShopifyProducts = Just rawShopifyProducts }
-                => [ selfCall Work ]
+                => [ selfCall (Work "ReceivedRawProducts") ]
 
         ReceivedShopifyCollects collects ->
-            { model | shopifyCollects = Just collects } => [ selfCall Work ]
+            { model | shopifyCollects = Just collects } => [ selfCall (Work "ReceivedShopifyCollects") ]
 
-        Work ->
-            Maybe.map5
-                (\settings internalCategories internalProducts rawShopifyProducts shopifyCollects ->
-                    let
-                        _ =
-                            Debug.log "Work................................." "yes.."
+        Work fromWhere ->
+            if model.workIsDone then
+                model => []
+            else
+                Maybe.map5
+                    (\settings internalCategories internalProducts rawShopifyProducts shopifyCollects ->
+                        let
+                            _ =
+                                Debug.log "Work................................. fromWhere: " fromWhere
 
-                        externalCategoriesIdsFormFirebase : EverySet ExternalCatId
-                        externalCategoriesIdsFormFirebase =
-                            Logic.getExternalCategoriesFromFirebase internalCategories Shopify
+                            externalCategoriesIdsFormFirebase : EverySet ExternalCatId
+                            externalCategoriesIdsFormFirebase =
+                                Logic.getExternalCategoriesFromFirebase internalCategories Shopify
+                                    |> Debug.log "externalCategoriesIdsFormFirebase: "
 
-                        -- |> Debug.log "externalCategoriesIdsFormFirebase: "
-                        ( oneExtCatToManyExtProducts, oneExtProductToManyExtCats ) =
-                            Logic.extractCategoryProductAsociations shopifyCollects
+                            externalCategoriesFromShop : EverySet ExternalCatId
+                            externalCategoriesFromShop =
+                                shopifyCollects |> List.map Tuple.first |> EverySet.fromList
 
-                        ( oneExtCatToManyIntCats, oneIntToManyExtCats ) =
-                            Logic.extractCateogoryToCategoryAssociations Shopify internalCategories
+                            emptyedOrDeletedExternalCategories : EverySet ExternalCatId
+                            emptyedOrDeletedExternalCategories =
+                                -- empty because the shop does not give emopty categories in collects.
+                                EverySet.diff externalCategoriesIdsFormFirebase externalCategoriesFromShop
 
-                        allShopProducts : EveryDict ExternalProductId NormalizedProduct
-                        allShopProducts =
-                            rawShopifyProducts
-                                |> List.map (\rawProduct -> Data.transformRawShopifyProduct rawProduct externalCategoriesIdsFormFirebase)
-                                |> List.map (\p -> ( p.externalId, p ))
-                                |> EveryDict.fromList
+                            ( oneExtCatToManyExtProducts, oneExtProductToManyExtCats ) =
+                                Logic.extractCategoryProductAsociations shopifyCollects
 
-                        relevantShopProducts : EveryDict ExternalProductId NormalizedProduct
-                        relevantShopProducts =
-                            allShopProducts
-                                |> Logic.getRelevantProducts oneExtCatToManyExtProducts externalCategoriesIdsFormFirebase
+                            ( oneExtCatToManyIntCats, oneIntToManyExtCats ) =
+                                Logic.extractCateogoryToCategoryAssociations Shopify internalCategories
 
-                        externalProductIdsFromFirebase : EverySet ExternalProductId
-                        externalProductIdsFromFirebase =
-                            Logic.getExternalProductIdsFromFirebase internalProducts
+                            allShopProducts : EveryDict ExternalProductId NormalizedProduct
+                            allShopProducts =
+                                rawShopifyProducts
+                                    |> List.map (\rawProduct -> Data.transformRawShopifyProduct rawProduct externalCategoriesIdsFormFirebase)
+                                    |> List.map (\p -> ( p.externalId, p ))
+                                    |> EveryDict.fromList
+                                    |> (\allProd -> log2 "allShopProducts: " (EveryDict.keys allProd |> (\x -> ( List.length x, x ))) allProd)
 
-                        --
-                        -- -- |> Debug.log "externalProductIdsFromFirebase: "
-                        externalProductIdsFromShop : EverySet ExternalProductId
-                        externalProductIdsFromShop =
-                            -- TODO: think if this is supposed to be relevant producxts or just all Products..????
-                            Logic.getExternalProductsIdsFromShop allShopProducts
+                            _ =
+                                Debug.log "oneExtCatToManyExtProducts: " oneExtCatToManyExtProducts
 
-                        --
-                        -- -- |> Debug.log "externalProductIdsFromShop: "
-                        deletedProductsExternalIds : EverySet ExternalProductId
-                        deletedProductsExternalIds =
-                            Logic.getDeletedProductsIds externalProductIdsFromFirebase externalProductIdsFromShop
-                                |> Debug.log "deletedProductsExternalIds: "
+                            relevantShopProducts : EveryDict ExternalProductId NormalizedProduct
+                            relevantShopProducts =
+                                allShopProducts
+                                    |> Logic.getRelevantProducts oneExtCatToManyExtProducts externalCategoriesIdsFormFirebase
+                                    |> (\allProd -> log2 "relevantShopProducts: " (EveryDict.keys allProd |> (\x -> ( List.length x, x ))) allProd)
 
-                        deletedProductsInternalIds : List InternalProductId
-                        deletedProductsInternalIds =
-                            deletedProductsExternalIds
-                                |> EverySet.map (\externalProductId -> Logic.findAsociatedInternalProductId externalProductId internalProducts)
-                                |> EverySet.toList
-                                |> Logic.removeNothings
-                                |> Debug.log "deletedProducts Firebase Ids: "
+                            -- |> Debug.log "relevantShopProducts: "
+                            externalProductIdsFromFirebase : EverySet ExternalProductId
+                            externalProductIdsFromFirebase =
+                                Logic.getExternalProductIdsFromFirebase internalProducts
 
-                        createdProductsIds : EverySet ExternalProductId
-                        createdProductsIds =
-                            Logic.getCreatedProductsIds externalProductIdsFromFirebase externalProductIdsFromShop
-                                |> Debug.log "createdProductsIds: "
+                            --
+                            -- -- |> Debug.log "externalProductIdsFromFirebase: "
+                            externalProductIdsFromShop : EverySet ExternalProductId
+                            externalProductIdsFromShop =
+                                -- TODO: think if this is supposed to be relevant producxts or just all Products..????
+                                Logic.getExternalProductsIdsFromShop allShopProducts
 
-                        createdProducts : List NormalizedProduct
-                        createdProducts =
-                            createdProductsIds
-                                |> EverySet.map (\externalProductId -> EveryDict.get externalProductId relevantShopProducts)
-                                |> EverySet.toList
-                                |> Logic.removeNothings
+                            --
+                            -- -- |> Debug.log "externalProductIdsFromShop: "
+                            deletedProductsExternalIds : EverySet ExternalProductId
+                            deletedProductsExternalIds =
+                                Logic.getDeletedProductsIds externalProductIdsFromFirebase externalProductIdsFromShop emptyedOrDeletedExternalCategories
 
-                        updatedProducts : List ( InternalProductId, NormalizedProduct )
-                        updatedProducts =
-                            Logic.getPosiblyUpdatedProductsIds createdProductsIds deletedProductsExternalIds externalProductIdsFromShop
-                                |> Debug.log "updatedProducts IDs: "
-                                |> EverySet.map
-                                    (\externalProductId ->
-                                        ( EveryDict.get externalProductId relevantShopProducts, Logic.findAsociatedInternalProductId externalProductId internalProducts )
-                                            |> (\( maybe_NormalizedProduct, maybe_InternalProductId ) -> Maybe.map2 (,) maybe_InternalProductId maybe_NormalizedProduct)
-                                    )
-                                |> EverySet.toList
-                                |> Logic.removeNothings
-                                |> List.filter (Logic.ensureItRelyNeedsUpdating internalProducts oneExtProductToManyExtCats)
-                    in
-                        -- saveToFirebase shopName deleted created updated oneExtProductToManyExtCats oneExternalCatIdToManyInternalCatIds
-                        model
-                            => [ Logic.saveToFirebase
-                                    Shopify
-                                    deletedProductsInternalIds
-                                    createdProducts
-                                    updatedProducts
-                                    oneExtProductToManyExtCats
-                                    oneExtCatToManyIntCats
-                               ]
-                )
-                model.settings
-                model.internalCategories
-                model.internalProducts
-                model.rawShopifyProducts
-                model.shopifyCollects
+                            -- |> Debug.log "deletedProductsExternalIds: "
+                            deletedProductsInternalIds : List InternalProductId
+                            deletedProductsInternalIds =
+                                deletedProductsExternalIds
+                                    |> EverySet.map (\externalProductId -> Logic.findAsociatedInternalProductId externalProductId internalProducts)
+                                    |> EverySet.toList
+                                    |> Logic.removeNothings
+
+                            -- |> Debug.log "deletedProductsInternalIds: "
+                            -- |> Debug.log "deletedProducts Firebase Ids: "
+                            createdProductsIds : EverySet ExternalProductId
+                            createdProductsIds =
+                                Logic.getCreatedProductsIds externalProductIdsFromFirebase externalProductIdsFromShop
+
+                            -- |> Debug.log "createdProductsIds: "
+                            createdProducts : List NormalizedProduct
+                            createdProducts =
+                                createdProductsIds
+                                    |> EverySet.map (\externalProductId -> EveryDict.get externalProductId relevantShopProducts)
+                                    |> EverySet.toList
+                                    |> Logic.removeNothings
+
+                            -- |> Debug.log "createdProducts: "
+                            updatedProducts : List ( InternalProductId, NormalizedProduct )
+                            updatedProducts =
+                                Logic.getPosiblyUpdatedProductsIds createdProductsIds deletedProductsExternalIds externalProductIdsFromShop
+                                    -- |> Debug.log "updatedProducts IDs: "
+                                    |> EverySet.map
+                                        (\externalProductId ->
+                                            ( EveryDict.get externalProductId relevantShopProducts, Logic.findAsociatedInternalProductId externalProductId internalProducts )
+                                                |> (\( maybe_NormalizedProduct, maybe_InternalProductId ) -> Maybe.map2 (,) maybe_InternalProductId maybe_NormalizedProduct)
+                                        )
+                                    |> EverySet.toList
+                                    |> Logic.removeNothings
+                                    |> List.filter (Logic.ensureItRelyNeedsUpdating internalProducts oneExtProductToManyExtCats)
+                        in
+                            -- saveToFirebase shopName deleted created updated oneExtProductToManyExtCats oneExternalCatIdToManyInternalCatIds
+                            { model | workIsDone = True }
+                                => [ Logic.saveToFirebase
+                                        Shopify
+                                        deletedProductsInternalIds
+                                        createdProducts
+                                        updatedProducts
+                                        oneExtProductToManyExtCats
+                                        oneExtCatToManyIntCats
+                                   ]
+                    )
+                    model.settings
+                    model.internalCategories
+                    model.internalProducts
+                    model.rawShopifyProducts
+                    model.shopifyCollects
+                    |> Maybe.withDefault
+                        (-- let
+                         --     _ =
+                         --         Debug.log "with default.. " model
+                         --  in
+                         model => []
+                        )
 
         DecodingError error ->
             model
@@ -231,6 +259,15 @@ update msg model =
                 -- in
                 ( model, cmds )
            )
+
+
+log2 : String -> a -> b -> b
+log2 text a b =
+    let
+        _ =
+            Debug.log text a
+    in
+        b
 
 
 subscriptions : Model -> Sub Msg

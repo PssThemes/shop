@@ -18,8 +18,9 @@ import EverySet exposing (EverySet)
 getDeletedProductsIds :
     EverySet ExternalProductId
     -> EverySet ExternalProductId
+    -> EverySet ExternalCatId
     -> EverySet ExternalProductId
-getDeletedProductsIds firebaseProductsIds shopProductsIds =
+getDeletedProductsIds firebaseProductsIds shopProductsIds emptyedOrDeletedExternalCategories =
     -- means products that are in firebase but not on shop.
     EverySet.diff firebaseProductsIds shopProductsIds
 
