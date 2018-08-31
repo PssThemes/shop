@@ -8413,9 +8413,39 @@ var _user$project$Logic$getCreatedProductsIds = F2(
 	function (firebaseProductsIds, shopProductsIds) {
 		return A2(_Gizra$elm_all_set$EverySet$diff, shopProductsIds, firebaseProductsIds);
 	});
-var _user$project$Logic$getDeletedProductsIds = F2(
-	function (firebaseProductsIds, shopProductsIds) {
-		return A2(_Gizra$elm_all_set$EverySet$diff, firebaseProductsIds, shopProductsIds);
+var _user$project$Logic$getDeletedProductsIds = F4(
+	function (firebaseProductsIds, shopProductsIds, emptyedOrDeletedExternalCategories, allShopProducts) {
+		var deasociatedProducts = _Gizra$elm_all_set$EverySet$fromList(
+			A3(
+				_eeue56$elm_all_dict$EveryDict$foldl,
+				F3(
+					function (k, product, acc) {
+						return {ctor: '::', _0: product.externalId, _1: acc};
+					}),
+				{ctor: '[]'},
+				A2(
+					_eeue56$elm_all_dict$EveryDict$filter,
+					F2(
+						function (k, product) {
+							return _elm_lang$core$Native_Utils.eq(product.externalCatIds, _Gizra$elm_all_set$EverySet$empty);
+						}),
+					A2(
+						_eeue56$elm_all_dict$EveryDict$map,
+						F2(
+							function (k, product) {
+								return _elm_lang$core$Native_Utils.update(
+									product,
+									{
+										externalCatIds: A2(_Gizra$elm_all_set$EverySet$diff, product.externalCatIds, emptyedOrDeletedExternalCategories)
+									});
+							}),
+						allShopProducts))));
+		var _p25 = A2(_elm_lang$core$Debug$log, 'deasociatedProducts: ', deasociatedProducts);
+		var _p26 = A2(_elm_lang$core$Debug$log, 'emptyedOrDeletedExternalCategories: ', emptyedOrDeletedExternalCategories);
+		return A2(
+			_Gizra$elm_all_set$EverySet$diff,
+			A2(_Gizra$elm_all_set$EverySet$diff, firebaseProductsIds, shopProductsIds),
+			deasociatedProducts);
 	});
 
 var _user$project$Shopify$log2 = F3(
@@ -8608,11 +8638,11 @@ var _user$project$Shopify$update = F2(
 										var _p8 = _user$project$Logic$extractCategoryProductAsociations(shopifyCollects);
 										var oneExtCatToManyExtProducts = _p8._0;
 										var oneExtProductToManyExtCats = _p8._1;
-										var _p9 = A2(_elm_lang$core$Debug$log, 'oneExtCatToManyExtProducts: ', oneExtCatToManyExtProducts);
-										var externalCategoriesIdsFormFirebase = A2(
-											_elm_lang$core$Debug$log,
-											'externalCategoriesIdsFormFirebase: ',
-											A2(_user$project$Logic$getExternalCategoriesFromFirebase, internalCategories, _user$project$Data$Shopify));
+										var _p9 = A2(_elm_lang$core$Debug$log, 'oneExtProductToManyExtCats: ', oneExtProductToManyExtCats);
+										var externalCategoriesFromShop = _Gizra$elm_all_set$EverySet$fromList(
+											A2(_elm_lang$core$List$map, _elm_lang$core$Tuple$first, shopifyCollects));
+										var externalCategoriesIdsFormFirebase = A2(_user$project$Logic$getExternalCategoriesFromFirebase, internalCategories, _user$project$Data$Shopify);
+										var emptyedOrDeletedExternalCategories = A2(_Gizra$elm_all_set$EverySet$diff, externalCategoriesIdsFormFirebase, externalCategoriesFromShop);
 										var allShopProducts = function (allProd) {
 											return A3(
 												_user$project$Shopify$log2,
@@ -8640,16 +8670,22 @@ var _user$project$Shopify$update = F2(
 														},
 														rawShopifyProducts))));
 										var externalProductIdsFromShop = _user$project$Logic$getExternalProductsIdsFromShop(allShopProducts);
-										var deletedProductsExternalIds = A2(_user$project$Logic$getDeletedProductsIds, externalProductIdsFromFirebase, externalProductIdsFromShop);
-										var deletedProductsInternalIds = _user$project$Logic$removeNothings(
-											_Gizra$elm_all_set$EverySet$toList(
-												A2(
-													_Gizra$elm_all_set$EverySet$map,
-													function (externalProductId) {
-														return A2(_user$project$Logic$findAsociatedInternalProductId, externalProductId, internalProducts);
-													},
-													deletedProductsExternalIds)));
 										var createdProductsIds = A2(_user$project$Logic$getCreatedProductsIds, externalProductIdsFromFirebase, externalProductIdsFromShop);
+										var deletedProductsExternalIds = A2(
+											_elm_lang$core$Debug$log,
+											'deletedProductsExternalIds: ',
+											A4(_user$project$Logic$getDeletedProductsIds, externalProductIdsFromFirebase, externalProductIdsFromShop, emptyedOrDeletedExternalCategories, allShopProducts));
+										var deletedProductsInternalIds = A2(
+											_elm_lang$core$Debug$log,
+											'deletedProductsInternalIds: ',
+											_user$project$Logic$removeNothings(
+												_Gizra$elm_all_set$EverySet$toList(
+													A2(
+														_Gizra$elm_all_set$EverySet$map,
+														function (externalProductId) {
+															return A2(_user$project$Logic$findAsociatedInternalProductId, externalProductId, internalProducts);
+														},
+														deletedProductsExternalIds))));
 										var relevantShopProducts = function (allProd) {
 											return A3(
 												_user$project$Shopify$log2,

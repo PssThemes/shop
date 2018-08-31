@@ -135,8 +135,8 @@ update msg model =
                             externalCategoriesIdsFormFirebase : EverySet ExternalCatId
                             externalCategoriesIdsFormFirebase =
                                 Logic.getExternalCategoriesFromFirebase internalCategories Shopify
-                                    |> Debug.log "externalCategoriesIdsFormFirebase: "
 
+                            -- |> Debug.log "externalCategoriesIdsFormFirebase: "
                             externalCategoriesFromShop : EverySet ExternalCatId
                             externalCategoriesFromShop =
                                 shopifyCollects |> List.map Tuple.first |> EverySet.fromList
@@ -149,6 +149,9 @@ update msg model =
                             ( oneExtCatToManyExtProducts, oneExtProductToManyExtCats ) =
                                 Logic.extractCategoryProductAsociations shopifyCollects
 
+                            _ =
+                                Debug.log "oneExtProductToManyExtCats: " oneExtProductToManyExtCats
+
                             ( oneExtCatToManyIntCats, oneIntToManyExtCats ) =
                                 Logic.extractCateogoryToCategoryAssociations Shopify internalCategories
 
@@ -160,9 +163,8 @@ update msg model =
                                     |> EveryDict.fromList
                                     |> (\allProd -> log2 "allShopProducts: " (EveryDict.keys allProd |> (\x -> ( List.length x, x ))) allProd)
 
-                            _ =
-                                Debug.log "oneExtCatToManyExtProducts: " oneExtCatToManyExtProducts
-
+                            -- _ =
+                            --     Debug.log "oneExtCatToManyExtProducts: " oneExtCatToManyExtProducts
                             relevantShopProducts : EveryDict ExternalProductId NormalizedProduct
                             relevantShopProducts =
                                 allShopProducts
@@ -181,21 +183,24 @@ update msg model =
                                 -- TODO: think if this is supposed to be relevant producxts or just all Products..????
                                 Logic.getExternalProductsIdsFromShop allShopProducts
 
-                            --
                             -- -- |> Debug.log "externalProductIdsFromShop: "
                             deletedProductsExternalIds : EverySet ExternalProductId
                             deletedProductsExternalIds =
-                                Logic.getDeletedProductsIds externalProductIdsFromFirebase externalProductIdsFromShop emptyedOrDeletedExternalCategories
+                                Logic.getDeletedProductsIds
+                                    externalProductIdsFromFirebase
+                                    externalProductIdsFromShop
+                                    emptyedOrDeletedExternalCategories
+                                    allShopProducts
+                                    |> Debug.log "deletedProductsExternalIds: "
 
-                            -- |> Debug.log "deletedProductsExternalIds: "
                             deletedProductsInternalIds : List InternalProductId
                             deletedProductsInternalIds =
                                 deletedProductsExternalIds
                                     |> EverySet.map (\externalProductId -> Logic.findAsociatedInternalProductId externalProductId internalProducts)
                                     |> EverySet.toList
                                     |> Logic.removeNothings
+                                    |> Debug.log "deletedProductsInternalIds: "
 
-                            -- |> Debug.log "deletedProductsInternalIds: "
                             -- |> Debug.log "deletedProducts Firebase Ids: "
                             createdProductsIds : EverySet ExternalProductId
                             createdProductsIds =

@@ -2,6 +2,27 @@
 ===============================================================================================================================
 ===============================================================================================================================
 ===============================================================================================================================
+31 august 2018
+
+How to detect what products are dissociated and remove them form firebase?
+(1) One idea is that every time an external category is removed in fireabse - products need to be removed.
+(2) Another is that every time a category is modified in shop .. meaning more products are added or removed form it.. things need to change in firebase.
+
+
+If a category is empty.. all products that contained it.. will be deleted .. if it was the last category.
+
+So if i get the list of all empty categories..
+And remove them form allShopProducts.. then if a shop product has no category left on him.. is considered a dissociated product.
+So second idea is handled. (2)
+
+Removing all categories form a set.. that are in another set.. is done by reversing it.. and keeping only the stuff in a set.. that is not in another set.
+- set difference is 
+
+
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
 30 august 2018
 
 Shopify:
@@ -32,10 +53,10 @@ Test out delete functionality.
     step 2. filter the products form shop.. to only the ones with 1 external category.
         Q: Do i filter with all products or relevant products?
         Option1: Filtering with all products.. means i get all of tshop products.. and i ensure i dont escape anyone..
-        Option2: Relevant products means only the ones wich have an extenral cateogry on them that is present on firebase.
+        Option2: Relevant products means only the ones witch have an extenral cateogry on them that is present on firebase.
 
         So given a relevant product.. with 1 category on him.. this means that category is not empty by design.
-        So we are interestted in products.. that have no categories on them.
+        So we are interested in products.. that have no categories on them.
         Aaa ok,.
 
         So Given that a product has no categories on him.. and given that is included in the list of relevant products... is this something which logically can happen?
@@ -59,11 +80,10 @@ Test out delete functionality.
     step 5. add them to the deleted external products list.
 
 
-    ## What happens when a product is removed form 2 or 3  categories at the same time..(in the same cycle) and remains an orphan product?    
-
+    ## What happens when a product is removed form 2 or 3  categories at the same time..(in the same cycle) and remains an orphan product?
 
     First what is the problem?
-    If you diasociate a product.. then he is only sopposed to be included .. only if the categories still remaining on him .. are present in firebase.
+    If you diasociate a product.. then he is only supposed to be included .. only if the categories still remaining on him .. are present in firebase.
     So one way to filter products..
     Si to ensure that at least 1 of the externalCatId present on a shop product..
     Is present in firebase.
@@ -79,16 +99,16 @@ Test out delete functionality.
     Sumarry:
     Deleting a product can happend for two reasons:
     1. the product is actually deleted.
-    2. the product is disasociated in a way that becomes irelevant to us.
+    2. the product is disassociated in a way that becomes irelevant to us.
 
     First case is handled with a simple set difference.
 
     But for second case we need to detect what it means that a product is disasociated in a way that becomes irelevant.
 
     Irelevant is any product that:
-    1. has no external cateogryes on it.
-    2. has no external categories..  after we filter out the ones that are deleted or emptied.
-      So for each prodcut.. we take out the external categoires which are present inside the emptyedOrDeletedExternalCategories.
+    1. has no external categories on it.
+    2. has no external categories ..  after we filter out the ones that are deleted or emptied.
+      So for each product.. we take out the external categoires which are present inside the emptyedOrDeletedExternalCategories.
       After this process.. if the product has no categories left on it .. it means is irelevant to us.
 
     Reversing this.. it means that if we take all shop products

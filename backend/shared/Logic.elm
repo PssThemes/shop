@@ -19,10 +19,34 @@ getDeletedProductsIds :
     EverySet ExternalProductId
     -> EverySet ExternalProductId
     -> EverySet ExternalCatId
+    -> EveryDict ExternalProductId NormalizedProduct
     -> EverySet ExternalProductId
-getDeletedProductsIds firebaseProductsIds shopProductsIds emptyedOrDeletedExternalCategories =
-    -- means products that are in firebase but not on shop.
-    EverySet.diff firebaseProductsIds shopProductsIds
+getDeletedProductsIds firebaseProductsIds shopProductsIds emptyedOrDeletedExternalCategories allShopProducts =
+    let
+        _ =
+            Debug.log "emptyedOrDeletedExternalCategories: " emptyedOrDeletedExternalCategories
+
+        _ =
+            Debug.log "deasociatedProducts: " deasociatedProducts
+
+        deasociatedProducts =
+            allShopProducts
+                -- Removing the emptyedOrDeletedExternalCategories
+                |> EveryDict.map
+                    (\k product ->
+                        { product
+                            | externalCatIds =
+                                EverySet.diff product.externalCatIds emptyedOrDeletedExternalCategories
+                        }
+                    )
+                -- Keep only the products with no categories.. now this are the ones that will be removed.
+                |> EveryDict.filter (\k product -> product.externalCatIds == EverySet.empty)
+                |> EveryDict.foldl (\k product acc -> product.externalId :: acc) []
+                |> EverySet.fromList
+    in
+        -- means products that are in firebase but not on shop.
+        -- and alo remove products that remain and are present
+        EverySet.diff (EverySet.diff firebaseProductsIds shopProductsIds) deasociatedProducts
 
 
 getCreatedProductsIds :
