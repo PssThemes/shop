@@ -2,6 +2,89 @@
 ===============================================================================================================================
 ===============================================================================================================================
 ===============================================================================================================================
+03 september 2018
+
+shopify
+
+Ensure the de-associate categories code is working.
+
+Cant figure otu why.. and i cant drill down in code to find where the problem comes.. since it requires many async calls.. so a better idea is to use fake data in a special way.
+My that i mean.. i build a model with a base situation.. like products put inside categories.. so on.. just something fake.
+
+then i will build specialized functions that do 1 thing.. like create an asociation.. remove an asociation.. create a product.. insert it .. so on..
+then given this base fake data.. and given this named specialized functions..
+using a combination of them i get the same effect as if i manully work in shopify.
+Is not proper testing.. ill not implement tdd for now.. just this exercise will help me better understand the situation.
+And later when i put a testing harness.. i will do the same thing.. fake data.. shape it with specialized functions.. then pass that trough the function beeing tested...
+then expec tthe resutl to be what that actions is supposed to take.
+
+How much time do i need to insert a testing harness into this project?
+Do i need to modify something  that harsh?
+Given that i dont need to manually fake data.. i can create products on the fly.. and insert them.. and do stuff.. like remove asociations and create categories and such..
+I can also remove stuff ..by calling functions..
+I can check for deep equality not like in javascript..
+
+I will not need to use the repl.. i can just go tdd style on it.. and also .. i might use the repl too to test the fuinctions that modify the data..
+This will take me another day or 2? Why?
+Since setup of elm test in elm 1.0 it might be different then 0.18.. so what changed?
+
+Advantages..
+It might be the only way in which i can properly realized why things are not working.
+It will clarify my thinking..
+I will learn to use testing harness in 1.0.
+It might be faster to finish the code this way...
+I might start here and use this approach every time in the future in a backend elm project.
+Elm is pure.. testing is super duper easy..
+
+
+Can i compare return cmd types?
+If not htf im gonna do anything?
+I need to ask in slack..
+
+Disadvantages..
+It might take more time then expected.
+
+What do i expect to take?
+1 day.. or even 2.
+
+Is it rely worth it..?
+Given that prestashop might require the same crazy setup.. and code there is different.. then hmm.
+I rather work on fake data and tests there too.
+
+The only serious problem here is i cant go inside code itself and hook myself into it with expectations.. quite a limitation.
+
+My actual problem is that i dont fully understand if the approach im having for dissociating products it actually works or not.
+I need a way to test it.. as opposed to think about it in my head.
+Make a bunch of asumptions.. and check if they are true.. But i cant have that qwithr async calls..
+Too much time spent on refresh and looking up inside the repl..
+
+What is the worst it can happen?
+I can waste time.. to setup this harness.. and discover that the problem was a very simple one.. and this testing was not neded to begin with..
+But testing is good regardless..
+Clarifies thinking.. then also is easy to reread later.. add more clauses.. see what expectations we had..
+
+The value is.. i can use the fake data i build 1.. just once.. for everything..
+Since i can add and remove and transform it with special functions..
+Ok so i have.
+1. data.
+2. functions for creating data.
+3. functions for transforming.. modifing and so on.. this are equivalent with actions performed by me in shop or firebase or stuff.
+
+Then i have a testing harness..
+which uses this operations.. and my functions.. to test stuff.
+
+Decision. Im gonna build a testing harness and test out a bunch of functions.
+Also create this full blown fake data..
+Then functions for manipulating it in specific ways.
+Im also gonna build a fake model.
+And test directly with the update function.
+
+Also ask in slack how to test the commands im getting back for the update function.. How to test the update function in general.
+
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
 31 august 2018
 
 How to detect what products are dissociated and remove them form firebase?
@@ -16,7 +99,7 @@ And remove them form allShopProducts.. then if a shop product has no category le
 So second idea is handled. (2)
 
 Removing all categories form a set.. that are in another set.. is done by reversing it.. and keeping only the stuff in a set.. that is not in another set.
-- set difference is 
+- set difference is
 
 
 ===============================================================================================================================
