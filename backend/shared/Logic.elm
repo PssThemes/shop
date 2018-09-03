@@ -29,6 +29,7 @@ getDeletedProductsIds firebaseProductsIds shopProductsIds emptyedOrDeletedExtern
         _ =
             Debug.log "deasociatedProducts: " deasociatedProducts
 
+        deasociatedProducts : EverySet ExternalProductId
         deasociatedProducts =
             allShopProducts
                 -- Removing the emptyedOrDeletedExternalCategories
