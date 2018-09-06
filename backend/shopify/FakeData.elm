@@ -25,6 +25,17 @@ shopifyModel =
     }
 
 
+shopifyEmptyModel : Shopify.Model
+shopifyEmptyModel =
+    { settings = Just settings
+    , internalCategories = Nothing
+    , internalProducts = Nothing
+    , rawShopifyProducts = Nothing
+    , shopifyCollects = Nothing
+    , workIsDone = False
+    }
+
+
 
 -- #endregion Shopify Model
 --
@@ -183,7 +194,7 @@ createRawProduct : Int -> RawShopifyProduct
 createRawProduct int =
     { id = int
     , title = int |> toString |> String.append "Product "
-    , body_html = "description for 1"
+    , body_html = "description for " ++ (toString int)
     , images =
         [ { src = "url" }
         ]
@@ -223,13 +234,6 @@ settings =
 
 
 -- #endregion Shared Stuff
---
---
--- #region Generators of data
-----------------------------------------------------------------------------------------------
--- Generators of data
-----------------------------------------------------------------------------------------------
--- #endregion Generators of data
 --
 --
 -- #region Transformers of data
