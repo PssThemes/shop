@@ -1,18 +1,12 @@
-module Logic exposing (..)
+module Logic exposing (createNewProduct, ensureItRelyNeedsUpdating, extractCategoryProductAsociations, extractCateogoryToCategoryAssociations, extractFieldsToUpdate, findAsociatedInternalProductId, getCreatedProductsIds, getDeletedProductsIds, getExternalCategoriesFromFirebase, getExternalProductIdsFromFirebase, getExternalProductsIdsFromShop, getPosiblyUpdatedProductsIds, getRelevantProducts, getRelevantProductsIds, listContains, removeNothings, saveToFirebase, updateOrInsert)
+
+-- import Json.Encode as JE
+-- import Rocket exposing ((=>))
 
 import Data exposing (..)
 import EveryDict exposing (..)
-
-
--- import Json.Encode as JE
-
-import EveryDict exposing (EveryDict)
-
-
--- import Rocket exposing ((=>))
-
-import Ports
 import EverySet exposing (EverySet)
+import Ports
 
 
 getDeletedProductsIds :
@@ -45,9 +39,9 @@ getDeletedProductsIds firebaseProductsIds shopProductsIds emptyedOrDeletedExtern
                 |> EveryDict.foldl (\k product acc -> product.externalId :: acc) []
                 |> EverySet.fromList
     in
-        -- means products that are in firebase but not on shop.
-        -- and alo remove products that remain and are present
-        EverySet.diff (EverySet.diff firebaseProductsIds shopProductsIds) deasociatedProducts
+    -- means products that are in firebase but not on shop.
+    -- and alo remove products that remain and are present
+    EverySet.diff (EverySet.diff firebaseProductsIds shopProductsIds) deasociatedProducts
 
 
 getCreatedProductsIds :
@@ -98,7 +92,7 @@ getPosiblyUpdatedProductsIds createdProductsIds deletedProductsExternalIds exter
         createdOrDeleted =
             EverySet.union createdProductsIds deletedProductsExternalIds
     in
-        EverySet.diff externalProductIdsFromShopify createdOrDeleted
+    EverySet.diff externalProductIdsFromShopify createdOrDeleted
 
 
 ensureItRelyNeedsUpdating :
@@ -169,11 +163,11 @@ saveToFirebase shopName deleted created updated oneExtProductToManyExtCats oneEx
                         }
                     )
     in
-        { deleted = deleted_
-        , created = created_
-        , updated = updated_
-        }
-            |> Ports.saveToFirebase
+    { deleted = deleted_
+    , created = created_
+    , updated = updated_
+    }
+        |> Ports.saveToFirebase
 
 
 createNewProduct : ShopName -> EveryDict ExternalCatId (EverySet InternalCatId) -> NormalizedProduct -> Maybe NewlyCreatedProduct
@@ -233,7 +227,7 @@ getExternalCategoriesFromFirebase internalCategories shopName =
             )
         |> EveryDict.toList
         |> EverySet.fromList
-        |> EverySet.map (Tuple.second >> (List.map Tuple.first) >> EverySet.fromList)
+        |> EverySet.map (Tuple.second >> List.map Tuple.first >> EverySet.fromList)
         |> EverySet.foldl (\externalCatIds acc -> EverySet.union externalCatIds acc) EverySet.empty
 
 
@@ -269,36 +263,36 @@ extractCateogoryToCategoryAssociations shopName internalCats =
                 |> List.map Tuple.first
                 |> EverySet.fromList
     in
-        internalCats
-            |> EveryDict.foldl
-                (\internalCatId internalCat (( oneExtCatToManyIntCats, oneIntToManyExtCats ) as totalAcc) ->
-                    let
-                        externalCatIds =
-                            getExtCatIds internalCat
+    internalCats
+        |> EveryDict.foldl
+            (\internalCatId internalCat (( oneExtCatToManyIntCats, oneIntToManyExtCats ) as totalAcc) ->
+                let
+                    externalCatIds =
+                        getExtCatIds internalCat
 
-                        acc1 : EveryDict ExternalCatId (EverySet InternalCatId)
-                        acc1 =
-                            externalCatIds
-                                |> EverySet.foldl
-                                    (\extCatId acc ->
-                                        acc
-                                            |> updateOrInsert extCatId internalCat.selfId
-                                    )
-                                    oneExtCatToManyIntCats
+                    acc1 : EveryDict ExternalCatId (EverySet InternalCatId)
+                    acc1 =
+                        externalCatIds
+                            |> EverySet.foldl
+                                (\extCatId acc ->
+                                    acc
+                                        |> updateOrInsert extCatId internalCat.selfId
+                                )
+                                oneExtCatToManyIntCats
 
-                        acc2 : EveryDict InternalCatId (EverySet ExternalCatId)
-                        acc2 =
-                            externalCatIds
-                                |> EverySet.foldl
-                                    (\extCatId acc ->
-                                        acc
-                                            |> updateOrInsert internalCatId extCatId
-                                    )
-                                    oneIntToManyExtCats
-                    in
-                        ( acc1, acc2 )
-                )
-                ( EveryDict.empty, EveryDict.empty )
+                    acc2 : EveryDict InternalCatId (EverySet ExternalCatId)
+                    acc2 =
+                        externalCatIds
+                            |> EverySet.foldl
+                                (\extCatId acc ->
+                                    acc
+                                        |> updateOrInsert internalCatId extCatId
+                                )
+                                oneIntToManyExtCats
+                in
+                ( acc1, acc2 )
+            )
+            ( EveryDict.empty, EveryDict.empty )
 
 
 updateOrInsert :
@@ -317,6 +311,7 @@ updateOrInsert key value dict =
                     Just set ->
                         if EverySet.member value set then
                             Just set
+
                         else
                             Just (EverySet.insert value set)
             )
@@ -364,8 +359,8 @@ getRelevantProducts oneExtCatToManyExtProducts externalCategoriesIdsFormFirebase
         relevantIds =
             getRelevantProductsIds oneExtCatToManyExtProducts externalCategoriesIdsFormFirebase
     in
-        allExternalProducts
-            |> EveryDict.filter (\k v -> EverySet.member k relevantIds)
+    allExternalProducts
+        |> EveryDict.filter (\k v -> EverySet.member k relevantIds)
 
 
 getExternalProductIdsFromFirebase : EveryDict InternalProductId InternalProduct -> EverySet ExternalProductId
