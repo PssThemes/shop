@@ -1,4 +1,4 @@
-module Logic exposing (createNewProduct, ensureItRelyNeedsUpdating, extractCategoryProductAsociations, extractCateogoryToCategoryAssociations, extractFieldsToUpdate, findAsociatedInternalProductId, getCreatedProductsIds, getDeletedProductsIds, getExternalCategoriesFromFirebase, getExternalProductIdsFromFirebase, getExternalProductsIdsFromShop, getPosiblyUpdatedProductsIds, getRelevantProducts, getRelevantProductsIds, listContains, removeNothings, saveToFirebase, updateOrInsert)
+module Logic exposing (createNewProduct, ensureItRelyNeedsUpdating, extractCategoryProductAsociations, extractCateogoryToCategoryAssociations, extractFieldsToUpdate, findAsociatedInternalProductId, getCreatedProductsIds, getExternalCategoriesFromFirebase, getExternalProductIdsFromFirebase, getExternalProductsIdsFromShop, getIdsOfDeletedProducts, getPosiblyUpdatedProductsIds, getRelevantProducts, getRelevantProductsIds, listContains, removeNothings, saveToFirebase, updateOrInsert)
 
 -- import Json.Encode as JE
 -- import Rocket exposing ((=>))
@@ -9,13 +9,13 @@ import EverySet exposing (EverySet)
 import Ports
 
 
-getDeletedProductsIds :
+getIdsOfDeletedProducts :
     EverySet ExternalProductId
     -> EverySet ExternalProductId
     -> EverySet ExternalCatId
     -> EveryDict ExternalProductId NormalizedProduct
     -> EverySet ExternalProductId
-getDeletedProductsIds firebaseProductsIds shopProductsIds emptyedOrDeletedExternalCategories allShopProducts =
+getIdsOfDeletedProducts firebaseProductsIds shopProductsIds emptyedOrDeletedExternalCategories allShopProducts =
     let
         _ =
             Debug.log "emptyedOrDeletedExternalCategories: " emptyedOrDeletedExternalCategories
