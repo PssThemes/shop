@@ -6,6 +6,7 @@ import EverySet exposing (EverySet)
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, list, string)
 import Logic
+import Shopify
 import Test exposing (..)
 
 
@@ -16,9 +17,20 @@ suite =
         ]
 
 
+maybeCmdValue : Cmd a -> Maybe a
+maybeCmdValue cmd =
+    cmd
+        |> Cmd.map
+
+
 test_DeleteFunctionality : Test
 test_DeleteFunctionality =
-    [ test """should remove a product that is in firebase but not in shop.""" <|
+    [ test "just test" <|
+        \_ ->
+            Shopify.update Shopify.Nothing shopifyModel
+                |> Tuple.second
+                |> TestableCmd.expectNoCmd
+    , test """should remove a product that is in firebase but not in shop.""" <|
         \_ ->
             let
                 firebaseExternalProductsIds =

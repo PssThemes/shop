@@ -1,22 +1,19 @@
-module Shopify exposing (..)
+module Shopify exposing (Model, Msg(..), init, jd1, je1, log2, main, selfCall, subscriptions, update)
 
 -- import AllDict exposing (..)
-
-import Data exposing (..)
-import Logic
-
-
 -- import Dict exposing (Dict)
 
+import Data exposing (..)
+import EveryDict exposing (EveryDict)
+import EverySet exposing (EverySet)
 import Json.Decode as JD
 import Json.Encode as JE
+import Logic
 import Platform
 import Ports
 import Process
 import Rocket exposing ((=>))
 import Task
-import EveryDict exposing (EveryDict)
-import EverySet exposing (EverySet)
 
 
 je1 : JE.Value
@@ -71,6 +68,8 @@ type Msg
     | ReceivedShopifyCollects (List ( ExternalCatId, ExternalProductId ))
     | DecodingError String
     | Work String
+      --
+    | Dev
 
 
 selfCall : Msg -> Cmd Msg
@@ -81,6 +80,9 @@ selfCall msg =
 update : Msg -> Model -> ( Model, List (Cmd Msg) )
 update msg model =
     (case msg of
+        Dev ->
+            model => []
+
         Start ->
             [ Process.sleep 6000
                 |> Task.andThen (\_ -> Task.succeed ())
@@ -125,6 +127,7 @@ update msg model =
         Work fromWhere ->
             if model.workIsDone then
                 model => []
+
             else
                 Maybe.map5
                     (\settings internalCategories internalProducts rawShopifyProducts shopifyCollects ->
@@ -228,16 +231,16 @@ update msg model =
                                     |> Logic.removeNothings
                                     |> List.filter (Logic.ensureItRelyNeedsUpdating internalProducts oneExtProductToManyExtCats)
                         in
-                            -- saveToFirebase shopName deleted created updated oneExtProductToManyExtCats oneExternalCatIdToManyInternalCatIds
-                            { model | workIsDone = True }
-                                => [ Logic.saveToFirebase
-                                        Shopify
-                                        deletedProductsInternalIds
-                                        createdProducts
-                                        updatedProducts
-                                        oneExtProductToManyExtCats
-                                        oneExtCatToManyIntCats
-                                   ]
+                        -- saveToFirebase shopName deleted created updated oneExtProductToManyExtCats oneExternalCatIdToManyInternalCatIds
+                        { model | workIsDone = True }
+                            => [ Logic.saveToFirebase
+                                    Shopify
+                                    deletedProductsInternalIds
+                                    createdProducts
+                                    updatedProducts
+                                    oneExtProductToManyExtCats
+                                    oneExtCatToManyIntCats
+                               ]
                     )
                     model.settings
                     model.internalCategories
@@ -245,12 +248,11 @@ update msg model =
                     model.rawShopifyProducts
                     model.shopifyCollects
                     |> Maybe.withDefault
-                        (-- let
-                         --     _ =
-                         --         Debug.log "with default.. " model
-                         --  in
-                         model => []
-                        )
+                        -- let
+                        --     _ =
+                        --         Debug.log "with default.. " model
+                        --  in
+                        (model => [])
 
         DecodingError error ->
             model
@@ -272,7 +274,7 @@ log2 text a b =
         _ =
             Debug.log text a
     in
-        b
+    b
 
 
 subscriptions : Model -> Sub Msg
