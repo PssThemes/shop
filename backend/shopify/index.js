@@ -82,7 +82,7 @@ function transformObjectInArray(obj){
 db.ref("products").once("value").then(snap => {
 
   const products = snap.val();
-  console.log(":products:", products);
+  // console.log(":products:", products);
   if(products){
     const productsAsArray = transformObjectInArray(products);
     ports.received_InternalProducts.send(productsAsArray);
@@ -97,9 +97,9 @@ db.ref("products").once("value").then(snap => {
 
 // Extenral products..
 const shopify = new Shopify({
-  shopName: "aion-shop1.myshopify.com",
-  apiKey: "6899818a3b21c823434c02a71605067b",
-  password: "fc0f0ed27ec9a3448eeddc871151f290",
+  shopName: "aion-shop2.myshopify.com",
+  apiKey: "f12fa0019654d4d1d30087e637b39bc5",
+  password: "67b3ea756b30521c58027663af84a78c",
 });
 
 shopify.product.list()
@@ -125,7 +125,7 @@ shopify.collect.list()
 .then(result => {
   const collects = result;
 
-  console.log("collects: ", collects);
+  // console.log("collects: ", collects);
 
   if(collects){
 
@@ -144,9 +144,22 @@ shopify.collect.list()
 // From Elm in js..
 ////////////////////////////////////////////////////////////////////////////////////
 
-ports.saveToFirebase.subscribe(stuff => {
-  console.log("saveToFirebase stuff: ", stuff);
-})
+ports.saveToFirebase.subscribe(elmData => {
+
+  // console.log("js elmData: ", elmData);
+  console.log("js elmData: created - ", elmData.deleted); 
+
+  elmData.created.map(product => {
+    const pushKey = db.ref("products").push().key;
+    product.selfId = pushKey;
+    db.ref("products").child(pushKey).set(product);
+  });
+
+  elmData.deleted.map(pushKey => {
+    db.ref("products").child(pushKey).set(null);
+  })
+
+});
 
 
 ////////////////////////////////////////////////////////////////////////////////////

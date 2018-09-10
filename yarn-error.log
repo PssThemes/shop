@@ -1,0 +1,53 @@
+Arguments: 
+  /usr/bin/node /usr/bin/yarn add elm-test
+
+PATH: 
+  /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+
+Yarn version: 
+  1.9.4
+
+Node version: 
+  10.9.0
+
+Platform: 
+  linux x64
+
+Trace: 
+  Error: EACCES: permission denied, mkdir '/home/vlad/Desktop/ionut/shop/node_modules/expand-range/node_modules/isarray'
+
+npm manifest: 
+  {
+    "name": "shop",
+    "version": "1.0.0",
+    "description": "Product directory for Shopify, Magento, Woocomerce and others..",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "start": "nodemon server.js"
+    },
+    "author": "Aion",
+    "license": "ISC",
+    "dependencies": {
+      "cors": "^2.8.4",
+      "elm-test": "^0.18.13-beta",
+      "firebase": "^5.4.2",
+      "prestan": "^1.1.0",
+      "request": "^2.88.0",
+      "request-promise-native": "^1.0.5",
+      "shopify-api-node": "^2.15.0",
+      "typy": "^2.0.1",
+      "woocommerce-api": "^1.4.2"
+    },
+    "devDependencies": {
+      "express": "^4.16.3",
+      "gulp": "^3.9.1",
+      "gulp-elm": "^0.7.2"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

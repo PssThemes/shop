@@ -2,6 +2,274 @@
 ===============================================================================================================================
 ===============================================================================================================================
 ===============================================================================================================================
+03 september 2018
+
+shopify
+
+Ensure the de-associate categories code is working.
+
+Cant figure otu why.. and i cant drill down in code to find where the problem comes.. since it requires many async calls.. so a better idea is to use fake data in a special way.
+My that i mean.. i build a model with a base situation.. like products put inside categories.. so on.. just something fake.
+
+then i will build specialized functions that do 1 thing.. like create an asociation.. remove an asociation.. create a product.. insert it .. so on..
+then given this base fake data.. and given this named specialized functions..
+using a combination of them i get the same effect as if i manully work in shopify.
+Is not proper testing.. ill not implement tdd for now.. just this exercise will help me better understand the situation.
+And later when i put a testing harness.. i will do the same thing.. fake data.. shape it with specialized functions.. then pass that trough the function beeing tested...
+then expec tthe resutl to be what that actions is supposed to take.
+
+How much time do i need to insert a testing harness into this project?
+Do i need to modify something  that harsh?
+Given that i dont need to manually fake data.. i can create products on the fly.. and insert them.. and do stuff.. like remove asociations and create categories and such..
+I can also remove stuff ..by calling functions..
+I can check for deep equality not like in javascript..
+
+I will not need to use the repl.. i can just go tdd style on it.. and also .. i might use the repl too to test the fuinctions that modify the data..
+This will take me another day or 2? Why?
+Since setup of elm test in elm 1.0 it might be different then 0.18.. so what changed?
+
+Advantages..
+It might be the only way in which i can properly realized why things are not working.
+It will clarify my thinking..
+I will learn to use testing harness in 1.0.
+It might be faster to finish the code this way...
+I might start here and use this approach every time in the future in a backend elm project.
+Elm is pure.. testing is super duper easy..
+
+
+Can i compare return cmd types?
+If not htf im gonna do anything?
+I need to ask in slack..
+
+Disadvantages..
+It might take more time then expected.
+
+What do i expect to take?
+1 day.. or even 2.
+
+Is it rely worth it..?
+Given that prestashop might require the same crazy setup.. and code there is different.. then hmm.
+I rather work on fake data and tests there too.
+
+The only serious problem here is i cant go inside code itself and hook myself into it with expectations.. quite a limitation.
+
+My actual problem is that i dont fully understand if the approach im having for dissociating products it actually works or not.
+I need a way to test it.. as opposed to think about it in my head.
+Make a bunch of asumptions.. and check if they are true.. But i cant have that qwithr async calls..
+Too much time spent on refresh and looking up inside the repl..
+
+What is the worst it can happen?
+I can waste time.. to setup this harness.. and discover that the problem was a very simple one.. and this testing was not neded to begin with..
+But testing is good regardless..
+Clarifies thinking.. then also is easy to reread later.. add more clauses.. see what expectations we had..
+
+The value is.. i can use the fake data i build 1.. just once.. for everything..
+Since i can add and remove and transform it with special functions..
+Ok so i have.
+1. data.
+2. functions for creating data.
+3. functions for transforming.. modifing and so on.. this are equivalent with actions performed by me in shop or firebase or stuff.
+
+Then i have a testing harness..
+which uses this operations.. and my functions.. to test stuff.
+
+Decision. Im gonna build a testing harness and test out a bunch of functions.
+Also create this full blown fake data..
+Then functions for manipulating it in specific ways.
+Im also gonna build a fake model.
+And test directly with the update function.
+
+Also ask in slack how to test the commands im getting back for the update function.. How to test the update function in general.
+
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+31 august 2018
+
+How to detect what products are dissociated and remove them form firebase?
+(1) One idea is that every time an external category is removed in fireabse - products need to be removed.
+(2) Another is that every time a category is modified in shop .. meaning more products are added or removed form it.. things need to change in firebase.
+
+
+If a category is empty.. all products that contained it.. will be deleted .. if it was the last category.
+
+So if i get the list of all empty categories..
+And remove them form allShopProducts.. then if a shop product has no category left on him.. is considered a dissociated product.
+So second idea is handled. (2)
+
+Removing all categories form a set.. that are in another set.. is done by reversing it.. and keeping only the stuff in a set.. that is not in another set.
+- set difference is
+
+
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+30 august 2018
+
+Shopify:
+DONE. Figure out why it duplicates the create functionality. WHY? Check our who of the following is right?
+  - work is called multiple times in the same cycle and it actually starts processing.. so js is called multiple times.
+  - there is no proper check that detects if a product needs to be created or not - check if created list is filled or not.
+
+Test out delete functionality.
+  - delete 1 product and see if gets deleted. DONE.
+  - de asociate a product with a category and see if gets deleted.
+    Behaviour: if from shopify i de asociate a product from a relevant category.. that product will not be removed form firebase.
+    Why?
+    Given that relecant categoires still contains that category.. even if is empoty.
+    Given that relevant products is filtered after relevant categoires.
+    Given that the product still exists in shop..
+
+    PROBLEM DETECTED>
+    If a category on shopify has no products.. then that category is excluded form the list of collects.
+    Meaning if i try to delete products i need to know which ones have only one category.. and that is deleted.
+
+
+    So right now i compare only products from fireabse and products from shiop. to detect who is deleted.
+    But also i need alist of emppty cateogries..
+    And i need to map over each shop product. And if that shop product... has only 1 cateogry .. and if that 1 category is in the empty categories list..
+    then that shop product is not included in firebase.
+
+    step 1. get list of empty external categories.
+    step 2. filter the products form shop.. to only the ones with 1 external category.
+        Q: Do i filter with all products or relevant products?
+        Option1: Filtering with all products.. means i get all of tshop products.. and i ensure i dont escape anyone..
+        Option2: Relevant products means only the ones witch have an extenral cateogry on them that is present on firebase.
+
+        So given a relevant product.. with 1 category on him.. this means that category is not empty by design.
+        So we are interested in products.. that have no categories on them.
+        Aaa ok,.
+
+        So Given that a product has no categories on him.. and given that is included in the list of relevant products... is this something which logically can happen?
+        No. because to be a relevant product .. needs to have at least 1 category.. and that category needs to be present in firebase.
+        Sooo. i means we need to use allProducts since a product with no categories cant posibly be a relevant product.
+
+        So Turns out that any product which has no cateogry.. will be included in this list of de asociated products.
+
+        Is it possible for a product to be in this list.. but not previously in firebase?
+        Yes. since in previous step.. this product might not be relevant. Is just some non asociated prodcut.. that is isolated form what happens in firebase..
+        Ok so still doers not matter..
+        Since deletedProductsExternalIds is what we after.. and there will be a optional mapping between this list and what exists in firebase.
+
+        SOoo.. final decision means :
+        All shop products with no external categories on them.. are considered deleted.
+
+        SO THIS ARE PRODUCTS WITH NO CATEGORIES ON THEM.
+
+    step 3. filter the products form shop to only the the ones that have that 1 category included in the empty category list. this products are considered deleted even if tyhey exist in shop. hey will not exist in firebase since no category in firebase is asociating to them.
+    step 4. extract the ids of this products.
+    step 5. add them to the deleted external products list.
+
+
+    ## What happens when a product is removed form 2 or 3  categories at the same time..(in the same cycle) and remains an orphan product?
+
+    First what is the problem?
+    If you diasociate a product.. then he is only supposed to be included .. only if the categories still remaining on him .. are present in firebase.
+    So one way to filter products..
+    Si to ensure that at least 1 of the externalCatId present on a shop product..
+    Is present in firebase.
+
+    If it has only 1 external category..
+    That ensure that one is not an empty category.
+
+    Also the problem is.. if the admin deletes and external category.. or empties it..
+    The firebase is supposed to break that association automatically.
+    Since having limping connections around is usless. This means we need to remove links to external categories also.
+
+
+    Sumarry:
+    Deleting a product can happend for two reasons:
+    1. the product is actually deleted.
+    2. the product is disassociated in a way that becomes irelevant to us.
+
+    First case is handled with a simple set difference.
+
+    But for second case we need to detect what it means that a product is disasociated in a way that becomes irelevant.
+
+    Irelevant is any product that:
+    1. has no external categories on it.
+    2. has no external categories ..  after we filter out the ones that are deleted or emptied.
+      So for each product.. we take out the external categoires which are present inside the emptyedOrDeletedExternalCategories.
+      After this process.. if the product has no categories left on it .. it means is irelevant to us.
+
+    Reversing this.. it means that if we take all shop products
+    And for each one we take out the emptyedOrDeletedExternalCategories
+    Then we endup with only relevant categories.
+
+    ## How to detect what external categories are empty?
+    IS the same issue with a deleted category.
+    How to detect a deleted category?
+
+    If an external category is in firebase... but not in the collects.. that means is deleted.. or empty.. since shopify behaves the same.
+    So this means filtering over collects.. and extracting all external categories ids as a set..
+    And getting the external categories form firebase..
+    Set difference between what is in firebase and what in shopify.. will give us the categories existent in firebase but not in shopify.
+    Which means this categories were deleted form shopify.
+
+    step1: get all external cat ids form shop. as set. ShopSet
+    step2: get all external cat ids form firebase. as set. FirebaseSet
+    step3: return:  set differecne between FirebaseSet and  ShopSet
+    DONE.
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+28 august 2018
+
+Shopify.
+
+- build a fake model in the fake data folder. DONE.
+- test out if the functions we use give the appropriate results.
+    - getExternalProductIdsFromFirebase DONE.
+    - extractCategoryProductAsociations DONE .
+    - extractCateogoryToCategoryAssociations DONE.
+
+    - getRelevantProducts DONE.
+    - getExternalProductIdsFromFirebase DONE.
+    - getExternalProductsIdsFromShop DONE.
+
+    - getDeletedProductsIds DONE.
+    - findAsociatedInternalProductId DONE.
+    - getCreatedProductsIds DONE.
+
+
+
+- put a work message and use the update function to manually test we get what we want.
+
+- test with real data.
+- test delete product
+- test create product
+- test update product
+
+PrestaShop.
+
+Build the following:
+- model
+- init
+- messages
+- update
+- subscriptions
+
+
+
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+27 august 2018
+
+Shopify .elm
+
+Reconstructing the work function to include the new data structure,.
+  - test out getExternalCategoriesFromFirebase DONE.
+  - repare extractAsociations function and test it out.
+
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
+===============================================================================================================================
 24 august 2018
 
 Shopify.

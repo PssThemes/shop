@@ -11,11 +11,12 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.4",
-    "firebase": "^5.2.0",
+    "elm-test": "^0.18.13-beta",
+    "firebase": "^5.4.2",
     "prestan": "^1.1.0",
-    "request": "^2.87.0",
+    "request": "^2.88.0",
     "request-promise-native": "^1.0.5",
-    "shopify-api-node": "^2.14.1",
+    "shopify-api-node": "^2.15.0",
     "typy": "^2.0.1",
     "woocommerce-api": "^1.4.2"
   },
