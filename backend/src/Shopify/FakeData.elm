@@ -1,11 +1,32 @@
-module FakeData exposing (..)
+module Shopify.FakeData exposing
+    ( appendShopifyCollect
+    , asociateInternalCategoryWithExternalCategory
+    , createExternalCategoryId
+    , createExternalCategoryName
+    , createExternalProductId
+    , createInternalCategory
+    , createInternalCategoryId
+    , createInternalCategoryName
+    , createInternalProduct
+    , createInternalProductId
+    , createInternalProductName
+    , createRawProduct
+    , internalCategories
+    , internalProducts
+    , rawShopifyProducts
+    , settings
+    , shopifyCollects
+    , shopifyEmptyModel
+    , shopifyModel
+    )
 
 import Data exposing (..)
 import EveryDict exposing (EveryDict)
-import Rocket exposing ((=>))
 import EverySet exposing (..)
 import Logic
-import Shopify
+import Rocket exposing ((=>))
+import Shopify.Shopify as Shopify
+
 
 
 -- #region Shopify Model
@@ -61,13 +82,13 @@ internalCategories =
         intCatId_pushKey2 =
             createInternalCategoryId "categoryPushKey2"
     in
-        [ intCatId_pushKey2 => createInternalCategory intCatId_pushKey2
-        , intCatId_pushKey2 => createInternalCategory intCatId_pushKey2
-        ]
-            |> EveryDict.fromList
-            |> asociateInternalCategoryWithExternalCategory Shopify intCatId_pushKey1 (createExternalCategoryId 1111)
-            |> asociateInternalCategoryWithExternalCategory Shopify intCatId_pushKey1 (createExternalCategoryId 2222)
-            |> asociateInternalCategoryWithExternalCategory Shopify intCatId_pushKey2 (createExternalCategoryId 1111)
+    [ intCatId_pushKey2 => createInternalCategory intCatId_pushKey2
+    , intCatId_pushKey2 => createInternalCategory intCatId_pushKey2
+    ]
+        |> EveryDict.fromList
+        |> asociateInternalCategoryWithExternalCategory Shopify intCatId_pushKey1 (createExternalCategoryId 1111)
+        |> asociateInternalCategoryWithExternalCategory Shopify intCatId_pushKey1 (createExternalCategoryId 2222)
+        |> asociateInternalCategoryWithExternalCategory Shopify intCatId_pushKey2 (createExternalCategoryId 1111)
 
 
 createInternalCategory : InternalCatId -> InternalCategory
@@ -109,14 +130,14 @@ asociateInternalCategoryWithExternalCategory shopName internalCatId externalCatI
                         Shopify ->
                             { cat
                                 | shopify =
-                                    (externalCatId => (createExternalCategoryName externalCatId))
+                                    (externalCatId => createExternalCategoryName externalCatId)
                                         :: cat.shopify
                             }
 
                         Prestashop ->
                             { cat
                                 | prestashop =
-                                    (externalCatId => (createExternalCategoryName externalCatId))
+                                    (externalCatId => createExternalCategoryName externalCatId)
                                         :: cat.prestashop
                             }
                 )
@@ -131,13 +152,13 @@ asociateInternalCategoryWithExternalCategory shopName internalCatId externalCatI
 
 internalProducts : EveryDict InternalProductId InternalProduct
 internalProducts =
-    [ (createInternalProductId "productPushKey1")
+    [ createInternalProductId "productPushKey1"
         => createInternalProduct Shopify (createInternalProductId "productPushKey1") (createExternalProductId 1)
-    , (createInternalProductId "productPushKey2")
+    , createInternalProductId "productPushKey2"
         => createInternalProduct Shopify (createInternalProductId "productPushKey2") (createExternalProductId 2)
-    , (createInternalProductId "productPushKey3")
+    , createInternalProductId "productPushKey3"
         => createInternalProduct Shopify (createInternalProductId "productPushKey3") (createExternalProductId 3)
-    , (createInternalProductId "productPushKey4")
+    , createInternalProductId "productPushKey4"
         => createInternalProduct Shopify (createInternalProductId "productPushKey4") (createExternalProductId 4)
     ]
         |> EveryDict.fromList
@@ -194,7 +215,7 @@ createRawProduct : Int -> RawShopifyProduct
 createRawProduct int =
     { id = int
     , title = int |> toString |> String.append "Product "
-    , body_html = "description for " ++ (toString int)
+    , body_html = "description for " ++ toString int
     , images =
         [ { src = "url" }
         ]

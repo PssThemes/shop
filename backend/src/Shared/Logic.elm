@@ -1,12 +1,12 @@
-module Logic exposing (createNewProduct, ensureItRelyNeedsUpdating, extractCategoryProductAsociations, extractCateogoryToCategoryAssociations, extractFieldsToUpdate, findAsociatedInternalProductId, getCreatedProductsIds, getExternalCategoriesFromFirebase, getExternalProductIdsFromFirebase, getExternalProductsIdsFromShop, getIdsOfDeletedProducts, getPosiblyUpdatedProductsIds, getRelevantProducts, getRelevantProductsIds, listContains, removeNothings, saveToFirebase, updateOrInsert)
+module Shared.Logic exposing (acumulateData, createNewProduct, ensureItRelyNeedsUpdating, extractCategoryProductAsociations, extractCateogoryToCategoryAssociations, extractFieldsToUpdate, findAsociatedInternalProductId, getCreatedProductsIds, getExternalCategoriesFromFirebase, getExternalProductIdsFromFirebase, getExternalProductsIdsFromShop, getIdsOfDeletedProducts, getPosiblyUpdatedProductsIds, getRelevantProducts, getRelevantProductsIds, listContains, removeNothings, saveToFirebase, updateOrInsert)
 
 -- import Json.Encode as JE
 -- import Rocket exposing ((=>))
 
-import Data exposing (..)
 import EveryDict exposing (..)
 import EverySet exposing (EverySet)
-import Ports
+import Shared.Data as Data exposing (..)
+import Shared.Ports as Ports
 
 
 getIdsOfDeletedProducts :
@@ -132,40 +132,52 @@ ensureItRelyNeedsUpdating internalProducts oneExtProductToManyExtCats ( internal
 -- #region Prepare Data for Firebase
 
 
-saveToFirebase :
+acumulateData :
     ShopName
     -> List InternalProductId
     -> List NormalizedProduct
     -> List ( InternalProductId, NormalizedProduct )
     -> EveryDict ExternalProductId (EverySet ExternalCatId)
     -> EveryDict ExternalCatId (EverySet InternalCatId)
+    ->
+        { deleted : List InternalProductId
+        , created : List NewlyCreatedProduct
+        , updated : List ( InternalProductId, FieldsToUpdate )
+        }
+acumulateData shopName deleted created updated oneExtProductToManyExtCats oneExternalCatIdToManyInternalCatIds =
+    { deleted = deleted
+    , created =
+        created
+            |> List.map (createNewProduct shopName oneExternalCatIdToManyInternalCatIds)
+            |> removeNothings
+    , updated =
+        updated
+            |> List.map (Tuple.mapSecond extractFieldsToUpdate)
+    }
+
+
+saveToFirebase :
+    { deleted : List InternalProductId
+    , created : List NewlyCreatedProduct
+    , updated : List ( InternalProductId, FieldsToUpdate )
+    }
     -> Cmd msg
-saveToFirebase shopName deleted created updated oneExtProductToManyExtCats oneExternalCatIdToManyInternalCatIds =
-    let
-        deleted_ =
-            deleted
-                |> List.map (\(InternalProductId id) -> id)
-
-        created_ =
-            created
-                |> List.map (createNewProduct shopName oneExternalCatIdToManyInternalCatIds)
-                |> removeNothings
-                |> List.map newlyCreatedProductEncoder
-
-        updated_ =
-            updated
-                |> List.map (Tuple.mapSecond extractFieldsToUpdate)
-                |> List.map (Tuple.mapSecond fieldsToUpdateEncoder)
-                |> List.map
-                    (\( InternalProductId id, fieldsToUpdate ) ->
-                        { firebaseKey = id
-                        , fieldsToUpdate = fieldsToUpdate
-                        }
-                    )
-    in
-    { deleted = deleted_
-    , created = created_
-    , updated = updated_
+saveToFirebase data =
+    { deleted =
+        data.deleted
+            |> List.map (\(InternalProductId id) -> id)
+    , created =
+        data.created
+            |> List.map newlyCreatedProductEncoder
+    , updated =
+        data.updated
+            |> List.map (Tuple.mapSecond fieldsToUpdateEncoder)
+            |> List.map
+                (\( InternalProductId id, fieldsToUpdate ) ->
+                    { firebaseKey = id
+                    , fieldsToUpdate = fieldsToUpdate
+                    }
+                )
     }
         |> Ports.saveToFirebase
 

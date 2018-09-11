@@ -5,9 +5,7 @@
     "license": "BSD3",
     "source-directories": [
         "..",
-        "../shared",
-        "../Shopify",
-        "../prestashop",
+        "../Tests",
         "."
     ],
     "exposed-modules": [],

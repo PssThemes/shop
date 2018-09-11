@@ -1,20 +1,16 @@
-module Data exposing (..)
-
-import Json.Decode as JD
-import Dict exposing (Dict)
-import EveryDict exposing (EveryDict)
-
+module Shared.Data exposing (CategoryName, ExternalCatId(..), ExternalProductId(..), FieldsToUpdate, InternalCatId(..), InternalCategory, InternalProduct, InternalProductId(..), NewlyCreatedProduct, NormalizedProduct, RawPrestashopProduct, RawShopifyCollect, RawShopifyProduct, Settings, ShopName(..), asociationDecoder, fieldsToUpdateEncoder, internalCategoriesDecoder, internalCategoryDecoder, internalProductDecoder, newlyCreatedProductEncoder, rawPrestashopProductDecoder, rawPrestashopProductsDecoder, rawRawShopifyProductDecoder, rawRawShopifyProductsDecoder, settingsDecoder, shopNameDecoder, shopNameEncoder, shopifyCollectsDecoder, transformRawPrestashopProduct, transformRawShopifyProduct)
 
 -- import Set exposing (Set)
+-- import Set exposing (Set)
 
+import Dict exposing (Dict)
+import EveryDict exposing (EveryDict)
+import EverySet exposing (EverySet)
+import Json.Decode as JD
 import Json.Decode.Pipeline as JDP
 import Json.Encode as JE
 import Rocket exposing ((=>))
 
-
--- import Set exposing (Set)
-
-import EverySet exposing (EverySet)
 
 
 -- #region Settings
@@ -37,7 +33,7 @@ type alias Settings =
 
 settingsDecoder : JD.Decoder Settings
 settingsDecoder =
-    (JD.map2
+    JD.map2
         (\shopify prestashop ->
             { shopify = shopify
             , prestashop = prestashop
@@ -65,7 +61,6 @@ settingsDecoder =
                 (JD.field "apiKey" JD.string)
             )
         )
-    )
 
 
 
@@ -146,10 +141,9 @@ type alias RawShopifyCollect =
 
 shopifyCollectsDecoder : JD.Decoder (List ( ExternalCatId, ExternalProductId ))
 shopifyCollectsDecoder =
-    (JD.map2 (\catId prodId -> ( ExternalCatId (toString catId), ExternalProductId (toString prodId) ))
+    JD.map2 (\catId prodId -> ( ExternalCatId (toString catId), ExternalProductId (toString prodId) ))
         (JD.field "collection_id" JD.int)
         (JD.field "product_id" JD.int)
-    )
         |> JD.list
 
 
@@ -275,8 +269,8 @@ internalProductDecoder =
         |> JDP.required "internalCatIds" (JD.dict JD.string)
         |> JDP.optional "mainImage" (JD.string |> JD.map Just) Nothing
         |> JDP.optional "media" (JD.list JD.string |> JD.map Just) Nothing
-        |> JDP.required "isHidden" (JD.bool)
-        |> JDP.required "howManyTimesWasOrdered" (JD.int)
+        |> JDP.required "isHidden" JD.bool
+        |> JDP.required "howManyTimesWasOrdered" JD.int
 
 
 
@@ -309,20 +303,20 @@ type alias NewlyCreatedProduct =
 
 newlyCreatedProductEncoder : NewlyCreatedProduct -> JE.Value
 newlyCreatedProductEncoder newlyCreatedProduct =
-    [ "shopName" => (shopNameEncoder newlyCreatedProduct.shopName)
+    [ "shopName" => shopNameEncoder newlyCreatedProduct.shopName
     , "externalId" => (newlyCreatedProduct.externalId |> (\(ExternalProductId id) -> JE.string id))
     , "name" => (newlyCreatedProduct.name |> JE.string)
     , "short_description" => (newlyCreatedProduct.short_description |> JE.string)
     , "price" => (newlyCreatedProduct.price |> JE.float)
     , "externalCatIds"
         => (newlyCreatedProduct.externalCatIds
-                |> EverySet.map (\(ExternalCatId id) -> (id => JE.string id))
+                |> EverySet.map (\(ExternalCatId id) -> id => JE.string id)
                 |> EverySet.toList
                 |> JE.object
            )
     , "internalCatIds"
         => (newlyCreatedProduct.internalCatIds
-                |> EverySet.map (\(InternalCatId id) -> (id => JE.string id))
+                |> EverySet.map (\(InternalCatId id) -> id => JE.string id)
                 |> EverySet.toList
                 |> JE.object
            )
@@ -332,8 +326,8 @@ newlyCreatedProductEncoder newlyCreatedProduct =
                 |> List.map JE.string
                 |> JE.list
            )
-    , "isHidden" => (JE.bool newlyCreatedProduct.isHidden)
-    , "howManyTimesWasOrdered" => (JE.int newlyCreatedProduct.howManyTimesWasOrdered)
+    , "isHidden" => JE.bool newlyCreatedProduct.isHidden
+    , "howManyTimesWasOrdered" => JE.int newlyCreatedProduct.howManyTimesWasOrdered
     ]
         |> JE.object
 
@@ -448,11 +442,11 @@ rawRawShopifyProductDecoder =
             , variants = variants
             }
         )
-        |> JDP.required "id" (JD.int)
-        |> JDP.required "title" (JD.string)
-        |> JDP.required "body_html" (JD.string)
+        |> JDP.required "id" JD.int
+        |> JDP.required "title" JD.string
+        |> JDP.required "body_html" JD.string
         |> JDP.required "images" (JD.list (JD.field "src" JD.string |> JD.map (\src -> { src = src })))
-        |> JDP.optional "image" ((JD.field "src" JD.string |> JD.map (\src -> Just { src = src }))) Nothing
+        |> JDP.optional "image" (JD.field "src" JD.string |> JD.map (\src -> Just { src = src })) Nothing
         |> JDP.required "variants" (JD.list (JD.field "price" JD.string |> JD.map (\price -> { price = price })))
 
 
@@ -476,11 +470,11 @@ rawPrestashopProductDecoder =
                 }
             }
         )
-        |> JDP.required "id" (JD.int)
-        |> JDP.required "name" (JD.string)
-        |> JDP.required "price" (JD.string)
-        |> JDP.required "description" (JD.string)
-        |> JDP.required "description_short" (JD.string)
+        |> JDP.required "id" JD.int
+        |> JDP.required "name" JD.string
+        |> JDP.required "price" JD.string
+        |> JDP.required "description" JD.string
+        |> JDP.required "description_short" JD.string
         |> JDP.requiredAt [ "associations", "categories" ] (JD.list (JD.field "id" JD.string |> JD.map (\id -> { id = id })))
         |> JDP.requiredAt [ "associations", "images" ] (JD.list (JD.field "id" JD.string |> JD.map (\id -> { id = id })))
 
@@ -504,26 +498,26 @@ transformRawShopifyProduct rawProduct externalCats =
         getShortDescription description =
             String.left 300 description
     in
-        { externalId = ExternalProductId (toString rawProduct.id)
-        , externalCatIds = externalCats
+    { externalId = ExternalProductId (toString rawProduct.id)
+    , externalCatIds = externalCats
 
-        --
-        , name = rawProduct.title
-        , price =
-            rawProduct.variants
-                |> List.head
-                |> Maybe.map (\obj -> obj |> .price >> String.toFloat)
-                |> Maybe.map (Result.withDefault 0)
-                |> Maybe.withDefault 0
+    --
+    , name = rawProduct.title
+    , price =
+        rawProduct.variants
+            |> List.head
+            |> Maybe.map (\obj -> obj |> .price >> String.toFloat)
+            |> Maybe.map (Result.withDefault 0)
+            |> Maybe.withDefault 0
 
-        --
-        , short_description = getShortDescription rawProduct.body_html
-        , description = rawProduct.body_html
+    --
+    , short_description = getShortDescription rawProduct.body_html
+    , description = rawProduct.body_html
 
-        --
-        , mainImage = rawProduct.image |> Maybe.map (\obj -> .src obj)
-        , media = List.map .src rawProduct.images
-        }
+    --
+    , mainImage = rawProduct.image |> Maybe.map (\obj -> .src obj)
+    , media = List.map .src rawProduct.images
+    }
 
 
 transformRawPrestashopProduct : RawPrestashopProduct -> NormalizedProduct

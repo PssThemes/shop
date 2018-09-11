@@ -1,13 +1,20 @@
-port module Ports exposing (..)
+port module Shared.Ports exposing
+    ( FirebasePushKey
+    , finish
+    , received_Collects
+    , received_ExternalProducts
+    , received_InternalProducts
+    , received_internalCategories
+    , received_settings
+    , saveToFirebase
+    , start
+    )
 
 -- import Data exposing (..)
 -- import Dict exposing (Dict)
-
-import Json.Decode as JD
-
-
 -- Outgoing ports
 
+import Json.Decode as JD
 import Json.Encode as JE
 
 

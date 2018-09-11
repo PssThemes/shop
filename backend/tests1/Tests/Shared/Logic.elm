@@ -1,12 +1,14 @@
-module Shared.Logic exposing (suite, test_DeleteFunctionality)
+module Tests.Shared.Logic exposing (suite, test_DeleteFunctionality)
 
-import Data exposing (..)
+-- import Expect exposing (Expectation)
+-- import Fuzz exposing (Fuzzer, int, list, string)
+-- import Logic
+-- import Shopify.FakeData as FakeData
+-- import Shopify.Shopify as Shopify
+-- import Shared.Data exposing (..)
+
 import EveryDict exposing (EveryDict)
 import EverySet exposing (EverySet)
-import Expect exposing (Expectation)
-import Fuzz exposing (Fuzzer, int, list, string)
-import Logic
-import Shopify
 import Test exposing (..)
 
 
@@ -17,19 +19,12 @@ suite =
         ]
 
 
-maybeCmdValue : Cmd a -> Maybe a
-maybeCmdValue cmd =
-    cmd
-        |> Cmd.map
-
-
 test_DeleteFunctionality : Test
 test_DeleteFunctionality =
     [ test "just test" <|
         \_ ->
-            Shopify.update Shopify.Nothing shopifyModel
-                |> Tuple.second
-                |> TestableCmd.expectNoCmd
+            Shopify.work FakeData.shopifyModel
+                |> Expect.equal Nothing
     , test """should remove a product that is in firebase but not in shop.""" <|
         \_ ->
             let
