@@ -132,40 +132,52 @@ ensureItRelyNeedsUpdating internalProducts oneExtProductToManyExtCats ( internal
 -- #region Prepare Data for Firebase
 
 
-saveToFirebase :
+acumulateData :
     ShopName
     -> List InternalProductId
     -> List NormalizedProduct
     -> List ( InternalProductId, NormalizedProduct )
     -> EveryDict ExternalProductId (EverySet ExternalCatId)
     -> EveryDict ExternalCatId (EverySet InternalCatId)
+    ->
+        { deleted : List InternalProductId
+        , created : List NewlyCreatedProduct
+        , updated : List ( InternalProductId, FieldsToUpdate )
+        }
+acumulateData shopName deleted created updated oneExtProductToManyExtCats oneExternalCatIdToManyInternalCatIds =
+    { deleted = deleted
+    , created =
+        created
+            |> List.map (createNewProduct shopName oneExternalCatIdToManyInternalCatIds)
+            |> removeNothings
+    , updated =
+        updated
+            |> List.map (Tuple.mapSecond extractFieldsToUpdate)
+    }
+
+
+saveToFirebase :
+    { deleted : List InternalProductId
+    , created : List NewlyCreatedProduct
+    , updated : List ( InternalProductId, FieldsToUpdate )
+    }
     -> Cmd msg
-saveToFirebase shopName deleted created updated oneExtProductToManyExtCats oneExternalCatIdToManyInternalCatIds =
-    let
-        deleted_ =
-            deleted
-                |> List.map (\(InternalProductId id) -> id)
-
-        created_ =
-            created
-                |> List.map (createNewProduct shopName oneExternalCatIdToManyInternalCatIds)
-                |> removeNothings
-                |> List.map newlyCreatedProductEncoder
-
-        updated_ =
-            updated
-                |> List.map (Tuple.mapSecond extractFieldsToUpdate)
-                |> List.map (Tuple.mapSecond fieldsToUpdateEncoder)
-                |> List.map
-                    (\( InternalProductId id, fieldsToUpdate ) ->
-                        { firebaseKey = id
-                        , fieldsToUpdate = fieldsToUpdate
-                        }
-                    )
-    in
-    { deleted = deleted_
-    , created = created_
-    , updated = updated_
+saveToFirebase { deleted, created, updated } =
+    { deleted =
+        deleted
+            |> List.map (\(InternalProductId id) -> id)
+    , created =
+        created
+            |> List.map newlyCreatedProductEncoder
+    , updated =
+        updated
+            |> List.map (Tuple.mapSecond fieldsToUpdateEncoder)
+            |> List.map
+                (\( InternalProductId id, fieldsToUpdate ) ->
+                    { firebaseKey = id
+                    , fieldsToUpdate = fieldsToUpdate
+                    }
+                )
     }
         |> Ports.saveToFirebase
 
@@ -311,7 +323,6 @@ updateOrInsert key value dict =
                     Just set ->
                         if EverySet.member value set then
                             Just set
-
                         else
                             Just (EverySet.insert value set)
             )
