@@ -20,11 +20,11 @@ module Shopify.FakeData exposing
     , shopifyModel
     )
 
-import Data exposing (..)
 import EveryDict exposing (EveryDict)
 import EverySet exposing (..)
-import Logic
 import Rocket exposing ((=>))
+import Shared.Data as Data exposing (..)
+import Shared.Logic as Logic
 import Shopify.Shopify as Shopify
 
 

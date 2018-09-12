@@ -8,3 +8,7 @@ We do need an encoder.. a transation mechanism from anything to some universal t
 ## Have the ability to use tasksk with this unieversal port..
 
 Making many tasks run in paralel.. or sequence.. then resolve them.. then work with their result.. is key.. to acomplish fast easy to read code with no crappy flags like is data loaded or something..
+
+
+## lolografic stuff
+imagine using the same principle of aps fiting on the screen or not.. like a snaping but in 32d.

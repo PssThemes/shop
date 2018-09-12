@@ -1,14 +1,13 @@
 module Tests.Shared.Logic exposing (suite, test_DeleteFunctionality)
 
--- import Expect exposing (Expectation)
--- import Fuzz exposing (Fuzzer, int, list, string)
--- import Logic
--- import Shopify.FakeData as FakeData
--- import Shopify.Shopify as Shopify
--- import Shared.Data exposing (..)
-
 import EveryDict exposing (EveryDict)
 import EverySet exposing (EverySet)
+import Expect exposing (Expectation)
+import Fuzz exposing (Fuzzer, int, list, string)
+import Shared.Data as Data exposing (..)
+import Shared.Logic as Logic
+import Shopify.FakeData as FakeData
+import Shopify.Shopify as Shopify
 import Test exposing (..)
 
 
