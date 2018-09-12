@@ -162,6 +162,7 @@ saveToFirebase :
     , updated : List ( InternalProductId, FieldsToUpdate )
     }
     -> Cmd msg
+<<<<<<< HEAD:backend/src/Shared/Logic.elm
 saveToFirebase data =
     { deleted =
         data.deleted
@@ -171,6 +172,17 @@ saveToFirebase data =
             |> List.map newlyCreatedProductEncoder
     , updated =
         data.updated
+=======
+saveToFirebase { deleted, created, updated } =
+    { deleted =
+        deleted
+            |> List.map (\(InternalProductId id) -> id)
+    , created =
+        created
+            |> List.map newlyCreatedProductEncoder
+    , updated =
+        updated
+>>>>>>> fc6cde0b1762df6fa893a1be1fbccc3f46074973:backend/shared/Logic.elm
             |> List.map (Tuple.mapSecond fieldsToUpdateEncoder)
             |> List.map
                 (\( InternalProductId id, fieldsToUpdate ) ->
@@ -323,7 +335,6 @@ updateOrInsert key value dict =
                     Just set ->
                         if EverySet.member value set then
                             Just set
-
                         else
                             Just (EverySet.insert value set)
             )

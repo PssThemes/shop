@@ -7624,17 +7624,25 @@ var _user$project$Data$newlyCreatedProductEncoder = function (newlyCreatedProduc
 								_0: A2(
 									_NoRedInk$rocket_update$Rocket_ops['=>'],
 									'externalCatIds',
+<<<<<<< HEAD
+									_elm_lang$core$Json_Encode$list(
+=======
 									_elm_lang$core$Json_Encode$object(
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 										_Gizra$elm_all_set$EverySet$toList(
 											A2(
 												_Gizra$elm_all_set$EverySet$map,
 												function (_p5) {
 													var _p6 = _p5;
+<<<<<<< HEAD
+													return _elm_lang$core$Json_Encode$string(_p6._0);
+=======
 													var _p7 = _p6._0;
 													return A2(
 														_NoRedInk$rocket_update$Rocket_ops['=>'],
 														_p7,
 														_elm_lang$core$Json_Encode$string(_p7));
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 												},
 												newlyCreatedProduct.externalCatIds)))),
 								_1: {
@@ -7642,6 +7650,15 @@ var _user$project$Data$newlyCreatedProductEncoder = function (newlyCreatedProduc
 									_0: A2(
 										_NoRedInk$rocket_update$Rocket_ops['=>'],
 										'internalCatIds',
+<<<<<<< HEAD
+										_elm_lang$core$Json_Encode$list(
+											_Gizra$elm_all_set$EverySet$toList(
+												A2(
+													_Gizra$elm_all_set$EverySet$map,
+													function (_p7) {
+														var _p8 = _p7;
+														return _elm_lang$core$Json_Encode$string(_p8._0);
+=======
 										_elm_lang$core$Json_Encode$object(
 											_Gizra$elm_all_set$EverySet$toList(
 												A2(
@@ -7653,6 +7670,7 @@ var _user$project$Data$newlyCreatedProductEncoder = function (newlyCreatedProduc
 															_NoRedInk$rocket_update$Rocket_ops['=>'],
 															_p10,
 															_elm_lang$core$Json_Encode$string(_p10));
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 													},
 													newlyCreatedProduct.internalCatIds)))),
 									_1: {
@@ -7864,15 +7882,24 @@ var _user$project$Data$Shopify = {ctor: 'Shopify'};
 var _user$project$Data$shopNameDecoder = A2(
 	_elm_lang$core$Json_Decode$andThen,
 	function (string) {
+<<<<<<< HEAD
+		var _p9 = string;
+		switch (_p9) {
+=======
 		var _p11 = string;
 		switch (_p11) {
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 			case 'shopify':
 				return _elm_lang$core$Json_Decode$succeed(_user$project$Data$Shopify);
 			case 'prestashop':
 				return _elm_lang$core$Json_Decode$succeed(_user$project$Data$Prestashop);
 			default:
 				return _elm_lang$core$Json_Decode$fail(
+<<<<<<< HEAD
+					A2(_elm_lang$core$Basics_ops['++'], 'invalid shop name :  ', _p9));
+=======
 					A2(_elm_lang$core$Basics_ops['++'], 'invalid shop name :  ', _p11));
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 		}
 	},
 	_elm_lang$core$Json_Decode$string);
@@ -7973,17 +8000,29 @@ var _user$project$Data$internalProductDecoder = A3(
 																										externalCatIds: _Gizra$elm_all_set$EverySet$fromList(
 																											A2(
 																												_elm_lang$core$List$map,
+<<<<<<< HEAD
+																												function (_p10) {
+																													return _user$project$Data$ExternalCatId(
+																														_elm_lang$core$Tuple$second(_p10));
+=======
 																												function (_p12) {
 																													return _user$project$Data$ExternalCatId(
 																														_elm_lang$core$Tuple$second(_p12));
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 																												},
 																												_elm_lang$core$Dict$toList(externalCatIds))),
 																										internalCatIds: _Gizra$elm_all_set$EverySet$fromList(
 																											A2(
 																												_elm_lang$core$List$map,
+<<<<<<< HEAD
+																												function (_p11) {
+																													return _user$project$Data$InternalCatId(
+																														_elm_lang$core$Tuple$second(_p11));
+=======
 																												function (_p13) {
 																													return _user$project$Data$InternalCatId(
 																														_elm_lang$core$Tuple$second(_p13));
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 																												},
 																												_elm_lang$core$Dict$toList(internalCatIds))),
 																										mainImage: mainImage,
@@ -8014,7 +8053,11 @@ var _user$project$Data$transformRawShopifyProduct = F2(
 		return {
 			externalId: _user$project$Data$ExternalProductId(
 				_elm_lang$core$Basics$toString(rawProduct.id)),
+<<<<<<< HEAD
+			externalCatIds: _Gizra$elm_all_set$EverySet$fromList(externalCats),
+=======
 			externalCatIds: externalCats,
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 			name: rawProduct.title,
 			price: A2(
 				_elm_lang$core$Maybe$withDefault,
@@ -8025,11 +8068,19 @@ var _user$project$Data$transformRawShopifyProduct = F2(
 					A2(
 						_elm_lang$core$Maybe$map,
 						function (obj) {
+<<<<<<< HEAD
+							return function (_p12) {
+								return _elm_lang$core$String$toFloat(
+									function (_) {
+										return _.price;
+									}(_p12));
+=======
 							return function (_p14) {
 								return _elm_lang$core$String$toFloat(
 									function (_) {
 										return _.price;
 									}(_p14));
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 							}(obj);
 						},
 						_elm_lang$core$List$head(rawProduct.variants)))),
@@ -8053,18 +8104,32 @@ var _user$project$Data$transformRawShopifyProduct = F2(
 	});
 var _user$project$Data$transformRawPrestashopProduct = function (rawProduct) {
 	return {
+<<<<<<< HEAD
+		externalId: function (_p13) {
+			return _user$project$Data$ExternalProductId(
+				_elm_lang$core$Basics$toString(_p13));
+=======
 		externalId: function (_p15) {
 			return _user$project$Data$ExternalProductId(
 				_elm_lang$core$Basics$toString(_p15));
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 		}(rawProduct.id),
 		externalCatIds: _Gizra$elm_all_set$EverySet$fromList(
 			A2(
 				_elm_lang$core$List$map,
+<<<<<<< HEAD
+				function (_p14) {
+					return _user$project$Data$ExternalCatId(
+						function (_) {
+							return _.id;
+						}(_p14));
+=======
 				function (_p16) {
 					return _user$project$Data$ExternalCatId(
 						function (_) {
 							return _.id;
 						}(_p16));
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 				},
 				rawProduct.associations.categories)),
 		name: rawProduct.name,
@@ -8279,6 +8344,19 @@ var _user$project$Logic$getExternalCategoriesFromFirebase = F2(
 				}),
 			_Gizra$elm_all_set$EverySet$empty,
 			A2(
+<<<<<<< HEAD
+				_eeue56$elm_all_dict$EveryDict$map,
+				F2(
+					function (k, cat) {
+						var _p11 = shopName;
+						if (_p11.ctor === 'Shopify') {
+							return cat.shopify;
+						} else {
+							return cat.prestashop;
+						}
+					}),
+				internalCategories));
+=======
 				_Gizra$elm_all_set$EverySet$map,
 				function (_p13) {
 					return _Gizra$elm_all_set$EverySet$fromList(
@@ -8301,13 +8379,19 @@ var _user$project$Logic$getExternalCategoriesFromFirebase = F2(
 									}
 								}),
 							internalCategories)))));
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 	});
 var _user$project$Logic$extractFieldsToUpdate = function (nProduct) {
 	return {name: nProduct.name, short_description: nProduct.short_description, price: nProduct.price, externalCatIds: nProduct.externalCatIds, mainImage: nProduct.mainImage, media: nProduct.media};
 };
 var _user$project$Logic$ensureItRelyNeedsUpdating = F3(
+<<<<<<< HEAD
+	function (internalProducts, oneExtProductToManyExtCats, _p12) {
+		var _p13 = _p12;
+=======
 	function (internalProducts, oneExtProductToManyExtCats, _p15) {
 		var _p16 = _p15;
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 		return true;
 	});
 var _user$project$Logic$getPosiblyUpdatedProductsIds = F3(
@@ -8318,6 +8402,17 @@ var _user$project$Logic$getPosiblyUpdatedProductsIds = F3(
 var _user$project$Logic$removeNothings = function (list) {
 	removeNothings:
 	while (true) {
+<<<<<<< HEAD
+		var _p14 = list;
+		if (_p14.ctor === '[]') {
+			return {ctor: '[]'};
+		} else {
+			var _p16 = _p14._1;
+			var _p15 = _p14._0;
+			if (_p15.ctor === 'Nothing') {
+				var _v9 = _p16;
+				list = _v9;
+=======
 		var _p17 = list;
 		if (_p17.ctor === '[]') {
 			return {ctor: '[]'};
@@ -8327,12 +8422,18 @@ var _user$project$Logic$removeNothings = function (list) {
 			if (_p18.ctor === 'Nothing') {
 				var _v10 = _p19;
 				list = _v10;
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 				continue removeNothings;
 			} else {
 				return {
 					ctor: '::',
+<<<<<<< HEAD
+					_0: _p15._0,
+					_1: _user$project$Logic$removeNothings(_p16)
+=======
 					_0: _p18._0,
 					_1: _user$project$Logic$removeNothings(_p19)
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 				};
 			}
 		}
@@ -8365,9 +8466,15 @@ var _user$project$Logic$saveToFirebase = F6(
 	function (shopName, deleted, created, updated, oneExtProductToManyExtCats, oneExternalCatIdToManyInternalCatIds) {
 		var updated_ = A2(
 			_elm_lang$core$List$map,
+<<<<<<< HEAD
+			function (_p17) {
+				var _p18 = _p17;
+				return {firebaseKey: _p18._0._0, fieldsToUpdate: _p18._1};
+=======
 			function (_p20) {
 				var _p21 = _p20;
 				return {firebaseKey: _p21._0._0, fieldsToUpdate: _p21._1};
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 			},
 			A2(
 				_elm_lang$core$List$map,
@@ -8386,11 +8493,20 @@ var _user$project$Logic$saveToFirebase = F6(
 					created)));
 		var deleted_ = A2(
 			_elm_lang$core$List$map,
+<<<<<<< HEAD
+			function (_p19) {
+				var _p20 = _p19;
+				return _p20._0;
+			},
+			deleted);
+		var _p21 = A2(_elm_lang$core$Debug$log, 'saveToFirebase: ', _user$project$Logic$saveToFirebase);
+=======
 			function (_p22) {
 				var _p23 = _p22;
 				return _p23._0;
 			},
 			deleted);
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 		return _user$project$Ports$saveToFirebase(
 			{deleted: deleted_, created: created_, updated: updated_});
 	});
@@ -8404,7 +8520,7 @@ var _user$project$Logic$findAsociatedInternalProductId = F2(
 					A2(
 						_eeue56$elm_all_dict$EveryDict$filter,
 						F2(
-							function (_p24, product) {
+							function (_p22, product) {
 								return _elm_lang$core$Native_Utils.eq(product.externalId, externalProductId);
 							}),
 						internalProducts))));
@@ -8464,14 +8580,24 @@ var _user$project$Shopify$selfCall = function (msg) {
 };
 var _user$project$Shopify$init = {
 	ctor: '_Tuple2',
+<<<<<<< HEAD
+	_0: {settings: _elm_lang$core$Maybe$Nothing, internalCategories: _elm_lang$core$Maybe$Nothing, internalProducts: _elm_lang$core$Maybe$Nothing, rawShopifyProducts: _elm_lang$core$Maybe$Nothing, shopifyCollects: _elm_lang$core$Maybe$Nothing},
+=======
 	_0: {settings: _elm_lang$core$Maybe$Nothing, internalCategories: _elm_lang$core$Maybe$Nothing, internalProducts: _elm_lang$core$Maybe$Nothing, rawShopifyProducts: _elm_lang$core$Maybe$Nothing, shopifyCollects: _elm_lang$core$Maybe$Nothing, workIsDone: false},
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 	_1: {ctor: '[]'}
 };
 var _user$project$Shopify$jd1 = _elm_lang$core$Json_Decode$int;
 var _user$project$Shopify$je1 = _elm_lang$core$Json_Encode$int(2);
+<<<<<<< HEAD
+var _user$project$Shopify$Model = F5(
+	function (a, b, c, d, e) {
+		return {settings: a, internalCategories: b, internalProducts: c, rawShopifyProducts: d, shopifyCollects: e};
+=======
 var _user$project$Shopify$Model = F6(
 	function (a, b, c, d, e, f) {
 		return {settings: a, internalCategories: b, internalProducts: c, rawShopifyProducts: d, shopifyCollects: e, workIsDone: f};
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 	});
 var _user$project$Shopify$Work = function (a) {
 	return {ctor: 'Work', _0: a};
@@ -8581,7 +8707,11 @@ var _user$project$Shopify$update = F2(
 												function (product) {
 													return {ctor: '_Tuple2', _0: product.selfId, _1: product};
 												},
+<<<<<<< HEAD
+												_p8)))
+=======
 												_p4._0)))
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 								}),
 							{
 								ctor: '::',
@@ -8595,7 +8725,11 @@ var _user$project$Shopify$update = F2(
 							_elm_lang$core$Native_Utils.update(
 								model,
 								{
+<<<<<<< HEAD
+									rawShopifyProducts: _elm_lang$core$Maybe$Just(_p3._0)
+=======
 									rawShopifyProducts: _elm_lang$core$Maybe$Just(_p4._0)
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 								}),
 							{
 								ctor: '::',
@@ -8631,6 +8765,13 @@ var _user$project$Shopify$update = F2(
 								_elm_lang$core$Maybe$map5,
 								F5(
 									function (settings, internalCategories, internalProducts, rawShopifyProducts, shopifyCollects) {
+<<<<<<< HEAD
+										var _p9 = A2(_elm_lang$core$Debug$log, 'hmm.', 'yes..');
+										return A2(
+											_NoRedInk$rocket_update$Rocket_ops['=>'],
+											model,
+											{ctor: '[]'});
+=======
 										var externalProductIdsFromFirebase = _user$project$Logic$getExternalProductIdsFromFirebase(internalProducts);
 										var _p7 = A2(_user$project$Logic$extractCateogoryToCategoryAssociations, _user$project$Data$Shopify, internalCategories);
 										var oneExtCatToManyIntCats = _p7._0;
@@ -8746,6 +8887,7 @@ var _user$project$Shopify$update = F2(
 												_0: A6(_user$project$Logic$saveToFirebase, _user$project$Data$Shopify, deletedProductsInternalIds, createdProducts, updatedProducts, oneExtProductToManyExtCats, oneExtCatToManyIntCats),
 												_1: {ctor: '[]'}
 											});
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 									}),
 								model.settings,
 								model.internalCategories,
@@ -8769,35 +8911,65 @@ var _user$project$Shopify$subscriptions = function (model) {
 		{
 			ctor: '::',
 			_0: _user$project$Ports$start(
+<<<<<<< HEAD
+				function (_p10) {
+=======
 				function (_p13) {
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 					return _user$project$Shopify$Start;
 				}),
 			_1: {
 				ctor: '::',
 				_0: _user$project$Ports$received_settings(
 					function (value) {
+<<<<<<< HEAD
+						var _p11 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$settingsDecoder, value);
+						if (_p11.ctor === 'Ok') {
+							return _user$project$Shopify$ReceivedSettings(_p11._0);
+						} else {
+							return _user$project$Shopify$DecodingError(_p11._0);
+=======
 						var _p14 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$settingsDecoder, value);
 						if (_p14.ctor === 'Ok') {
 							return _user$project$Shopify$ReceivedSettings(_p14._0);
 						} else {
 							return _user$project$Shopify$DecodingError(_p14._0);
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 						}
 					}),
 				_1: {
 					ctor: '::',
 					_0: _user$project$Ports$received_internalCategories(
 						function (value) {
+<<<<<<< HEAD
+							var _p12 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$internalCategoriesDecoder, value);
+							if (_p12.ctor === 'Ok') {
+								return _user$project$Shopify$ReceivedInternalCategories(_p12._0);
+							} else {
+								return _user$project$Shopify$DecodingError(_p12._0);
+=======
 							var _p15 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$internalCategoriesDecoder, value);
 							if (_p15.ctor === 'Ok') {
 								return _user$project$Shopify$ReceivedInternalCategories(_p15._0);
 							} else {
 								return _user$project$Shopify$DecodingError(_p15._0);
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 							}
 						}),
 					_1: {
 						ctor: '::',
 						_0: _user$project$Ports$received_InternalProducts(
 							function (value) {
+<<<<<<< HEAD
+								var _p13 = A2(
+									_elm_lang$core$Json_Decode$decodeValue,
+									_elm_lang$core$Json_Decode$list(_user$project$Data$internalProductDecoder),
+									value);
+								if (_p13.ctor === 'Ok') {
+									return _user$project$Shopify$ReceivedInternalProducts(_p13._0);
+								} else {
+									return _user$project$Shopify$DecodingError(_p13._0);
+=======
 								var _p16 = A2(
 									_elm_lang$core$Json_Decode$decodeValue,
 									_elm_lang$core$Json_Decode$list(_user$project$Data$internalProductDecoder),
@@ -8806,28 +8978,45 @@ var _user$project$Shopify$subscriptions = function (model) {
 									return _user$project$Shopify$ReceivedInternalProducts(_p16._0);
 								} else {
 									return _user$project$Shopify$DecodingError(_p16._0);
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 								}
 							}),
 						_1: {
 							ctor: '::',
 							_0: _user$project$Ports$received_ExternalProducts(
 								function (value) {
+<<<<<<< HEAD
+									var _p14 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$rawRawShopifyProductsDecoder, value);
+									if (_p14.ctor === 'Ok') {
+										return _user$project$Shopify$ReceivedRawProducts(_p14._0);
+									} else {
+										return _user$project$Shopify$DecodingError(_p14._0);
+=======
 									var _p17 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$rawRawShopifyProductsDecoder, value);
 									if (_p17.ctor === 'Ok') {
 										return _user$project$Shopify$ReceivedRawProducts(_p17._0);
 									} else {
 										return _user$project$Shopify$DecodingError(_p17._0);
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 									}
 								}),
 							_1: {
 								ctor: '::',
 								_0: _user$project$Ports$received_Collects(
 									function (value) {
+<<<<<<< HEAD
+										var _p15 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$shopifyCollectsDecoder, value);
+										if (_p15.ctor === 'Ok') {
+											return _user$project$Shopify$ReceivedShopifyCollects(_p15._0);
+										} else {
+											return _user$project$Shopify$DecodingError(_p15._0);
+=======
 										var _p18 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Data$shopifyCollectsDecoder, value);
 										if (_p18.ctor === 'Ok') {
 											return _user$project$Shopify$ReceivedShopifyCollects(_p18._0);
 										} else {
 											return _user$project$Shopify$DecodingError(_p18._0);
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 										}
 									}),
 								_1: {ctor: '[]'}
@@ -8841,9 +9030,15 @@ var _user$project$Shopify$subscriptions = function (model) {
 var _user$project$Shopify$main = _elm_lang$core$Platform$program(
 	{
 		init: _NoRedInk$rocket_update$Rocket$batchInit(_user$project$Shopify$init),
+<<<<<<< HEAD
+		update: function (_p16) {
+			return _NoRedInk$rocket_update$Rocket$batchUpdate(
+				_user$project$Shopify$update(_p16));
+=======
 		update: function (_p19) {
 			return _NoRedInk$rocket_update$Rocket$batchUpdate(
 				_user$project$Shopify$update(_p19));
+>>>>>>> 0febd35dba8042d3e936e73ef09c39be9a00d018
 		},
 		subscriptions: _user$project$Shopify$subscriptions
 	})();
