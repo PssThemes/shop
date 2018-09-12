@@ -261,14 +261,6 @@ settings =
 ----------------------------------------------------------------------------------------------
 -- Transformers of data
 ----------------------------------------------------------------------------------------------
--- type alias Model =
---     { settings : Maybe Settings
---     , internalCategories : Maybe (EveryDict InternalCatId InternalCategory)
---     , internalProducts : Maybe (EveryDict InternalProductId InternalProduct)
---     , rawShopifyProducts : Maybe (List RawShopifyProduct)
---     , shopifyCollects : Maybe (List ( ExternalCatId, ExternalProductId ))
---     , workIsDone : Bool
---     }
 
 
 createNewProductInShopify : Int -> ExternalCatId -> Shopify.Model -> Shopify.Model
@@ -287,12 +279,58 @@ createNewProductInShopify id externalCatId shopifyModel =
 
 
 
+-- type alias Model =
+--     { settings : Maybe Settings
+--     , internalCategories : Maybe (EveryDict InternalCatId InternalCategory)
+--     , internalProducts : Maybe (EveryDict InternalProductId InternalProduct)
+--     , rawShopifyProducts : Maybe (List RawShopifyProduct)
+--     , shopifyCollects : Maybe (List ( ExternalCatId, ExternalProductId ))
+--     , workIsDone : Bool
+--     }
 -- type alias InternalCategory =
 --     { selfId : InternalCatId
 --     , name : String
 --     , shopify : List ( ExternalCatId, CategoryName )
 --     , prestashop : List ( ExternalCatId, CategoryName )
 --     }
+
+
+manuallyAddProductInFirebase : String -> Int -> Shopify.Model -> Shopify.Model
+manuallyAddProductInFirebase pushId externalId model =
+    let
+        internalProductId =
+            createInternalProductId pushId
+
+        externalProductId =
+            createExternalProductId externalId
+
+        product =
+            createInternalProduct Shopify internalProductId externalProductId
+    in
+    model.internalProducts
+        |> Maybe.map
+            (\internalProducts ->
+                case EveryDict.get internalProductId internalProducts of
+                    Just _ ->
+                        -- this product already exists.
+                        model
+
+                    Nothing ->
+                        -- create a new product and add it inside the internalProducts dict.
+                        { model
+                            | internalProducts =
+                                Just (EveryDict.insert internalProductId product internalProducts)
+                        }
+            )
+        |> Maybe.withDefault
+            -- no internal products yet.. insert a new one.
+            { model
+                | internalProducts =
+                    [ internalProductId => product
+                    ]
+                        |> EveryDict.fromList
+                        >> Just
+            }
 
 
 createShopifyAsociationEvenWhenCategoryDoesNotExist : InternalCatId -> ExternalCatId -> Shopify.Model -> Shopify.Model
