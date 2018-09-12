@@ -261,4 +261,101 @@ settings =
 ----------------------------------------------------------------------------------------------
 -- Transformers of data
 ----------------------------------------------------------------------------------------------
+-- type alias Model =
+--     { settings : Maybe Settings
+--     , internalCategories : Maybe (EveryDict InternalCatId InternalCategory)
+--     , internalProducts : Maybe (EveryDict InternalProductId InternalProduct)
+--     , rawShopifyProducts : Maybe (List RawShopifyProduct)
+--     , shopifyCollects : Maybe (List ( ExternalCatId, ExternalProductId ))
+--     , workIsDone : Bool
+--     }
+
+
+createNewProductInShopify : Int -> ExternalCatId -> Shopify.Model -> Shopify.Model
+createNewProductInShopify id externalCatId shopifyModel =
+    { shopifyModel
+        | rawShopifyProducts =
+            shopifyModel.rawShopifyProducts
+                |> appendOrCreateMaybeList (createRawProduct id)
+        , shopifyCollects =
+            shopifyModel.shopifyCollects
+                |> appendOrCreateMaybeList
+                    ( externalCatId
+                    , createExternalProductId id
+                    )
+    }
+
+
+
+-- type alias InternalCategory =
+--     { selfId : InternalCatId
+--     , name : String
+--     , shopify : List ( ExternalCatId, CategoryName )
+--     , prestashop : List ( ExternalCatId, CategoryName )
+--     }
+
+
+createShopifyAsociationEvenWhenCategoryDoesNotExist : InternalCatId -> ExternalCatId -> Shopify.Model -> Shopify.Model
+createShopifyAsociationEvenWhenCategoryDoesNotExist internalCatId externalCatId shopifyModel =
+    let
+        createAsociation : InternalCategory -> InternalCategory
+        createAsociation category =
+            { category
+                | shopify =
+                    ( externalCatId, createExternalCategoryName externalCatId ) :: category.shopify
+            }
+    in
+    { shopifyModel
+        | internalCategories =
+            case shopifyModel.internalCategories of
+                Nothing ->
+                    -- create the category and insert the asociation.
+                    [ internalCatId
+                        => (createInternalCategory internalCatId
+                                |> createAsociation
+                           )
+                    ]
+                        |> (EveryDict.fromList >> Just)
+
+                Just internalCategories ->
+                    (case EveryDict.get internalCatId internalCategories of
+                        Nothing ->
+                            -- create new category and insert the asociation.
+                            createInternalCategory internalCatId
+                                |> createAsociation
+
+                        Just category ->
+                            -- update and existing category by inserting the asociation.
+                            category
+                                |> createAsociation
+                    )
+                        |> (\newInternalCategory ->
+                                internalCategories
+                                    |> updateExistingOrInsertNew internalCatId (\oldInternalCategory -> newInternalCategory) newInternalCategory
+                                    |> Just
+                           )
+    }
+
+
+updateExistingOrInsertNew : k -> (v -> v) -> v -> EveryDict k v -> EveryDict k v
+updateExistingOrInsertNew k f v dict =
+    case EveryDict.get k dict of
+        Nothing ->
+            EveryDict.insert k v dict
+
+        Just v ->
+            EveryDict.insert k (f v) dict
+
+
+appendOrCreateMaybeList : a -> Maybe (List a) -> Maybe (List a)
+appendOrCreateMaybeList a maybe =
+    case maybe of
+        Just list ->
+            Just (list ++ [ a ])
+
+        Nothing ->
+            Just [ a ]
+
+
+
 -- #endregion Transformers of data
