@@ -41,6 +41,8 @@ getIdsOfDeletedProducts firebaseProductsIds shopProductsIds emptyedOrDeletedExte
     in
     -- means products that are in firebase but not on shop.
     -- and alo remove products that remain and are present
+    -- EverySet.diff firebaseProductsIds shopProductsIds
+    --     |> Debug.log (toString ( firebaseProductsIds, shopProductsIds ))
     EverySet.diff (EverySet.diff firebaseProductsIds shopProductsIds) deasociatedProducts
 
 

@@ -11,8 +11,12 @@ module Shopify.FakeData exposing
     , createInternalProductId
     , createInternalProductName
     , createRawProduct
+    , createShopifyAsociationEvenWhenCategoryDoesNotExist
     , internalCategories
     , internalProducts
+    , manuallyAddProductInFirebase
+    , pairOfCat
+    , pairOfProduct
     , rawShopifyProducts
     , settings
     , shopifyCollects
@@ -49,10 +53,10 @@ shopifyModel =
 shopifyEmptyModel : Shopify.Model
 shopifyEmptyModel =
     { settings = Just settings
-    , internalCategories = Nothing
-    , internalProducts = Nothing
-    , rawShopifyProducts = Nothing
-    , shopifyCollects = Nothing
+    , internalCategories = Just EveryDict.empty
+    , internalProducts = Just EveryDict.empty
+    , rawShopifyProducts = Just []
+    , shopifyCollects = Just []
     , workIsDone = False
     }
 
@@ -144,6 +148,11 @@ asociateInternalCategoryWithExternalCategory shopName internalCatId externalCatI
             )
 
 
+pairOfCat : Int -> ( InternalCatId, ExternalCatId )
+pairOfCat id =
+    ( createInternalCategoryId (toString id), createExternalCategoryId id )
+
+
 
 -- #endregion Internal Categories  Stuff
 --
@@ -224,6 +233,11 @@ createRawProduct int =
     }
 
 
+pairOfProduct : Int -> ( InternalProductId, ExternalProductId )
+pairOfProduct id =
+    ( createInternalProductId (toString id), createExternalProductId id )
+
+
 
 -- #endregion Raw Products
 --
@@ -295,15 +309,9 @@ createNewProductInShopify id externalCatId shopifyModel =
 --     }
 
 
-manuallyAddProductInFirebase : String -> Int -> Shopify.Model -> Shopify.Model
-manuallyAddProductInFirebase pushId externalId model =
+manuallyAddProductInFirebase : InternalProductId -> ExternalProductId -> Shopify.Model -> Shopify.Model
+manuallyAddProductInFirebase internalProductId externalProductId model =
     let
-        internalProductId =
-            createInternalProductId pushId
-
-        externalProductId =
-            createExternalProductId externalId
-
         product =
             createInternalProduct Shopify internalProductId externalProductId
     in
@@ -396,4 +404,11 @@ appendOrCreateMaybeList a maybe =
 
 
 
+-- { settings : Maybe Settings
+-- , internalCategories : Maybe (EveryDict InternalCatId InternalCategory)
+-- , internalProducts : Maybe (EveryDict InternalProductId InternalProduct)
+-- , rawShopifyProducts : Maybe (List RawShopifyProduct)
+-- , shopifyCollects : Maybe (List ( ExternalCatId, ExternalProductId ))
+-- , workIsDone : Bool
+-- }
 -- #endregion Transformers of data

@@ -6,7 +6,7 @@ import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, list, string)
 import Shared.Data as Data exposing (..)
 import Shared.Logic as Logic
-import Shopify.FakeData as FakeData
+import Shopify.FakeData as FakeData exposing (..)
 import Shopify.Shopify as Shopify
 import Test exposing (..)
 
@@ -29,22 +29,51 @@ suite =
 --     }
 
 
+putShopifyModelToWork :
+    Shopify.Model
+    ->
+        ({ deleted : List InternalProductId
+         , created : List NewlyCreatedProduct
+         , updated : List ( InternalProductId, FieldsToUpdate )
+         }
+         -> Expectation
+        )
+    -> Expectation
+putShopifyModelToWork model test =
+    Maybe.map4 Shopify.work
+        model.internalCategories
+        model.internalProducts
+        model.rawShopifyProducts
+        model.shopifyCollects
+        |> Maybe.map test
+        |> Maybe.withDefault (Expect.fail ("the Shopify Model used contains a field with Nothing." ++ toString model))
+
+
+shopifyEmptyModel : Shopify.Model
+shopifyEmptyModel =
+    FakeData.shopifyEmptyModel
+
+
 test_DeleteFunctionality : Test
 test_DeleteFunctionality =
-    [ test "just test" <|
+    [ test """should remove a product that is in firebase but not in shop.""" <|
         \_ ->
-            Shopify.work FakeData.shopifyModel
-                |> Expect.equal Nothing
-    , test """should remove a product that is in firebase but not in shop.""" <|
-        \_ ->
-            -- testModel =
-            --   { FakeData.shopifyModel
-            --     | internalCategories =
-            --         []
-            --           |> ( Dict.formList >> Just )
-            --   }
-            1
-                |> Expect.equal 1
+            let
+                ( intCatId, extCatId ) =
+                    pairOfCat 111
+
+                ( intProdId, extProdId ) =
+                    pairOfProduct 1
+
+                testModel =
+                    shopifyEmptyModel
+                        |> manuallyAddProductInFirebase intProdId extProdId
+                        |> createShopifyAsociationEvenWhenCategoryDoesNotExist intCatId extCatId
+            in
+            (\data ->
+                Expect.equal data.deleted [ intProdId ]
+            )
+                |> putShopifyModelToWork testModel
     , skip <|
         describe """deleting an internal firebase category"""
             [ todo """ products asociated with the external categories -  that have been deleted
@@ -63,10 +92,6 @@ test_DeleteFunctionality =
             , todo "should not be deleted, if the product has other external categories(asociations) on it."
             ]
     , skip <|
-        let
-            init =
-                2
-        in
         describe "emptying a shop category of all products"
             [ todo "all products which have only that category on them should be deleted."
             , todo "all products that have other categories on them outside of this one.. should be kept."
