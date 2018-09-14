@@ -1,5 +1,7 @@
 module Shopify.FakeData exposing
-    ( appendShopifyCollect
+    ( addCategoryToExternalProduct
+    , addCategoryToInternalProduct
+    , appendShopifyCollect
     , asociateInternalCategoryWithExternalCategory
     , createExternalCategoryId
     , createExternalCategoryName
@@ -401,6 +403,33 @@ appendOrCreateMaybeList a maybe =
 
         Nothing ->
             Just [ a ]
+
+
+addCategoryToExternalProduct : ExternalProductId -> ExternalCatId -> Shopify.Model -> Shopify.Model
+addCategoryToExternalProduct externalProductId externalCatId model =
+    { model
+        | shopifyCollects =
+            model.shopifyCollects
+                |> Maybe.map (\collects -> ( externalCatId, externalProductId ) :: collects)
+    }
+
+
+addCategoryToInternalProduct : InternalProductId -> ExternalCatId -> Shopify.Model -> Shopify.Model
+addCategoryToInternalProduct intProdId extCatId model =
+    { model
+        | internalProducts =
+            model.internalProducts
+                |> Maybe.map
+                    (\products ->
+                        products
+                            |> EveryDict.update intProdId
+                                (Maybe.map
+                                    (\product ->
+                                        { product | externalCatIds = EverySet.insert extCatId product.externalCatIds }
+                                    )
+                                )
+                    )
+    }
 
 
 

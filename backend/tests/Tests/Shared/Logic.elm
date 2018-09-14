@@ -68,6 +68,8 @@ test_DeleteFunctionality =
                 testModel =
                     shopifyEmptyModel
                         |> manuallyAddProductInFirebase intProdId extProdId
+                        |> addCategoryToExternalProduct extProdId extCatId
+                        -- |> addCategoryToInternalProduct intProdId extCatId
                         |> createShopifyAsociationEvenWhenCategoryDoesNotExist intCatId extCatId
             in
             (\data ->
